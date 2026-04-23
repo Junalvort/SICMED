@@ -61,6 +61,12 @@
   </footer>
 </main>
 <script type="module" src="db.js"></script>
-<script src="especialidades.js"></script>
+<script>
+  document.addEventListener("sicmed:ready", function() {
+    var s = document.createElement("script");
+    s.src = "especialidades.js";
+    document.body.appendChild(s);
+  });
+</script>
 </body>
 </html>

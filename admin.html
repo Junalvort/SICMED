@@ -160,6 +160,12 @@
 </div>
 
 <script type="module" src="db.js"></script>
-<script src="admin.js"></script>
+<script>
+  document.addEventListener("sicmed:ready", function() {
+    var s = document.createElement("script");
+    s.src = "admin.js";
+    document.body.appendChild(s);
+  });
+</script>
 </body>
 </html>

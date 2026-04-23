@@ -18,8 +18,15 @@
   };
   var PRIOR_COLOR = { P0:'#EF5350', P1:'#FFA726', P2:'#42A5F5', GES:'#66BB6A' };
 
-  var log = STORE_getLog();
+  var log = [];
   var filtroActivo = '';
+
+  // Cargar log desde Firebase (async)
+  window.STORE_getLog().then(function(data) {
+    log = data;
+    renderStats();
+    renderLista('');
+  });
 
   // ── Resumen ──
   function renderStats() {
@@ -110,9 +117,7 @@
     });
   });
 
-  // ── Init ──
-  renderStats();
-  renderLista('');
+  // ── Init realizado por STORE_getLog async arriba ──
 
   function escHTML(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');

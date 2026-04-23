@@ -37,7 +37,7 @@
       loginWrap.style.display = 'none';
       adminWrap.style.display = 'block';
       loginError.textContent  = '';
-      renderTable(DB);
+      renderTable(window.DB);
     } else {
       loginError.textContent = 'Usuario o código incorrecto.';
       loginPass.value = '';
@@ -56,7 +56,7 @@
   /* ── RESET BD ────────────────────────────────────────────────────────────── */
   btnResetDB.addEventListener('click', function () {
     if (confirm('¿Resetear la base de datos a los valores originales del protocolo SSMOCC?\n\nEsto eliminará TODOS los cambios locales y el historial de actualizaciones.')) {
-      STORE_reset();
+      window.STORE_reset();
       location.reload();
     }
   });
@@ -66,7 +66,7 @@
 
   function renderTable(data) {
     tbody.innerHTML   = '';
-    diagCount.textContent = DB.length;
+    diagCount.textContent = window.DB.length;
     data.forEach(function (d) {
       var tr = document.createElement('tr');
       tr.innerHTML =
@@ -91,7 +91,7 @@
 
   adminSearch.addEventListener('input', function () {
     var q = adminSearch.value.trim().toLowerCase();
-    renderTable(q ? DB.filter(function (d) {
+    renderTable(q ? window.DB.filter(function (d) {
       return d.cie10.toLowerCase().includes(q) ||
              d.nombre.toLowerCase().includes(q) ||
              d.especialidad.toLowerCase().includes(q);
@@ -140,15 +140,13 @@
   }
 
   function confirmarEliminar(cie10) {
-    var d = DB.find(function (x) { return x.cie10 === cie10; });
+    var d = window.DB.find(function (x) { return x.cie10 === cie10; });
     if (!d) return;
     if (confirm('¿Eliminar "' + d.nombre + '" (' + d.cie10 + ')?')) {
-      var copia = { cie10: d.cie10, nombre: d.nombre, especialidad: d.especialidad, prioridad: d.prioridad };
-      var idx   = DB.findIndex(function (x) { return x.cie10 === cie10; });
-      if (idx !== -1) DB.splice(idx, 1);
-      STORE_save('ELIMINADO', copia);           // ← guarda en localStorage + log
-      mostrarToast('🗑 Diagnóstico eliminado', '#EF5350');
-      refrescarTabla();
+      window.STORE_delete(cie10).then(function() {
+        mostrarToast('🗑 Diagnóstico eliminado', '#EF5350');
+        refrescarTabla();
+      });
     }
   }
 
@@ -177,21 +175,22 @@
 
     var accion;
     if (editingCie10) {
-      var idx = DB.findIndex(function (d) { return d.cie10 === editingCie10; });
-      if (idx !== -1) { DB[idx] = entry; accion = 'EDITADO'; }
+      var idx = window.DB.findIndex(function (d) { return d.cie10 === editingCie10; });
+      if (idx !== -1) { window.DB[idx] = entry; accion = 'EDITADO'; }
     } else {
-      if (DB.find(function (d) { return d.cie10 === cie10; })) {
+      if (window.DB.find(function (d) { return d.cie10 === cie10; })) {
         alert('El código CIE-10 "' + cie10 + '" ya existe. Usa un código único.');
         return;
       }
-      DB.push(entry);
+      window.DB.push(entry);
       accion = 'NUEVO';
     }
 
-    STORE_save(accion, entry);                // ← guarda en localStorage + log
-    mostrarToast(accion === 'NUEVO' ? '✅ Diagnóstico agregado' : '✅ Diagnóstico actualizado', '#66BB6A');
-    refrescarTabla();
-    cerrarModal();
+    window.STORE_save(accion, entry).then(function() {
+      mostrarToast(accion === 'NUEVO' ? '✅ Diagnóstico agregado' : '✅ Diagnóstico actualizado', '#66BB6A');
+      refrescarTabla();
+      cerrarModal();
+    });
   });
 
   /* ── TOAST ───────────────────────────────────────────────────────────────── */
@@ -219,7 +218,7 @@
   /* ── Helpers ─────────────────────────────────────────────────────────────── */
   function refrescarTabla() {
     var q = adminSearch.value.trim().toLowerCase();
-    renderTable(q ? DB.filter(function (d) {
+    renderTable(q ? window.DB.filter(function (d) {
       return d.cie10.toLowerCase().includes(q) ||
              d.nombre.toLowerCase().includes(q) ||
              d.especialidad.toLowerCase().includes(q);

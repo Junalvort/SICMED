@@ -1,2 +1,0 @@
-# SICMED
-Page for SIC

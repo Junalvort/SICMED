@@ -68,6 +68,12 @@
 </main>
 
 <script type="module" src="db.js"></script>
-<script src="actualizaciones.js"></script>
+<script>
+  document.addEventListener("sicmed:ready", function() {
+    var s = document.createElement("script");
+    s.src = "actualizaciones.js";
+    document.body.appendChild(s);
+  });
+</script>
 </body>
 </html>

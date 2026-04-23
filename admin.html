@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Administrador – SICMED</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body data-page="admin">
+
+<header class="navbar">
+  <div class="navbar-brand">
+    <span class="brand-icon"></span>
+    <a href="index.html" style="text-decoration:none">
+      <span class="brand-name">SIC<span class="brand-accent">MED</span></span>
+    </a>
+  </div>
+  <nav class="navbar-nav">
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <ul class="nav-list" id="navList">
+      <li class="nav-item"><a href="index.html"          class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li class="nav-item"><a href="especialidades.html"        class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
+      <li class="nav-item"><a href="procedimientos.html"       class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
+      <li class="nav-item"><a href="actualizaciones.html"       class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
+      <li class="nav-item active"><a href="admin.html"                 class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ── LOGIN ── -->
+<div class="admin-login-wrap" id="loginWrap">
+  <div class="admin-login-box">
+    <div class="admin-login-icon">🔐</div>
+    <div class="admin-login-title">Acceso Administrador</div>
+    <div class="admin-login-sub">Ingresa tus credenciales para gestionar la base de datos</div>
+    <div class="admin-field">
+      <label class="admin-label">Usuario</label>
+      <input type="text"     id="loginUser" class="admin-input" placeholder="usuario" autocomplete="username"/>
+    </div>
+    <div class="admin-field">
+      <label class="admin-label">Código de acceso</label>
+      <input type="password" id="loginPass" class="admin-input" placeholder="••••••" autocomplete="current-password"/>
+    </div>
+    <button class="btn-admin-login" id="btnLogin">Ingresar</button>
+    <div class="admin-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ── PANEL ── -->
+<div style="display:none" id="adminWrap">
+  <div class="admin-panel">
+    <div class="admin-panel-title">🛠️ Panel de Administración</div>
+    <div class="admin-panel-sub">
+      Protocolo SSMOCC &nbsp;·&nbsp;
+      <span id="diagCount">0</span> diagnósticos en base de datos
+    </div>
+
+    <!-- Info localStorage -->
+    <div style="background:rgba(79,195,247,.07);border:1px solid rgba(79,195,247,.2);border-radius:10px;
+      padding:10px 16px;margin-bottom:16px;font-size:.82rem;color:rgba(255,255,255,.55);line-height:1.6;">
+      ✅ Los cambios se guardan <strong style="color:#4FC3F7">automáticamente</strong> en este navegador
+      y están disponibles de inmediato en el buscador y en Especialidades.
+      Se reflejan también en el <a href="actualizaciones.html" style="color:#80CBC4">historial de actualizaciones</a>.
+    </div>
+
+    <div class="admin-toolbar">
+      <button class="btn-new-diag"    id="btnNew">➕ Nuevo diagnóstico</button>
+      <input type="text" class="admin-search-input" id="adminSearch" placeholder="Filtrar por nombre, CIE-10 o especialidad…"/>
+      <button class="btn-export-excel" id="btnResetDB" style="background:rgba(229,57,53,.1);border-color:rgba(229,57,53,.3);color:#EF9A9A;" title="Elimina todos los cambios locales y vuelve a la base de datos original">
+        🔄 Resetear BD
+      </button>
+      <button class="btn-logout" id="btnLogout">🚪 Cerrar sesión</button>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>CIE-10</th>
+            <th>Diagnóstico</th>
+            <th>Especialidad</th>
+            <th>Destino</th>
+            <th>Prioridad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="adminTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL ── -->
+<div class="admin-modal-bg" id="modalBg">
+  <div class="admin-modal">
+    <div class="admin-modal-title">
+      <span id="modalTitleText">Nuevo diagnóstico</span>
+      <button class="modal-close-btn" id="modalClose">✕</button>
+    </div>
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label>CIE-10 *</label>
+        <input class="modal-input" id="mCie10" placeholder="Ej: E039"/>
+      </div>
+      <div class="modal-field">
+        <label>Prioridad *</label>
+        <select class="modal-select" id="mPrioridad">
+          <option value="P0">P0 – Urgencia</option>
+          <option value="P1">P1 – Alta prioridad (&lt;30 días)</option>
+          <option value="P2" selected>P2 – Normal (&lt;6 meses)</option>
+          <option value="GES">GES – Garantía Explícita</option>
+        </select>
+      </div>
+      <div class="modal-field full">
+        <label>Nombre del diagnóstico *</label>
+        <input class="modal-input" id="mNombre" placeholder="Ej: Hipotiroidismo no especificado refractario"/>
+      </div>
+      <div class="modal-field">
+        <label>Especialidad *</label>
+        <select class="modal-select" id="mEspecialidad">
+          <option value="Endocrinología">Endocrinología</option>
+          <option value="Gastroenterología">Gastroenterología</option>
+          <option value="Hematología">Hematología</option>
+          <option value="Nefrología">Nefrología</option>
+          <option value="Neurología">Neurología</option>
+          <option value="Oftalmología">Oftalmología</option>
+          <option value="Cirugía Bariátrica">Cirugía Bariátrica</option>
+          <option value="Medicina Interna">Medicina Interna</option>
+          <option value="Otra">Otra</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Destino de derivación *</label>
+        <input class="modal-input" id="mDestino" placeholder="Ej: Medicina Interna, Urgencia"/>
+      </div>
+      <div class="modal-field full">
+        <label>Sinónimos (separados por coma)</label>
+        <input class="modal-input" id="mSinonimos" placeholder="Ej: TSH alto, tiroides baja"/>
+      </div>
+      <div class="modal-field full">
+        <label>Criterios de derivación *</label>
+        <textarea class="modal-textarea" id="mCriterios" rows="3" placeholder="Criterios clínicos para indicar esta derivación…"></textarea>
+      </div>
+      <div class="modal-field full">
+        <label>Exámenes mínimos (EMBD)</label>
+        <textarea class="modal-textarea" id="mExamenes" rows="2" placeholder="Ej: TSH, T4L, hemograma, VHS…"></textarea>
+      </div>
+      <div class="modal-field full">
+        <label>Notas adicionales</label>
+        <textarea class="modal-textarea" id="mNotas" rows="2" placeholder="Advertencias, GES, instrucciones especiales…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" id="modalCancel">Cancelar</button>
+      <button class="btn-modal-save"   id="modalSave">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="db.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

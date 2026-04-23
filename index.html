@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SICMED – Derivaciones Médicas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body data-page="inicio">
+
+<header class="navbar">
+  <div class="navbar-brand">
+    <span class="brand-icon"></span>
+    <span class="brand-name">SIC<span class="brand-accent">MED</span></span>
+  </div>
+  <nav class="navbar-nav">
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <ul class="nav-list" id="navList">
+      <li class="nav-item active"><a href="index.html"          class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li class="nav-item"><a href="especialidades.html"        class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
+      <li class="nav-item"><a href="procedimientos.html"       class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
+      <li class="nav-item"><a href="actualizaciones.html"       class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
+      <li class="nav-item"><a href="admin.html"                 class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="main-content">
+  <section class="hero-section">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1 class="hero-title">Protocolo de Derivación<br/>
+          <span class="hero-subtitle">Nivel Secundario</span>
+        </h1>
+        <p class="hero-desc">Busca diagnósticos por nombre o código CIE-10</p>
+      </div>
+
+      <div class="search-container" id="searchContainer">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" class="search-input"
+            placeholder="Buscar diagnóstico o código CIE-10…" autocomplete="off"/>
+          <button class="search-clear" id="searchClear">✕</button>
+        </div>
+        <div class="search-dropdown" id="searchDropdown">
+          <div class="dropdown-inner" id="dropdownInner"></div>
+        </div>
+        <button class="btn-buscar" id="btnBuscar">
+          <span class="btn-icon">🔎</span> Buscar
+        </button>
+      </div>
+
+      <div class="result-panel" id="resultPanel" hidden>
+        <div class="result-header">
+          <h3 id="resultTitle">Resultado</h3>
+          <button class="result-close" id="resultClose">✕</button>
+        </div>
+        <div id="resultBody"></div>
+      </div>
+    </div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </section>
+
+  <section class="stats-section">
+    <div class="stat-card"><span class="stat-num" id="statEsp">7</span><span class="stat-label">Especialidades</span></div>
+    <div class="stat-card"><span class="stat-num" id="statDiag">–</span><span class="stat-label">Diagnósticos</span></div>
+   
+  </section>
+
+  <footer class="site-footer">
+    <div>
+    </div>
+     <div class="footer-credits">Junior Alvarez &nbsp;|&nbsp; CESFAM Lo Amor &nbsp;·&nbsp; SICMED © 2026</div>
+  </footer>
+</main>
+
+<script type="module" src="db.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

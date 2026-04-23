@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Procedimientos – SICMED</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body data-page="procedimientos">
+<header class="navbar">
+  <div class="navbar-brand">
+    <span class="brand-icon"></span>
+    <a href="index.html" style="text-decoration:none">
+      <span class="brand-name">SIC<span class="brand-accent">MED</span></span>
+    </a>
+  </div>
+  <nav class="navbar-nav">
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <ul class="nav-list" id="navList">
+      <li class="nav-item"><a href="index.html"          class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li class="nav-item"><a href="especialidades.html"        class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
+      <li class="nav-item active"><a href="procedimientos.html"       class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
+      <li class="nav-item"><a href="actualizaciones.html"       class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
+      <li class="nav-item"><a href="admin.html"                 class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
+    </ul>
+  </nav>
+</header>
+<main class="main-content">
+  <div class="page-header">
+    <h1 class="page-title">📋 Procedimientos</h1>
+    <p class="page-subtitle">Sección en construcción — próximamente disponible</p>
+  </div>
+  <div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,.35)">
+    <div style="font-size:3rem;margin-bottom:12px">🚧</div>
+    <div style="font-size:1.1rem">Esta sección estará disponible en la próxima versión</div>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://clinico.rayenaps.cl/" target="_blank" class="footer-link">Rayen Clinico</a>
+      <a href="http://10.0.11.47/ADMIN.aspx" target="_blank" class="footer-link">Laboratorio Cerro Navia</a>
+      <a href="https://teleradiologia.redclinica.cl/LoginInicio.aspx" target="_blank" class="footer-link">Radiologia Red Unichile</a>
+      <a href="https://www.licencia.cl/sesiones/nueva/" target="_blank" class="footer-link">Licencias Medicas</a>
+      <a href="https://farmaciapopularonline.cl/consultor?farmacia=cerro%20navia" target="_blank" class="footer-link">Farmacia Popular</a>
+    </div>
+    <div class="footer-credits">Junior Alvarez &nbsp;|&nbsp; CESFAM Lo Amor &nbsp;·&nbsp; SICMED © 2026</div>
+  </footer>
+</main>
+<script>
+  var h = document.getElementById('hamburger');
+  var n = document.getElementById('navList');
+  if(h && n) h.addEventListener('click', function(){ n.classList.toggle('open'); });
+</script>
+</body>
+</html>

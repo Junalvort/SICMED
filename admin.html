@@ -20,11 +20,11 @@
   <nav class="navbar-nav">
     <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
     <ul class="nav-list" id="navList">
-      <li class="nav-item"><a href="index.html"          class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
-      <li class="nav-item"><a href="especialidades.html"        class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
-      <li class="nav-item"><a href="procedimientos.html"       class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
-      <li class="nav-item"><a href="actualizaciones.html"       class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
-      <li class="nav-item active"><a href="admin.html"                 class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
+      <li class="nav-item"><a href="index.html"           class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li class="nav-item"><a href="especialidades.html"  class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
+      <li class="nav-item"><a href="procedimientos.html"  class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
+      <li class="nav-item"><a href="actualizaciones.html" class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
+      <li class="nav-item active"><a href="admin.html"    class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
     </ul>
   </nav>
 </header>
@@ -37,7 +37,7 @@
     <div class="admin-login-sub">Ingresa tus credenciales para gestionar la base de datos</div>
     <div class="admin-field">
       <label class="admin-label">Usuario</label>
-      <input type="text"     id="loginUser" class="admin-input" placeholder="usuario" autocomplete="username"/>
+      <input type="text" id="loginUser" class="admin-input" placeholder="usuario" autocomplete="username"/>
     </div>
     <div class="admin-field">
       <label class="admin-label">Código de acceso</label>
@@ -53,46 +53,61 @@
   <div class="admin-panel">
     <div class="admin-panel-title">🛠️ Panel de Administración</div>
     <div class="admin-panel-sub">
-      Protocolo SSMOCC &nbsp;·&nbsp;
-      <span id="diagCount">0</span> diagnósticos en base de datos
+      SICMED &nbsp;·&nbsp; <span id="diagCount">0</span> diagnósticos &nbsp;·&nbsp; <span id="espCount">0</span> especialidades
     </div>
 
-    <!-- Info localStorage -->
-    <div style="background:rgba(79,195,247,.07);border:1px solid rgba(79,195,247,.2);border-radius:10px;
-      padding:10px 16px;margin-bottom:16px;font-size:.82rem;color:rgba(255,255,255,.55);line-height:1.6;">
-      ✅ Los cambios se guardan <strong style="color:#4FC3F7">automáticamente</strong> en este navegador
-      y están disponibles de inmediato en el buscador y en Especialidades.
-      Se reflejan también en el <a href="actualizaciones.html" style="color:#80CBC4">historial de actualizaciones</a>.
+    <!-- Pestañas -->
+    <div class="admin-tabs" id="adminTabs">
+      <button class="admin-tab active" data-tab="diagnosticos">🔬 Diagnósticos</button>
+      <button class="admin-tab"        data-tab="especialidades">🩺 Especialidades</button>
     </div>
 
-    <div class="admin-toolbar">
-      <button class="btn-new-diag"    id="btnNew">➕ Nuevo diagnóstico</button>
-      <input type="text" class="admin-search-input" id="adminSearch" placeholder="Filtrar por nombre, CIE-10 o especialidad…"/>
-      <button class="btn-export-excel" id="btnResetDB" style="background:rgba(229,57,53,.1);border-color:rgba(229,57,53,.3);color:#EF9A9A;" title="Elimina todos los cambios locales y vuelve a la base de datos original">
-        🔄 Resetear BD
-      </button>
-      <button class="btn-logout" id="btnLogout">🚪 Cerrar sesión</button>
+    <!-- ── PESTAÑA DIAGNÓSTICOS ── -->
+    <div class="admin-tab-content" id="tabDiagnosticos">
+      <div class="admin-toolbar">
+        <button class="btn-new-diag" id="btnNew">➕ Nuevo diagnóstico</button>
+        <input type="text" class="admin-search-input" id="adminSearch" placeholder="Filtrar por nombre, CIE-10 o especialidad…"/>
+        <button class="btn-export-excel" id="btnResetDB"
+          style="background:rgba(229,57,53,.1);border-color:rgba(229,57,53,.3);color:#EF9A9A;">
+          🔄 Resetear BD
+        </button>
+        <button class="btn-logout" id="btnLogout">🚪 Cerrar sesión</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>CIE-10</th><th>Diagnóstico</th><th>Especialidad</th>
+              <th>Destino</th><th>Prioridad</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="adminTbody"></tbody>
+        </table>
+      </div>
     </div>
 
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>CIE-10</th>
-            <th>Diagnóstico</th>
-            <th>Especialidad</th>
-            <th>Destino</th>
-            <th>Prioridad</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="adminTbody"></tbody>
-      </table>
+    <!-- ── PESTAÑA ESPECIALIDADES ── -->
+    <div class="admin-tab-content" id="tabEspecialidades" style="display:none">
+      <div class="admin-toolbar">
+        <button class="btn-new-diag" id="btnNewEsp">➕ Nueva especialidad</button>
+        <div style="margin-left:auto;color:rgba(255,255,255,.4);font-size:.85rem">
+          Las especialidades se sincronizan en toda la plataforma
+        </div>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Emoji</th><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr>
+          </thead>
+          <tbody id="espTbody"></tbody>
+        </table>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- ── MODAL ── -->
+  </div><!-- /admin-panel -->
+</div><!-- /adminWrap -->
+
+<!-- ── MODAL DIAGNÓSTICO ── -->
 <div class="admin-modal-bg" id="modalBg">
   <div class="admin-modal">
     <div class="admin-modal-title">
@@ -120,15 +135,7 @@
       <div class="modal-field">
         <label>Especialidad *</label>
         <select class="modal-select" id="mEspecialidad">
-          <option value="Endocrinología">Endocrinología</option>
-          <option value="Gastroenterología">Gastroenterología</option>
-          <option value="Hematología">Hematología</option>
-          <option value="Nefrología">Nefrología</option>
-          <option value="Neurología">Neurología</option>
-          <option value="Oftalmología">Oftalmología</option>
-          <option value="Cirugía Bariátrica">Cirugía Bariátrica</option>
-          <option value="Medicina Interna">Medicina Interna</option>
-          <option value="Otra">Otra</option>
+          <!-- Se puebla dinámicamente desde window.ESPECIALIDADES -->
         </select>
       </div>
       <div class="modal-field">
@@ -155,6 +162,53 @@
     <div class="modal-footer">
       <button class="btn-modal-cancel" id="modalCancel">Cancelar</button>
       <button class="btn-modal-save"   id="modalSave">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL ESPECIALIDAD ── -->
+<div class="admin-modal-bg" id="modalEspBg">
+  <div class="admin-modal" style="max-width:500px">
+    <div class="admin-modal-title">
+      <span id="modalEspTitle">Nueva especialidad</span>
+      <button class="modal-close-btn" id="modalEspClose">✕</button>
+    </div>
+
+    <div class="modal-grid" style="grid-template-columns:1fr">
+
+      <!-- Selector de emoji -->
+      <div class="modal-field">
+        <label>Emoji / Ícono *</label>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div id="emojiPreview" style="
+            font-size:2.4rem;width:56px;height:56px;
+            background:rgba(79,195,247,.1);border:1px solid rgba(79,195,247,.25);
+            border-radius:12px;display:flex;align-items:center;justify-content:center;
+            cursor:pointer;flex-shrink:0;" title="Clic para cambiar">🏥</div>
+          <input class="modal-input" id="mEspIcon" placeholder="Escribe o pega un emoji…" maxlength="8"
+            style="font-size:1.4rem;text-align:center;letter-spacing:4px"/>
+        </div>
+        <!-- Paleta de emojis médicos -->
+        <div id="emojiPalette" style="
+          display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;
+          background:rgba(255,255,255,.04);border-radius:10px;padding:10px;">
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <label>Nombre de la especialidad *</label>
+        <input class="modal-input" id="mEspNombre" placeholder="Ej: Cardiología"/>
+      </div>
+
+      <div class="modal-field">
+        <label>Descripción corta</label>
+        <input class="modal-input" id="mEspDesc" placeholder="Ej: Corazón, hipertensión, arritmias"/>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" id="modalEspCancel">Cancelar</button>
+      <button class="btn-modal-save"   id="modalEspSave">💾 Guardar especialidad</button>
     </div>
   </div>
 </div>

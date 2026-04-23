@@ -1,15 +1,4 @@
-// ─── DERIVMED – Especialidades ───────────────────────────────────────────────
-
-var SPECIALTIES_META = {
-  "Endocrinología":    { icon: "🔬", desc: "Tiroides, suprarrenales, metabolismo" },
-  "Gastroenterología": { icon: "🫁", desc: "Aparato digestivo, hígado, páncreas" },
-  "Hematología":       { icon: "🩸", desc: "Enfermedades de la sangre y coagulación" },
-  "Nefrología":        { icon: "🫘", desc: "Riñón, ERC, síndrome nefrótico" },
-  "Neurología":        { icon: "🧠", desc: "Sistema nervioso, cefaleas, movimientos" },
-  "Oftalmología":      { icon: "👁", desc: "Enfermedades oculares y visuales" },
-  "Cirugía Bariátrica":{ icon: "⚖", desc: "Programa obesidad HSJD" },
-  "Medicina Interna":  { icon: "🏥", desc: "Patología general ambulatoria" }
-};
+// ─── SICMED – Especialidades ──────────────────────────────────────────────────
 
 var PRIOR_COLOR = { P0:"#EF5350", P1:"#FFA726", P2:"#42A5F5", GES:"#66BB6A" };
 var PRIOR_LABEL = { P0:"P0 – Urgencia", P1:"P1 – menos 30 días", P2:"P2 – menos 6 meses", GES:"GES" };
@@ -18,7 +7,6 @@ function escaparHTML(s) {
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
-// DOM refs - todos declarados ANTES de usarlos
 var hamburger   = document.getElementById("hamburger");
 var navList     = document.getElementById("navList");
 var grid        = document.getElementById("cardsGrid");
@@ -29,68 +17,63 @@ var diagList    = document.getElementById("diagList");
 var diagClose   = document.getElementById("diagClose");
 var priorFilter = document.getElementById("priorFilter");
 
-// Hamburger menu
 if (hamburger && navList) {
   hamburger.addEventListener("click", function() {
     navList.classList.toggle("open");
   });
 }
 
-// Agrupar diagnósticos por especialidad
-var groups = {};
-for (var i = 0; i < DB.length; i++) {
-  var d = DB[i];
-  if (!groups[d.especialidad]) groups[d.especialidad] = [];
-  groups[d.especialidad].push(d);
-}
+// ── Construir tarjetas desde window.ESPECIALIDADES ───────────────────────────
+function buildCards() {
+  grid.innerHTML = "";
 
-// Orden de presentación
-var ORDER = [
-  "Endocrinología","Gastroenterología","Hematología","Nefrología",
-  "Neurología","Oftalmología","Cirugía Bariátrica","Medicina Interna"
-];
+  // Agrupar diagnósticos por especialidad
+  var groups = {};
+  for (var i = 0; i < window.DB.length; i++) {
+    var d = window.DB[i];
+    if (!groups[d.especialidad]) groups[d.especialidad] = [];
+    groups[d.especialidad].push(d);
+  }
 
-var espKeys = [];
-for (var o = 0; o < ORDER.length; o++) {
-  if (groups[ORDER[o]]) espKeys.push(ORDER[o]);
-}
-// agregar si hay especialidades extra no contempladas
-var allKeys = Object.keys(groups);
-for (var k = 0; k < allKeys.length; k++) {
-  if (espKeys.indexOf(allKeys[k]) === -1) espKeys.push(allKeys[k]);
-}
+  // Usar el orden y metadata de window.ESPECIALIDADES
+  var esps = window.ESPECIALIDADES;
 
-// Crear tarjetas
-for (var e = 0; e < espKeys.length; e++) {
-  (function(esp) {
-    var meta  = SPECIALTIES_META[esp] || { icon:"🏥", desc:"" };
-    var count = groups[esp].length;
+  // Agregar especialidades que tengan diagnósticos pero no estén en ESPECIALIDADES
+  var nombresConocidos = esps.map(function(e){ return e.nombre; });
+  Object.keys(groups).forEach(function(nombre) {
+    if (nombresConocidos.indexOf(nombre) === -1) {
+      esps = esps.concat([{ nombre: nombre, icon: "🏥", desc: "" }]);
+    }
+  });
+
+  esps.forEach(function(esp) {
+    var diags = groups[esp.nombre] || [];
     var card  = document.createElement("div");
     card.className = "specialty-card";
     card.innerHTML =
-      '<div class="sc-icon">' + meta.icon + "</div>" +
-      '<div class="sc-title">' + escaparHTML(esp) + "</div>" +
-      '<div class="sc-count">' + count + " diagnóstico" + (count !== 1 ? "s" : "") + "</div>" +
-      '<p style="font-size:.82rem;color:rgba(255,255,255,.45);margin-top:6px;line-height:1.4">' + escaparHTML(meta.desc) + "</p>" +
+      '<div class="sc-icon">' + (esp.icon || "🏥") + "</div>" +
+      '<div class="sc-title">' + escaparHTML(esp.nombre) + "</div>" +
+      '<div class="sc-count">' + diags.length + " diagnóstico" + (diags.length !== 1 ? "s" : "") + "</div>" +
+      '<p style="font-size:.82rem;color:rgba(255,255,255,.45);margin-top:6px;line-height:1.4">' + escaparHTML(esp.desc || "") + "</p>" +
       '<span class="sc-arrow">→</span>';
 
-    card.addEventListener("click", function() { openPanel(esp, meta); });
+    card.addEventListener("click", function() { openPanel(esp, groups[esp.nombre] || []); });
     grid.appendChild(card);
-  })(espKeys[e]);
+  });
 }
 
+buildCards();
+
 // ─── Panel lateral ────────────────────────────────────────────────────────────
-var currentEsp = null;
+var currentDatos = [];
 
-function openPanel(esp, meta) {
-  currentEsp = esp;
-  diagIcon.textContent  = meta.icon;
-  diagTitle.textContent = esp;
+function openPanel(esp, datos) {
+  currentDatos = datos;
+  diagIcon.textContent  = esp.icon || "🏥";
+  diagTitle.textContent = esp.nombre;
 
-  // Pills de prioridad
   priorFilter.innerHTML = "";
   var prios = [];
-  var datos = groups[esp];
   for (var x = 0; x < datos.length; x++) {
     if (prios.indexOf(datos[x].prioridad) === -1) prios.push(datos[x].prioridad);
   }
@@ -101,8 +84,7 @@ function openPanel(esp, meta) {
     priorFilter.appendChild(makePill(PRIOR_LABEL[prios[p]] || prios[p], prios[p], false));
   }
 
-  renderDiagList(groups[esp], null);
-
+  renderDiagList(datos, null);
   panel.classList.add("open");
   document.body.style.overflow = "hidden";
 }
@@ -119,49 +101,34 @@ function makePill(label, val, active) {
     "transition:.2s;margin-bottom:4px;";
 
   btn.addEventListener("click", function() {
-    var btns = priorFilter.querySelectorAll("button");
-    for (var b = 0; b < btns.length; b++) {
-      btns[b].style.background  = "rgba(255,255,255,.08)";
-      btns[b].style.color       = "rgba(255,255,255,.6)";
-      btns[b].style.borderColor = "rgba(255,255,255,.12)";
-    }
+    priorFilter.querySelectorAll("button").forEach(function(b) {
+      b.style.background  = "rgba(255,255,255,.08)";
+      b.style.color       = "rgba(255,255,255,.6)";
+      b.style.borderColor = "rgba(255,255,255,.12)";
+    });
     btn.style.background  = "rgba(79,195,247,.25)";
     btn.style.color       = "#4FC3F7";
     btn.style.borderColor = "rgba(79,195,247,.4)";
-    renderDiagList(groups[currentEsp], val);
+    renderDiagList(currentDatos, val);
   });
-
   return btn;
 }
 
 function renderDiagList(data, filterP) {
   diagList.innerHTML = "";
+  var list = data.filter(function(d) { return !filterP || d.prioridad === filterP; });
 
-  var list = [];
-  for (var i = 0; i < data.length; i++) {
-    if (!filterP || data[i].prioridad === filterP) list.push(data[i]);
-  }
-
-  if (list.length === 0) {
+  if (!list.length) {
     diagList.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,.4);">Sin diagnósticos en esta prioridad</div>';
     return;
   }
 
-  for (var j = 0; j < list.length; j++) {
-    var d   = list[j];
+  list.forEach(function(d) {
     var row = document.createElement("div");
     row.className = "diag-row";
-
-    var criterHTML = d.criterios
-      ? '<div class="dr-notas"><strong style="color:#80CBC4">Criterios:</strong> ' + escaparHTML(d.criterios) + "</div>"
-      : "";
-    var examHTML = d.examenes
-      ? '<div class="dr-notas"><strong style="color:#FFCC80">EMBD:</strong> ' + escaparHTML(d.examenes) + "</div>"
-      : "";
-    var notasHTML = d.notas
-      ? '<div class="dr-notas">💡 ' + escaparHTML(d.notas) + "</div>"
-      : "";
-
+    var criterHTML = d.criterios ? '<div class="dr-notas"><strong style="color:#80CBC4">Criterios:</strong> ' + escaparHTML(d.criterios) + "</div>" : "";
+    var examHTML   = d.examenes  ? '<div class="dr-notas"><strong style="color:#FFCC80">EMBD:</strong> '     + escaparHTML(d.examenes)  + "</div>" : "";
+    var notasHTML  = d.notas     ? '<div class="dr-notas">💡 ' + escaparHTML(d.notas) + "</div>" : "";
     row.innerHTML =
       '<span class="dr-cie">' + escaparHTML(d.cie10) + "</span>" +
       '<div class="dr-info">' +
@@ -169,12 +136,9 @@ function renderDiagList(data, filterP) {
         '<div class="dr-notas" style="margin-top:4px"><strong style="color:#90CAF9">Destino:</strong> ' + escaparHTML(d.destino) + "</div>" +
         criterHTML + examHTML + notasHTML +
       "</div>" +
-      '<span class="badge-urgencia ' + d.prioridad + '" style="flex-shrink:0;align-self:flex-start;">' +
-        escaparHTML(d.prioridad) +
-      "</span>";
-
+      '<span class="badge-urgencia ' + d.prioridad + '" style="flex-shrink:0;align-self:flex-start;">' + escaparHTML(d.prioridad) + "</span>";
     diagList.appendChild(row);
-  }
+  });
 }
 
 function closePanel() {
@@ -183,11 +147,5 @@ function closePanel() {
 }
 
 diagClose.addEventListener("click", closePanel);
-
-panel.addEventListener("click", function(e) {
-  if (e.target === panel) closePanel();
-});
-
-document.addEventListener("keydown", function(e) {
-  if (e.key === "Escape") closePanel();
-});
+panel.addEventListener("click", function(e) { if (e.target === panel) closePanel(); });
+document.addEventListener("keydown", function(e) { if (e.key === "Escape") closePanel(); });

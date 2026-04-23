@@ -16,6 +16,19 @@
   };
 
   // ── Datos base del protocolo SSMOCC ────────────────────────────────────────
+
+  // ── Especialidades base ────────────────────────────────────────────────────
+  const ESP_BASE = [
+    { nombre:"Endocrinología",    icon:"🔬", desc:"Tiroides, suprarrenales, metabolismo" },
+    { nombre:"Gastroenterología", icon:"🫁", desc:"Aparato digestivo, hígado, páncreas" },
+    { nombre:"Hematología",       icon:"🩸", desc:"Enfermedades de la sangre y coagulación" },
+    { nombre:"Nefrología",        icon:"🫘", desc:"Riñón, ERC, síndrome nefrótico" },
+    { nombre:"Neurología",        icon:"🧠", desc:"Sistema nervioso, cefaleas, movimientos" },
+    { nombre:"Oftalmología",      icon:"👁️", desc:"Enfermedades oculares y visuales" },
+    { nombre:"Cirugía Bariátrica",icon:"⚖️", desc:"Programa obesidad HSJD" },
+    { nombre:"Medicina Interna",  icon:"🏥", desc:"Patología general ambulatoria" },
+  ];
+
   const DB_BASE = [
     { cie10:"E035",  nombre:"Coma mixedematoso", sinonimos:["coma mixedema","mixedema"], especialidad:"Endocrinología", destino:"Urgencia", prioridad:"P0", criterios:"Sospecha fundada", examenes:"Clínica suficiente", notas:"Derivar directamente a urgencia" },
     { cie10:"E055",  nombre:"Crisis / Tormenta tirotóxica", sinonimos:["tormenta tirotoxica","crisis tirotoxica","tirotoxicosis"], especialidad:"Endocrinología", destino:"Urgencia", prioridad:"P0", criterios:"Sospecha fundada", examenes:"Clínica suficiente", notas:"" },
@@ -155,6 +168,47 @@
   }
 
   // ── Funciones globales ──────────────────────────────────────────────────────
+
+
+  // ── Array global de especialidades ─────────────────────────────────────────
+  window.ESPECIALIDADES = [];
+  const COL_ESP = "especialidades";
+
+  // Cargar especialidades
+  try {
+    const snapEsp = await getDocs(collection(fdb, COL_ESP));
+    if (snapEsp.empty) {
+      for (const e of ESP_BASE) {
+        await setDoc(doc(fdb, COL_ESP, e.nombre), e);
+        window.ESPECIALIDADES.push(e);
+      }
+    } else {
+      snapEsp.forEach(d => window.ESPECIALIDADES.push(d.data()));
+      // Sort by nombre
+      window.ESPECIALIDADES.sort((a,b) => a.nombre.localeCompare(b.nombre, "es"));
+    }
+  } catch(e) {
+    window.ESPECIALIDADES.push(...ESP_BASE);
+  }
+
+  window.ESP_save = async function(esp) {
+    // esp = { nombre, icon, desc }
+    try {
+      await setDoc(doc(fdb, COL_ESP, esp.nombre), esp);
+      const idx = window.ESPECIALIDADES.findIndex(e => e.nombre === esp.nombre);
+      if (idx !== -1) window.ESPECIALIDADES[idx] = esp;
+      else window.ESPECIALIDADES.push(esp);
+      window.ESPECIALIDADES.sort((a,b) => a.nombre.localeCompare(b.nombre, "es"));
+    } catch(e) { console.error("Error guardando especialidad:", e); throw e; }
+  };
+
+  window.ESP_delete = async function(nombre) {
+    try {
+      await deleteDoc(doc(fdb, COL_ESP, nombre));
+      const idx = window.ESPECIALIDADES.findIndex(e => e.nombre === nombre);
+      if (idx !== -1) window.ESPECIALIDADES.splice(idx, 1);
+    } catch(e) { console.error("Error eliminando especialidad:", e); throw e; }
+  };
 
   window.searchDB = function(query_str) {
     if (!query_str || query_str.trim().length < 2) return [];

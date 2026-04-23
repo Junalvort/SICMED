@@ -224,6 +224,94 @@
     window.PROCEDIMIENTOS.push(...PROC_BASE);
   }
 
+
+  // ── Guías ─────────────────────────────────────────────────────────────────
+  const COL_GUIA = "guias";
+  window.GUIAS = [];
+
+  const GUIA_BASE = [
+    {
+      id: "cv_padi",
+      titulo: "Control CV / PADI / PDS",
+      icono: "🏠",
+      color: "#42A5F5",
+      descripcion: "Guía de control domiciliario integral para programas PDS, PADI y CPU",
+      secciones: [
+        {
+          subtitulo: "1. Diagnósticos frecuentes",
+          contenido: "Z63.6: Problemas relacionados con familiar dependiente\nI10: Hipertensión esencial (GES)\nE11: Diabetes mellitus no insulinodependiente (GES)\nE78.2: Hiperlipidemia mixta\nE66: Obesidad\nN18.1–N18.5: ERC Etapa 1–5 (GES)\nE03: Hipotiroidismo (GES)\nF17.3: Trastorno por uso de tabaco (GES)\nZ76.0: Consulta para repetición de receta\nZ99-1: Órtesis (GES)\nZ00: Examen médico general (solo revisión de exámenes sin síntomas)\nR10.1: Dolor abdominal superior → Ecografía abdominal\nK29.7: Gastritis no especificada → Endoscopia con test de ureasa\nH52.7: Trastorno de refracción → Anteojos GES/NOGES\nJ15: Neumonía bacteriana → Rx tórax (Convenio UC)\nJ45: Asma → Rx tórax 2 proyecciones (Convenio UC)"
+        },
+        {
+          subtitulo: "2. Formularios",
+          contenido: "• Salud Cardiovascular Integral (CI)\n• Índice de Barthel (CI, Ingreso, PDS) → <35 puntos = dependencia severa\n• Minimental Abreviado (CI, Ingreso) → Derivación a Demencia\n• TEST DE PFEIFFER (CI, Ingreso) → Cognitivo adulto mayor\n• AUDIT (CI) → Dependencia alcohol → Derivar programa AA\n• ASISST → Dependencia sustancias (Terapeuta)\n• Programa Dependencia PADDS y CPU (CI, PDS)\n• PADPDS-CPU Elaboración plan consensuado (CI, PDS)\n• RFAM - Formulario Riesgo Familiar Red Occidente (CI) → CADA 3 AÑOS\n• Formulario Control Otros Programas de Salud (Controles ERA, CI)\n• NECPAL 4 (CPU) → Registrar P1…P12 en ficha como positiva o no"
+        },
+        {
+          subtitulo: "3. Actividades CONTROLES CV",
+          contenido: "• Control de Salud Cardiovascular (CI)\n• Control Integral con Riesgo (XX) → riesgo leve/moderado/severo (G1, G2, G3)\n• Aplicación AUDIT (CI)\n• Evaluación riesgo familiar RFAM (Gestión) (CI)\n• AG_Aplicación RFAM-Riesgo (XX) → Si RFAM realizado en <3 años (CI)\n• Consejería de estilos de vida (Todos)"
+        },
+        {
+          subtitulo: "3. Actividades PDS/PADI",
+          contenido: "• Control de Salud Cardiovascular (CI)\n• Control Integral con Riesgo (XX)\n• Aplicación AUDIT (CI)\n• Evaluación riesgo familiar RFAM (Gestión)\n• AG_Aplicación RFAM-Riesgo (XX) → Si <3 años\n• Consejería de estilos de vida (Todos)\n• Consejerías familiares - Temas Prioridad - Con integrante dependiente severo (Ind)\n• Aplicación de Barthel (CI, ingresos)\n• Tratamientos y/o procedimientos en domicilio - personas con dependencia severa (no oncológicos)\n• Visita domiciliaria integral PADDS - Dependencia severa sin demencia / no terminal - Ingreso PADDS\n• Ingresos PADDS - Ingreso persona con dependencia severa - Plan de cuidado integral (vía ECICEP)\n• Visita domiciliaria integral PADDS - Dependencia severa CON diagnóstico de demencia"
+        },
+        {
+          subtitulo: "3. Actividades CPU",
+          contenido: "• Visita domiciliaria tratamiento/procedimiento/rehabilitación - APS-CPU\n• Visita Domiciliaria Integral ingreso - APS-CPU\n• Visita Domiciliaria Integral seguimiento - APS-CPU\n• Tratamientos y/o Procedimientos en Domicilio - Personas con dependencia severa oncológicos\n• Morbilidad, control CPU\n\nVISITA PERDIDA:\n• Visita Domiciliaria Perdida\n• AG_Visita domiciliaria perdida por falta de transporte\n• Llamada Telefónica Perdida"
+        },
+        {
+          subtitulo: "4. Documentación",
+          contenido: "• Certificados, GES y documentación ELEAM: Firmar y dejar en BOX ADMINISTRATIVO. Si se puede dejar copia excelente; si no, llamar a familiar (firma como apoderado).\n• Paraclínicos y controles: Dejar en poder del paciente las impresiones junto con carnet de control. Control integral → sección de control. Morbilidad → sección de morbilidad."
+        },
+        {
+          subtitulo: "5. Peso en paciente con dependencia",
+          contenido: "Mediciones de: Perímetro braquial, longitud de rodilla y cálculo aproximado de peso y talla (CALCULADORA)."
+        },
+        {
+          subtitulo: "6. Actualizar Excel PDS",
+          contenido: "⚠️ ACTUALIZAR EXCEL DE PDS CON FECHA ACTUAL DE CONTROL INTEGRAL."
+        },
+        {
+          subtitulo: "7. Derivaciones a Hospital",
+          contenido: "• A criterio clínico: Dejar estipulado en historia clínica si presenta alteraciones que puedan comprometer la salud. Incluir PERTINENTES NEGATIVOS.\n• Especificar cambios en registro de controles de carnet.\n• Llamar al hospital comentando el caso si es necesario.\n• Llenar datos específicos de la patología. Paciente/familiar lee y firma desistimiento de derivación.\n• Si el paciente es aceptado: Anotar nombre del médico del HFBC, lugar de aceptación (normalmente triage). Mandar copia de interconsulta a jefe de programa para gestionar ambulancia. Copia original queda con el cuidador/paciente."
+        },
+        {
+          subtitulo: "9. RFAM — Pasos",
+          contenido: "a. Formulario (Pauta de valoración) → Salud familiar → RFAM - Formulario Riesgo Familiar Red Occidente (1 alta es suficiente)\nb. Ficha familiar (icono): Seleccionar evaluación familiar → Agregar → Riesgo Alto → Guardar\nc. Actividad: Evaluación de riesgo familiar RFAM (Gestión) (CI) / AG_Aplicación RFAM-Riesgo (XX) → Si tiene RFAM en <3 años (CI)"
+        }
+      ]
+    }
+  ];
+
+  try {
+    const snapGuia = await getDocs(collection(fdb, COL_GUIA));
+    if (snapGuia.empty) {
+      for (const g of GUIA_BASE) {
+        await setDoc(doc(fdb, COL_GUIA, g.id), g);
+        window.GUIAS.push(g);
+      }
+    } else {
+      snapGuia.forEach(d => window.GUIAS.push(d.data()));
+    }
+  } catch(e) {
+    window.GUIAS.push(...GUIA_BASE);
+  }
+
+  window.GUIA_save = async function(guia) {
+    try {
+      await setDoc(doc(fdb, COL_GUIA, guia.id), guia);
+      const idx = window.GUIAS.findIndex(g => g.id === guia.id);
+      if (idx !== -1) window.GUIAS[idx] = guia;
+      else window.GUIAS.push(guia);
+    } catch(e) { console.error("Error guardando guía:", e); throw e; }
+  };
+
+  window.GUIA_delete = async function(id) {
+    try {
+      await deleteDoc(doc(fdb, COL_GUIA, id));
+      const idx = window.GUIAS.findIndex(g => g.id === id);
+      if (idx !== -1) window.GUIAS.splice(idx, 1);
+    } catch(e) { console.error("Error eliminando guía:", e); throw e; }
+  };
+
   window.PROC_save = async function(proc) {
     try {
       await setDoc(doc(fdb, COL_PROC, proc.id), proc);

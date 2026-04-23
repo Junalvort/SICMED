@@ -71,6 +71,7 @@
       renderEspTable();
       poblarSelectEsp();
       renderProcTable(window.PROCEDIMIENTOS);
+      renderGuiaTable(window.GUIAS);
     } else {
       loginError.textContent = 'Usuario o código incorrecto.';
       loginPass.value = ''; loginPass.focus();
@@ -389,7 +390,7 @@
 
   /* Cerrar modales con Escape */
   document.addEventListener('keydown', function(e){
-    if (e.key==='Escape') { cerrarModal(); cerrarModalEsp(); cerrarModalProc(); }
+    if (e.key==='Escape') { cerrarModal(); cerrarModalEsp(); cerrarModalProc(); cerrarModalGuia(); }
   });
 
   /* ────────────────────────────────────────────────────────────────────────
@@ -513,6 +514,146 @@
       renderProcTable(window.PROCEDIMIENTOS);
       cerrarModalProc();
     });
+  });
+
+
+  /* ────────────────────────────────────────────────────────────────────────
+     TABLA GUÍAS
+  ──────────────────────────────────────────────────────────────────────── */
+  var guiaTbody     = document.getElementById('guiaTbody');
+  var btnNewGuia    = document.getElementById('btnNewGuia');
+  var guiaSearch    = document.getElementById('guiaSearch');
+  var modalGuiaBg   = document.getElementById('modalGuiaBg');
+  var modalGuiaClose= document.getElementById('modalGuiaClose');
+  var modalGuiaCancel=document.getElementById('modalGuiaCancel');
+  var modalGuiaSave = document.getElementById('modalGuiaSave');
+  var modalGuiaTitle= document.getElementById('modalGuiaTitle');
+  var gColorPicker  = document.getElementById('gColorPicker');
+  var editingGuiaId = null;
+
+  function renderGuiaTable(data) {
+    if (!guiaTbody) return;
+    guiaTbody.innerHTML = '';
+    (data||[]).forEach(function(g) {
+      var color = g.color || '#4FC3F7';
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td style="font-size:1.4rem;text-align:center">' + esc(g.icono||'📋') + '</td>' +
+        '<td class="td-nombre" style="color:' + color + '">' + esc(g.titulo||'') + '</td>' +
+        '<td style="font-size:.82rem;color:rgba(255,255,255,.5)">' + esc((g.descripcion||'').substring(0,60)) + '</td>' +
+        '<td style="font-size:.8rem;color:rgba(255,255,255,.4)">' + ((g.secciones||[]).length) + ' secciones</td>' +
+        '<td class="td-actions">' +
+          '<button class="btn-edit" data-gid="' + esc(g.id) + '">✏️ Editar</button>' +
+          '<button class="btn-del"  data-gid="' + esc(g.id) + '">🗑 Eliminar</button>' +
+        '</td>';
+      guiaTbody.appendChild(tr);
+    });
+    guiaTbody.querySelectorAll('.btn-edit').forEach(function(b){
+      b.addEventListener('click', function(){ openGuiaEdit(b.dataset.gid); });
+    });
+    guiaTbody.querySelectorAll('.btn-del').forEach(function(b){
+      b.addEventListener('click', function(){ confirmarEliminarGuia(b.dataset.gid); });
+    });
+  }
+
+  if (guiaSearch) {
+    guiaSearch.addEventListener('input', function(){
+      var q = guiaSearch.value.trim().toLowerCase();
+      renderGuiaTable(q ? (window.GUIAS||[]).filter(function(g){
+        return (g.titulo||'').toLowerCase().includes(q);
+      }) : window.GUIAS);
+    });
+  }
+
+  function abrirModalGuia()  { if(modalGuiaBg){ modalGuiaBg.classList.add('open');    document.body.style.overflow='hidden'; } }
+  function cerrarModalGuia() { if(modalGuiaBg){ modalGuiaBg.classList.remove('open'); document.body.style.overflow=''; editingGuiaId=null; } }
+  if(modalGuiaClose)  modalGuiaClose.addEventListener('click',  cerrarModalGuia);
+  if(modalGuiaCancel) modalGuiaCancel.addEventListener('click', cerrarModalGuia);
+  if(modalGuiaBg)     modalGuiaBg.addEventListener('click', function(e){ if(e.target===modalGuiaBg) cerrarModalGuia(); });
+
+  // Color picker sync
+  if (gColorPicker) {
+    gColorPicker.addEventListener('input', function(){
+      var ci = document.getElementById('gColor');
+      if(ci) ci.value = gColorPicker.value;
+    });
+    var ci2 = document.getElementById('gColor');
+    if(ci2) ci2.addEventListener('input', function(){
+      if(/^#[0-9A-Fa-f]{6}$/.test(ci2.value)) gColorPicker.value = ci2.value;
+    });
+  }
+
+  function limpiarFormGuia(){
+    ['gId','gTitulo','gDescripcion','gSecciones'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.value='';
+    });
+    var gi=document.getElementById('gIcono'); if(gi) gi.value='📋';
+    var gc=document.getElementById('gColor'); if(gc) gc.value='#42A5F5';
+    if(gColorPicker) gColorPicker.value='#42A5F5';
+  }
+
+  if(btnNewGuia) btnNewGuia.addEventListener('click', function(){
+    editingGuiaId = null;
+    if(modalGuiaTitle) modalGuiaTitle.textContent = 'Nueva guía';
+    limpiarFormGuia();
+    abrirModalGuia();
+  });
+
+  function openGuiaEdit(id){
+    var g = (window.GUIAS||[]).find(function(x){ return x.id===id; });
+    if(!g) return;
+    editingGuiaId = id;
+    if(modalGuiaTitle) modalGuiaTitle.textContent = 'Editando: ' + g.titulo;
+    var set = function(eid,val){ var el=document.getElementById(eid); if(el) el.value=val||''; };
+    set('gId', g.id);
+    set('gTitulo', g.titulo);
+    set('gDescripcion', g.descripcion);
+    set('gIcono', g.icono||'📋');
+    set('gColor', g.color||'#42A5F5');
+    if(gColorPicker) gColorPicker.value = g.color||'#42A5F5';
+    var gs = document.getElementById('gSecciones');
+    if(gs) gs.value = JSON.stringify(g.secciones||[], null, 2);
+    abrirModalGuia();
+  }
+
+  function confirmarEliminarGuia(id){
+    var g = (window.GUIAS||[]).find(function(x){ return x.id===id; });
+    if(!g) return;
+    if(confirm('¿Eliminar la guía "' + g.titulo + '"?')){
+      window.GUIA_delete(id).then(function(){
+        mostrarToast('🗑 Guía eliminada', '#EF5350');
+        renderGuiaTable(window.GUIAS);
+      });
+    }
+  }
+
+  if(modalGuiaSave) modalGuiaSave.addEventListener('click', function(){
+    var get = function(id){ var el=document.getElementById(id); return el?el.value.trim():''; };
+    var id    = get('gId').replace(/\s+/g,'_').toLowerCase();
+    var titulo = get('gTitulo');
+    if(!id||!titulo){ alert('Completa los campos obligatorios (*).'); return; }
+    if(!editingGuiaId && (window.GUIAS||[]).find(function(g){ return g.id===id; })){
+      alert('Ya existe una guía con el ID "'+id+'". Usa un ID único.'); return;
+    }
+    var secsRaw = get('gSecciones');
+    var secciones = [];
+    if (secsRaw) {
+      try { secciones = JSON.parse(secsRaw); }
+      catch(e) { alert('El campo Secciones no tiene formato JSON válido.\nRevisa que sea un array: [{"subtitulo":"...","contenido":"..."}]'); return; }
+    }
+    var guia = {
+      id: editingGuiaId || id,
+      titulo: titulo,
+      icono: get('gIcono') || '📋',
+      color: get('gColor') || '#42A5F5',
+      descripcion: get('gDescripcion'),
+      secciones: secciones
+    };
+    window.GUIA_save(guia).then(function(){
+      mostrarToast(editingGuiaId ? '✅ Guía actualizada' : '✅ Guía agregada', '#66BB6A');
+      renderGuiaTable(window.GUIAS);
+      cerrarModalGuia();
+    }).catch(function(err){ alert('Error guardando guía: ' + err.message); });
   });
 
 })();

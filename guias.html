@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Guías – SICMED</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body data-page="guias">
+<header class="navbar">
+  <div class="navbar-brand">
+    <span class="brand-icon"></span>
+    <a href="index.html" style="text-decoration:none">
+      <span class="brand-name">SIC<span class="brand-accent">MED</span></span>
+    </a>
+  </div>
+  <nav class="navbar-nav">
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <ul class="nav-list" id="navList">
+      <li class="nav-item"><a href="index.html"           class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li class="nav-item"><a href="especialidades.html"  class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
+      <li class="nav-item"><a href="procedimientos.html"  class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
+      <li class="nav-item active"><a href="guias.html"    class="nav-link"><span class="nav-icon">📖</span> Guías</a></li>
+      <li class="nav-item"><a href="actualizaciones.html" class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
+      <li class="nav-item"><a href="admin.html"           class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="main-content">
+  <div class="page-header">
+    <h1 class="page-title">📖 Guías Clínicas</h1>
+    <p class="page-subtitle">Instrucciones, formularios y actividades por programa — CESFAM Lo Amor</p>
+  </div>
+
+  <!-- Tabs principales -->
+  <div class="guia-tabs-wrap">
+    <div class="guia-tabs" id="guiaTabs">
+      <button class="guia-tab active" data-seccion="guias">📋 Guías de programas</button>
+      <button class="guia-tab" data-seccion="escalas">📊 Escalas</button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN: GUÍAS -->
+  <div id="seccionGuias">
+    <!-- Filtros por color/categoría -->
+    <div class="proc-filtros" id="guiaFiltros" style="padding-bottom:16px"></div>
+    <!-- Cards de guías -->
+    <div class="guia-cards-grid" id="guiaCardsGrid">
+      <div class="proc-loading">Cargando guías…</div>
+    </div>
+    <!-- Panel detalle guía -->
+    <div class="proc-panel" id="guiaPanel">
+      <div class="proc-box" style="max-width:740px">
+        <div class="proc-box-header">
+          <div>
+            <div class="proc-box-tipo" id="guiaPanelTipo"></div>
+            <div class="proc-box-title" id="guiaPanelTitulo"></div>
+            <div id="guiaPanelDesc" style="font-size:.88rem;color:rgba(255,255,255,.5);margin-top:4px"></div>
+          </div>
+          <button class="diag-close" id="guiaPanelClose">✕</button>
+        </div>
+        <div id="guiaPanelBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN: ESCALAS -->
+  <div id="seccionEscalas" style="display:none">
+    <div class="escalas-grid" id="escalasGrid"></div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://clinico.rayenaps.cl/"           target="_blank" class="footer-link">Rayen Clínico</a>
+      <a href="http://10.0.11.47/ADMIN.aspx"           target="_blank" class="footer-link">Laboratorio Cerro Navia</a>
+      <a href="https://teleradiologia.redclinica.cl/LoginInicio.aspx" target="_blank" class="footer-link">Radiología Red Unichile</a>
+      <a href="https://www.licencia.cl/sesiones/nueva/" target="_blank" class="footer-link">Licencias Médicas</a>
+      <a href="https://farmaciapopularonline.cl/consultor?farmacia=cerro%20navia" target="_blank" class="footer-link">Farmacia Popular</a>
+    </div>
+    <div class="footer-credits">Junior Alvarez &nbsp;|&nbsp; CESFAM Lo Amor &nbsp;·&nbsp; SICMED © 2026</div>
+  </footer>
+</main>
+
+<script type="module" src="db.js"></script>
+<script>
+  document.addEventListener("sicmed:ready", function() {
+    var s = document.createElement("script");
+    s.src = "guias.js";
+    document.body.appendChild(s);
+  });
+</script>
+</body>
+</html>

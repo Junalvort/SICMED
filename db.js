@@ -4,7 +4,13 @@
 
 // ── 1. PEGA AQUÍ TU CONFIGURACIÓN DE FIREBASE ────────────────────────────────
 // (la encuentras en tu proyecto Firebase > Configuración > Tu app web)
-const FIREBASE_CONFIG = {
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
   apiKey: "AIzaSyAbT9L872CeyMcIuwHtK5UjyA3jJKAF8i0",
   authDomain: "derivmed.firebaseapp.com",
   projectId: "derivmed",
@@ -12,6 +18,9 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "742083987090",
   appId: "1:742083987090:web:9c9c32ca82a82cd882484b"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ── 2. DATOS BASE (se cargan a Firestore la primera vez) ──────────────────────

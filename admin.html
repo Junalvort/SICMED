@@ -60,6 +60,7 @@
     <div class="admin-tabs" id="adminTabs">
       <button class="admin-tab active" data-tab="diagnosticos">🔬 Diagnósticos</button>
       <button class="admin-tab"        data-tab="especialidades">🩺 Especialidades</button>
+      <button class="admin-tab"        data-tab="procedimientos">📋 Procedimientos</button>
     </div>
 
     <!-- ── PESTAÑA DIAGNÓSTICOS ── -->
@@ -209,6 +210,67 @@
     <div class="modal-footer">
       <button class="btn-modal-cancel" id="modalEspCancel">Cancelar</button>
       <button class="btn-modal-save"   id="modalEspSave">💾 Guardar especialidad</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL PROCEDIMIENTO ── -->
+<div class="admin-modal-bg" id="modalProcBg">
+  <div class="admin-modal" style="max-width:660px">
+    <div class="admin-modal-title">
+      <span id="modalProcTitle">Nuevo procedimiento</span>
+      <button class="modal-close-btn" id="modalProcClose">✕</button>
+    </div>
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label>ID único *</label>
+        <input class="modal-input" id="pId" placeholder="Ej: eco_abdominal (sin espacios)"/>
+      </div>
+      <div class="modal-field">
+        <label>Tipo *</label>
+        <select class="modal-select" id="pTipo">
+          <option value="Prueba Diagnóstica">Prueba Diagnóstica</option>
+          <option value="Imagenología">Imagenología</option>
+          <option value="Procedimiento">Procedimiento</option>
+          <option value="Cirugía Menor">Cirugía Menor</option>
+          <option value="Rehabilitación Física">Rehabilitación Física</option>
+          <option value="Dermatología APS">Dermatología APS</option>
+          <option value="Órtesis">Órtesis</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="modal-field full">
+        <label>Nombre del procedimiento *</label>
+        <input class="modal-input" id="pNombre" placeholder="Ej: Ecotomografía Abdominal"/>
+      </div>
+      <div class="modal-field">
+        <label>Modalidad</label>
+        <input class="modal-input" id="pModalidad" placeholder="Ej: Ecografía, Radiología…"/>
+      </div>
+      <div class="modal-field">
+        <label>Establecimiento</label>
+        <input class="modal-input" id="pEstablecimiento" placeholder="Ej: UAPO Cerro Navia"/>
+      </div>
+      <div class="modal-field">
+        <label>Prioridad</label>
+        <input class="modal-input" id="pPrioridad" placeholder="Normal / Alta (sospecha Ca)"/>
+      </div>
+      <div class="modal-field full">
+        <label>Diagnósticos asociados (CIE-10)</label>
+        <textarea class="modal-textarea" id="pDiagnosticos" rows="2" placeholder="Ej: K80 Colelitiasis, R10 Dolor abdominal…"></textarea>
+      </div>
+      <div class="modal-field full">
+        <label>Criterios y pasos en Rayen *</label>
+        <textarea class="modal-textarea" id="pCriterios" rows="4" placeholder="Pasos para realizar la orden en Rayen, criterios clínicos…"></textarea>
+      </div>
+      <div class="modal-field full">
+        <label>Notas / Advertencias</label>
+        <textarea class="modal-textarea" id="pNotas" rows="2" placeholder="Contraindicaciones, advertencias especiales…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" id="modalProcCancel">Cancelar</button>
+      <button class="btn-modal-save"   id="modalProcSave">💾 Guardar procedimiento</button>
     </div>
   </div>
 </div>

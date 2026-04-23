@@ -19,40 +19,64 @@
   <nav class="navbar-nav">
     <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
     <ul class="nav-list" id="navList">
-      <li class="nav-item"><a href="index.html"          class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
-      <li class="nav-item"><a href="especialidades.html"        class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
-      <li class="nav-item active"><a href="procedimientos.html"       class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
-      <li class="nav-item"><a href="actualizaciones.html"       class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
-      <li class="nav-item"><a href="admin.html"                 class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
+      <li class="nav-item"><a href="index.html"           class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li class="nav-item"><a href="especialidades.html"  class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
+      <li class="nav-item active"><a href="procedimientos.html" class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
+      <li class="nav-item"><a href="actualizaciones.html" class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
+      <li class="nav-item"><a href="admin.html"           class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
     </ul>
   </nav>
 </header>
+
 <main class="main-content">
   <div class="page-header">
     <h1 class="page-title">📋 Procedimientos</h1>
-    <p class="page-subtitle">Sección en construcción — próximamente disponible</p>
+    <p class="page-subtitle">Instructivo de órdenes de procedimientos diagnósticos y derivaciones — CESFAM Lo Amor</p>
   </div>
-  <div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,.35)">
-    <div style="font-size:3rem;margin-bottom:12px">🚧</div>
-    <div style="font-size:1.1rem">Esta sección estará disponible en la próxima versión</div>
+
+  <!-- Barra de filtro por tipo -->
+  <div class="proc-filtros" id="procFiltros">
+    <button class="proc-pill active" data-tipo="">Todos</button>
   </div>
+
+  <!-- Grid de procedimientos -->
+  <div class="proc-grid" id="procGrid">
+    <div class="proc-loading">Cargando procedimientos…</div>
+  </div>
+
+  <!-- Panel detalle -->
+  <div class="proc-panel" id="procPanel">
+    <div class="proc-box">
+      <div class="proc-box-header">
+        <div>
+          <div class="proc-box-tipo" id="panelTipo"></div>
+          <div class="proc-box-title" id="panelNombre"></div>
+        </div>
+        <button class="diag-close" id="procClose">✕</button>
+      </div>
+      <div class="proc-detail" id="procDetail"></div>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="footer-links">
-      <a href="https://clinico.rayenaps.cl/" target="_blank" class="footer-link">Rayen Clinico</a>
-      <a href="http://10.0.11.47/ADMIN.aspx" target="_blank" class="footer-link">Laboratorio Cerro Navia</a>
-      <a href="https://teleradiologia.redclinica.cl/LoginInicio.aspx" target="_blank" class="footer-link">Radiologia Red Unichile</a>
-      <a href="https://www.licencia.cl/sesiones/nueva/" target="_blank" class="footer-link">Licencias Medicas</a>
+      <a href="https://clinico.rayenaps.cl/"           target="_blank" class="footer-link">Rayen Clínico</a>
+      <a href="http://10.0.11.47/ADMIN.aspx"           target="_blank" class="footer-link">Laboratorio Cerro Navia</a>
+      <a href="https://teleradiologia.redclinica.cl/LoginInicio.aspx" target="_blank" class="footer-link">Radiología Red Unichile</a>
+      <a href="https://www.licencia.cl/sesiones/nueva/" target="_blank" class="footer-link">Licencias Médicas</a>
       <a href="https://farmaciapopularonline.cl/consultor?farmacia=cerro%20navia" target="_blank" class="footer-link">Farmacia Popular</a>
     </div>
     <div class="footer-credits">Junior Alvarez &nbsp;|&nbsp; CESFAM Lo Amor &nbsp;·&nbsp; SICMED © 2026</div>
   </footer>
 </main>
 
-<script>
-    var h = document.getElementById('hamburger');
-  var n = document.getElementById('navList');
-  if(h && n) h.addEventListener('click', function(){ n.classList.toggle('open'); });
-</script>
 <script type="module" src="db.js"></script>
+<script>
+  document.addEventListener("sicmed:ready", function() {
+    var s = document.createElement("script");
+    s.src = "procedimientos.js";
+    document.body.appendChild(s);
+  });
+</script>
 </body>
 </html>

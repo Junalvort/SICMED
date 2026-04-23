@@ -21,9 +21,9 @@
   var log = [];
   var filtroActivo = '';
 
-  // Cargar log desde Firebase (async)
+  // Cargar log desde Firebase (async) — solo últimos 5
   window.STORE_getLog().then(function(data) {
-    log = data;
+    log = data.slice(0, 5);
     renderStats();
     renderLista('');
   });

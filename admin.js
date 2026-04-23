@@ -70,6 +70,7 @@
       renderTable(window.DB);
       renderEspTable();
       poblarSelectEsp();
+      renderProcTable(window.PROCEDIMIENTOS);
     } else {
       loginError.textContent = 'Usuario o código incorrecto.';
       loginPass.value = ''; loginPass.focus();
@@ -388,7 +389,130 @@
 
   /* Cerrar modales con Escape */
   document.addEventListener('keydown', function(e){
-    if (e.key==='Escape') { cerrarModal(); cerrarModalEsp(); }
+    if (e.key==='Escape') { cerrarModal(); cerrarModalEsp(); cerrarModalProc(); }
+  });
+
+  /* ────────────────────────────────────────────────────────────────────────
+     TABLA PROCEDIMIENTOS
+  ──────────────────────────────────────────────────────────────────────── */
+  var procTbody  = document.getElementById('procTbody');
+  var btnNewProc = document.getElementById('btnNewProc');
+  var procSearch = document.getElementById('procSearch');
+  var modalProcBg    = document.getElementById('modalProcBg');
+  var modalProcClose = document.getElementById('modalProcClose');
+  var modalProcCancel= document.getElementById('modalProcCancel');
+  var modalProcSave  = document.getElementById('modalProcSave');
+  var modalProcTitle = document.getElementById('modalProcTitle');
+  var editingProcId  = null;
+
+  var TIPO_COLOR = {
+    'Prueba Diagnóstica':'#42A5F5','Imagenología':'#AB47BC','Procedimiento':'#26A69A',
+    'Cirugía Menor':'#EF5350','Rehabilitación Física':'#FFA726','Dermatología APS':'#66BB6A',
+    'Órtesis':'#78909C','Otro':'#90CAF9'
+  };
+
+  function renderProcTable(data) {
+    if (!procTbody) return;
+    procTbody.innerHTML = '';
+    data.forEach(function(p) {
+      var color = TIPO_COLOR[p.tipo] || '#fff';
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><span style="font-weight:700;font-size:.8rem;color:' + color + '">' + esc(p.tipo||'') + '</span></td>' +
+        '<td class="td-nombre">' + esc(p.nombre||'') + '</td>' +
+        '<td style="font-size:.85rem;color:rgba(255,255,255,.5)">' + esc(p.modalidad||'') + '</td>' +
+        '<td style="font-size:.82rem;color:rgba(255,255,255,.45)">' + esc(p.establecimiento||'') + '</td>' +
+        '<td class="td-actions">' +
+          '<button class="btn-edit" data-pid="' + esc(p.id) + '">✏️ Editar</button>' +
+          '<button class="btn-del"  data-pid="' + esc(p.id) + '">🗑 Eliminar</button>' +
+        '</td>';
+      procTbody.appendChild(tr);
+    });
+    procTbody.querySelectorAll('.btn-edit').forEach(function(b){
+      b.addEventListener('click', function(){ openProcEdit(b.dataset.pid); });
+    });
+    procTbody.querySelectorAll('.btn-del').forEach(function(b){
+      b.addEventListener('click', function(){ confirmarEliminarProc(b.dataset.pid); });
+    });
+  }
+
+  if (procSearch) {
+    procSearch.addEventListener('input', function(){
+      var q = procSearch.value.trim().toLowerCase();
+      renderProcTable(q ? window.PROCEDIMIENTOS.filter(function(p){
+        return (p.nombre||'').toLowerCase().includes(q) || (p.tipo||'').toLowerCase().includes(q);
+      }) : window.PROCEDIMIENTOS);
+    });
+  }
+
+  function abrirModalProc()  { if(modalProcBg){ modalProcBg.classList.add('open');    document.body.style.overflow='hidden'; } }
+  function cerrarModalProc() { if(modalProcBg){ modalProcBg.classList.remove('open'); document.body.style.overflow=''; editingProcId=null; } }
+  if(modalProcClose)  modalProcClose.addEventListener('click',  cerrarModalProc);
+  if(modalProcCancel) modalProcCancel.addEventListener('click', cerrarModalProc);
+  if(modalProcBg)     modalProcBg.addEventListener('click', function(e){ if(e.target===modalProcBg) cerrarModalProc(); });
+
+  function limpiarFormProc(){
+    ['pId','pNombre','pModalidad','pEstablecimiento','pPrioridad','pDiagnosticos','pCriterios','pNotas'].forEach(function(id){
+      var el = document.getElementById(id); if(el) el.value='';
+    });
+    var t = document.getElementById('pTipo'); if(t) t.value='Prueba Diagnóstica';
+  }
+
+  if(btnNewProc) btnNewProc.addEventListener('click', function(){
+    editingProcId = null;
+    if(modalProcTitle) modalProcTitle.textContent = 'Nuevo procedimiento';
+    limpiarFormProc();
+    abrirModalProc();
+  });
+
+  function openProcEdit(id){
+    var p = window.PROCEDIMIENTOS.find(function(x){ return x.id===id; });
+    if(!p) return;
+    editingProcId = id;
+    if(modalProcTitle) modalProcTitle.textContent = 'Editando: ' + p.nombre;
+    var set = function(eid,val){ var el=document.getElementById(eid); if(el) el.value=val||''; };
+    set('pId',p.id); set('pNombre',p.nombre); set('pModalidad',p.modalidad);
+    set('pEstablecimiento',p.establecimiento); set('pPrioridad',p.prioridad);
+    set('pDiagnosticos',p.diagnosticos); set('pCriterios',p.criterios); set('pNotas',p.notas);
+    var t = document.getElementById('pTipo'); if(t) t.value = p.tipo||'Prueba Diagnóstica';
+    abrirModalProc();
+  }
+
+  function confirmarEliminarProc(id){
+    var p = window.PROCEDIMIENTOS.find(function(x){ return x.id===id; });
+    if(!p) return;
+    if(confirm('¿Eliminar el procedimiento "' + p.nombre + '"?')){
+      window.PROC_delete(id).then(function(){
+        mostrarToast('🗑 Procedimiento eliminado', '#EF5350');
+        renderProcTable(window.PROCEDIMIENTOS);
+      });
+    }
+  }
+
+  if(modalProcSave) modalProcSave.addEventListener('click', function(){
+    var get = function(id){ var el=document.getElementById(id); return el?el.value.trim():''; };
+    var id       = get('pId').replace(/\s+/g,'_').toLowerCase();
+    var nombre   = get('pNombre');
+    var tipo     = document.getElementById('pTipo') ? document.getElementById('pTipo').value : 'Otro';
+    var criterios= get('pCriterios');
+    if(!id||!nombre||!criterios){ alert('Completa los campos obligatorios (*).'); return; }
+    if(!editingProcId && window.PROCEDIMIENTOS.find(function(p){ return p.id===id; })){
+      alert('Ya existe un procedimiento con el ID "'+id+'". Usa un ID único.'); return;
+    }
+    var proc = {
+      id: editingProcId || id, tipo, nombre,
+      modalidad:        get('pModalidad'),
+      establecimiento:  get('pEstablecimiento'),
+      prioridad:        get('pPrioridad') || 'Normal',
+      diagnosticos:     get('pDiagnosticos'),
+      criterios,
+      notas:            get('pNotas')
+    };
+    window.PROC_save(proc).then(function(){
+      mostrarToast(editingProcId ? '✅ Procedimiento actualizado' : '✅ Procedimiento agregado', '#66BB6A');
+      renderProcTable(window.PROCEDIMIENTOS);
+      cerrarModalProc();
+    });
   });
 
 })();

@@ -222,17 +222,22 @@ body {
 .dd-item:hover, .dd-item.focused { background: var(--md-surface); }
 
 .dd-cie {
-  font-size: .8rem; font-weight: 700;
-  color: var(--md-primary);
-  background: var(--md-surface-2);
+  font-size: .78rem; font-weight: 700;
+  color: #0D47A1;
+  background: #B3E5FC;
   padding: 2px 8px; border-radius: 20px;
   flex-shrink: 0; min-width: 56px; text-align: center;
 }
-.dd-nombre { flex: 1; font-size: .95rem; color: var(--md-on-surface); }
+.dd-nombre { flex: 1; font-size: .93rem; color: #0D1B3E; font-weight: 500; }
 .dd-espec {
-  font-size: .78rem; color: var(--md-muted);
+  font-size: .76rem; color: #5C7BAA;
   white-space: nowrap;
 }
+/* Badge dentro del dropdown — fondo claro, asegurar visibilidad */
+.dd-item .badge-urgencia.P0  { background: rgba(239,83,80,.15);  color: #C62828; border-color: rgba(198,40,40,.4); }
+.dd-item .badge-urgencia.P1  { background: rgba(230,119,0,.12);  color: #E65100; border-color: rgba(230,81,0,.4); }
+.dd-item .badge-urgencia.P2  { background: rgba(13,71,161,.12);  color: #0D47A1; border-color: rgba(13,71,161,.4); }
+.dd-item .badge-urgencia.GES { background: rgba(27,94,32,.12);   color: #1B5E20; border-color: rgba(27,94,32,.4); }
 
 .dd-empty {
   padding: 16px 18px;
@@ -306,9 +311,15 @@ body {
   font-size: .8rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: .5px;
 }
-.badge-urgencia.electiva   { background: rgba(21,101,192,.35); color: #90CAF9; }
-.badge-urgencia.preferente { background: rgba(251,140,0,.25);  color: #FFCC80; }
-.badge-urgencia.urgente    { background: rgba(229,57,53,.25);  color: #EF9A9A; }
+/* Prioridades del protocolo SSMOCC */
+.badge-urgencia.P0  { background: rgba(239,83,80,.25);   color: #EF5350; border: 1px solid rgba(239,83,80,.5); }
+.badge-urgencia.P1  { background: rgba(255,167,38,.2);   color: #FFA726; border: 1px solid rgba(255,167,38,.5); }
+.badge-urgencia.P2  { background: rgba(66,165,245,.2);   color: #42A5F5; border: 1px solid rgba(66,165,245,.5); }
+.badge-urgencia.GES { background: rgba(102,187,106,.2);  color: #66BB6A; border: 1px solid rgba(102,187,106,.5); }
+/* Alias legacy */
+.badge-urgencia.electiva   { background: rgba(66,165,245,.2);  color: #42A5F5; border: 1px solid rgba(66,165,245,.4); }
+.badge-urgencia.preferente { background: rgba(255,167,38,.2);  color: #FFA726; border: 1px solid rgba(255,167,38,.4); }
+.badge-urgencia.urgente    { background: rgba(239,83,80,.25);  color: #EF5350; border: 1px solid rgba(239,83,80,.4); }
 
 .result-notas {
   grid-column: 1/-1;
@@ -921,7 +932,7 @@ body {
 .act-vacio-sub   { font-size: .88rem; color: rgba(255,255,255,.3); line-height: 1.6; }
 
 @media (max-width: 600px) {
-  .act-stats   { padding: 0 16px 16px; }
+  .act-stats   { padding: 0 12px 16px; grid-template-columns: 1fr 1fr; gap: 10px; }
   .act-filtros { padding: 0 16px 16px; }
   .act-lista   { padding: 0 16px 32px; }
 }
@@ -956,3 +967,145 @@ body {
 }
 .admin-tab-content { animation: fadeIn .2s ease; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+
+/* ─── PROCEDIMIENTOS ─────────────────────────────────────────────────────────── */
+.proc-filtros {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  padding: 0 24px 20px; max-width: 1000px; margin: 0 auto;
+}
+.proc-pill {
+  padding: 7px 16px; border-radius: 20px; cursor: pointer;
+  font-family: 'Nunito', sans-serif; font-size: .82rem; font-weight: 600;
+  background: rgba(255,255,255,.07); color: rgba(255,255,255,.6);
+  border: 1px solid rgba(255,255,255,.15); transition: var(--transition);
+}
+.proc-pill:hover { background: rgba(79,195,247,.1); color: #4FC3F7; border-color: rgba(79,195,247,.3); }
+.proc-pill.active { background: rgba(79,195,247,.18); color: #4FC3F7; border-color: rgba(79,195,247,.45); }
+
+.proc-grid {
+  padding: 0 24px 40px; max-width: 1000px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.proc-loading { text-align:center; padding: 40px; color: rgba(255,255,255,.4); font-size:.95rem; }
+
+/* Banner de sección */
+.proc-banner {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 20px; border-radius: var(--radius-md);
+  border-left: 4px solid #4FC3F7;
+}
+.proc-banner-icon { font-size: 1.5rem; flex-shrink: 0; }
+.proc-banner-title {
+  font-family: 'Nunito', sans-serif; font-size: 1.05rem; font-weight: 800;
+  color: #fff; flex: 1;
+}
+.proc-banner-count {
+  font-size: .78rem; color: rgba(255,255,255,.4);
+  text-transform: uppercase; letter-spacing: .6px;
+}
+
+/* Cards row */
+.proc-cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.proc-card {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(79,195,247,.1);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: var(--transition); cursor: default;
+}
+.proc-card:hover { background: rgba(255,255,255,.08); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+.proc-card-nombre {
+  font-family: 'Nunito', sans-serif; font-size: .95rem; font-weight: 700;
+  color: #fff; line-height: 1.3;
+}
+.proc-card-mod { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.proc-tag {
+  font-size: .72rem; font-weight: 700; padding: 2px 10px;
+  border-radius: 20px; border: 1px solid; text-transform: uppercase; letter-spacing: .4px;
+}
+.proc-establecimiento { font-size: .75rem; color: rgba(255,255,255,.45); }
+.proc-card-diag {
+  font-size: .8rem; color: rgba(255,255,255,.5); line-height: 1.4;
+  flex: 1;
+}
+.proc-card-btn {
+  align-self: flex-start;
+  background: transparent; border: 1px solid;
+  padding: 5px 14px; border-radius: 20px;
+  font-family: 'Nunito', sans-serif; font-size: .8rem; font-weight: 700;
+  cursor: pointer; transition: var(--transition);
+}
+.proc-card-btn:hover { background: rgba(79,195,247,.12); }
+
+/* Panel detalle procedimiento */
+.proc-panel {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(5,20,55,.75); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px; opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.proc-panel.open { opacity: 1; pointer-events: auto; }
+.proc-box {
+  background: linear-gradient(145deg, #0F2E6E, #0A1F4D);
+  border: 1px solid rgba(79,195,247,.25); border-radius: var(--radius-lg);
+  width: 100%; max-width: 660px; max-height: 88vh; overflow-y: auto;
+  padding: 28px; box-shadow: 0 24px 60px rgba(0,0,0,.5);
+  transform: scale(.96); transition: transform .3s;
+}
+.proc-panel.open .proc-box { transform: scale(1); }
+.proc-box-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.proc-box-tipo {
+  font-size: .78rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .8px; margin-bottom: 4px;
+}
+.proc-box-title {
+  font-family: 'Nunito', sans-serif; font-size: 1.25rem; font-weight: 800;
+  color: #fff; line-height: 1.3;
+}
+.proc-detail {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.proc-detail-section { display: flex; flex-direction: column; gap: 4px; }
+.proc-detail-section.full { grid-column: 1/-1; }
+.proc-detail-label {
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .7px;
+  color: rgba(255,255,255,.4); font-weight: 600;
+}
+.proc-detail-value {
+  font-size: .9rem; color: rgba(255,255,255,.85); line-height: 1.5;
+}
+.proc-detail-notas {
+  grid-column: 1/-1;
+  background: rgba(255,167,38,.08); border: 1px solid rgba(255,167,38,.25);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  font-size: .85rem; color: #FFD54F; line-height: 1.5;
+  margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+  .proc-filtros { padding: 0 12px 16px; }
+  .proc-grid    { padding: 0 12px 32px; }
+  .proc-cards-row { grid-template-columns: 1fr; }
+  .proc-detail  { grid-template-columns: 1fr; }
+  .proc-box     { padding: 20px 16px; }
+}
+
+/* ─── FIX MOBILE: act-stats 2 columnas en pantalla pequeña ─────────────────── */
+@media (max-width: 480px) {
+  .act-stats {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    padding: 0 12px 16px !important;
+  }
+  .act-stat-card { padding: 12px 8px; }
+  .act-stat-num  { font-size: 1.6rem; }
+  .act-stat-label { font-size: .7rem; }
+}

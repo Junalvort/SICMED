@@ -191,6 +191,56 @@
     window.ESPECIALIDADES.push(...ESP_BASE);
   }
 
+  // ── Procedimientos ──────────────────────────────────────────────────────────
+  const COL_PROC = "procedimientos";
+  window.PROCEDIMIENTOS = [];
+
+  const PROC_BASE = [
+    { id:"prueba_dx", tipo:"Prueba Diagnóstica", nombre:"Endoscopia Digestiva Alta con test de Ureasa", modalidad:"Endoscopia", establecimiento:"Contralor", prioridad:"Normal / Alta (sospecha Ca)", diagnosticos:"K25 Úlcera gástrica, D00.2 Ca gástrico, R63.4 Pérdida de peso, K29.7 Gastritis no especificada", criterios:"Clasificación diagnóstica. Prioridad Normal o Alta (sospecha Ca). Fundamentos clínicos + teléfono. ¿Resolutividad? Sí. Derivar a contralor: Sí", notas:"" },
+    { id:"eco_mamaria", tipo:"Imagenología", nombre:"Ecotomografía Mamaria", modalidad:"Ecografía", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"Z12.3 Examen de pesquisa especial para tumor de la mama", criterios:"Clasificación diagnóstica. Fundamentos clínicos. Prioridad Normal. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
+    { id:"mamo_comp", tipo:"Imagenología", nombre:"Proyecciones Mamográficas Complementarias", modalidad:"Ecografía", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"Z12.3 Examen de pesquisa especial para tumor de la mama", criterios:"Clasificación diagnóstica. Fundamentos clínicos. Prioridad Normal. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
+    { id:"mamografia", tipo:"Imagenología", nombre:"Mamografía Bilateral (4 exp.)", modalidad:"Radiología simple", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"Z12.3 Examen de pesquisa especial para tumor de la mama", criterios:"Clasificación diagnóstica. Fundamentos clínicos. Prioridad Normal. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
+    { id:"rx_pelvis", tipo:"Imagenología", nombre:"Radiografía Pelvis (lactante o niño < 6 años)", modalidad:"Radiología simple", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"Q65.4 Subluxación congénita de la cadera, bilateral", criterios:"Clasificación diagnóstica. Fundamentos clínicos. Prioridad Normal. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
+    { id:"eco_abdominal", tipo:"Imagenología", nombre:"Ecotomografía Abdominal", modalidad:"Ecografía", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"K80 Colelitiasis, R10 Dolor abdominal parte superior", criterios:"Incluye hígado, vía biliar, vesícula, páncreas, riñones, bazo, retroperitoneo y grandes vasos. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
+    { id:"rx_torax", tipo:"Imagenología", nombre:"Radiografía de Tórax", modalidad:"Radiografía", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"J15 Neumonía bacteriana, J45 Asma bronquial, J44.9 EPOC", criterios:"Frontal y lateral (incluye fluoroscopia) 1-2 proy. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
+    { id:"fondo_ojo", tipo:"Procedimiento", nombre:"Fondo de Ojo (Presencial)", modalidad:"Fondo de ojo", establecimiento:"UAPO Cerro Navia", prioridad:"Normal", diagnosticos:"E11 Diabetes Mellitus No insulinodependiente, E11.7 DM con múltiples complicaciones", criterios:"Solo DM2 confirmada. Frecuencia anual. Sin diagnóstico confirmado de retinopatía o cataratas no operada. Marcar GES. Extrasistema: No. Resolutividad: No. Derivar a contralor: Sí", notas:"Extrasistema: NO. GES obligatorio." },
+    { id:"cirugia_menor", tipo:"Cirugía Menor", nombre:"Cirugía Menor", modalidad:"Cirugía menor", establecimiento:"Cesfam Dr. Albertz", prioridad:"Normal", diagnosticos:"Biopsias cutáneas, fibromas blandos, papilomas, acrocordones, nevus típicos, verrugas, granuloma piógeno, angiomas, onicocriptosis, cuerpo extraño cutáneo, tumor benigno subcutáneo, lipoma, quiste epidérmico, quiste sebáceo, verruga plantar", criterios:"Lesiones hasta 3 cm. Describir tamaño y localización. Extrasistema: No. Resolutividad: No. Derivar a contralor: Sí. Agregar código CIE-10 y teléfono en fundamento.", notas:"NO derivar: lesiones en cara/pliegues (excepto acrocordones), abscesos en periodo inflamatorio, lesiones sospechosas de malignidad de teledermatología, lesiones anogenitales, pacientes con TACO." },
+    { id:"rehab_adulto", tipo:"Rehabilitación Física", nombre:"Evaluación y Tratamiento por Rehabilitación Física (Adulto)", modalidad:"Rehabilitación", establecimiento:"Hospital Félix Bulnes Cerda / Sala RBC", prioridad:"Normal", diagnosticos:"Patologías agudas y crónicas osteomusculares", criterios:"Patologías AGUDAS (<3 meses evolución) → Hospital Félix Bulnes Cerda. Patologías CRÓNICAS (>3 meses evolución) → Sala RBC. Fundamentos clínicos + teléfono. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
+    { id:"telederma", tipo:"Dermatología APS", nombre:"Teledermatología (Consulta Médica Especialidad Dermatología)", modalidad:"Teledermatología", establecimiento:"Cesfam al cual esté inscrito", prioridad:"Normal", diagnosticos:"Patologías dermatológicas (ver indicaciones)", criterios:"Diagnósticos de dermatología acorde. Envío de fotografías con consentimiento al correo referente según Cesfam. Extrasistema: No. Resolutividad: No. Derivar a contralor: Sí", notas:"NO derivar: verrugas anogenitales, procedimientos quirúrgicos, patología oral, pie diabético, quemaduras agudas, shock anafiláctico." },
+    { id:"ortesis", tipo:"Órtesis", nombre:"Entrega de Órtesis", modalidad:"Órtesis", establecimiento:"Cesfam al cual esté inscrito", prioridad:"Normal", diagnosticos:"Adultos ≥65 años (GES). 45-64 años programa piloto: artrosis cadera/rodilla, dependientes severos, DM2 con úlcera activa, ACV, amputaciones EEII, lesión medular, síndrome Post-UCI", criterios:"Previo GES Órtesis en mayores de 65 años. Programa piloto 45-64 años para casos específicos. Fundamentos clínicos + teléfono. Extrasistema: No. Resolutividad: No. Derivar a contralor: Sí", notas:"Órtesis disponibles: Bastón con codera móvil, Andador con/sin ruedas, Silla de ruedas, Cojín Anti-escaras, Colchón Anti-escaras." },
+  ];
+
+  try {
+    const snapProc = await getDocs(collection(fdb, COL_PROC));
+    if (snapProc.empty) {
+      for (const p of PROC_BASE) {
+        await setDoc(doc(fdb, COL_PROC, p.id), p);
+        window.PROCEDIMIENTOS.push(p);
+      }
+    } else {
+      snapProc.forEach(d => window.PROCEDIMIENTOS.push(d.data()));
+    }
+  } catch(e) {
+    window.PROCEDIMIENTOS.push(...PROC_BASE);
+  }
+
+  window.PROC_save = async function(proc) {
+    try {
+      await setDoc(doc(fdb, COL_PROC, proc.id), proc);
+      const idx = window.PROCEDIMIENTOS.findIndex(p => p.id === proc.id);
+      if (idx !== -1) window.PROCEDIMIENTOS[idx] = proc;
+      else window.PROCEDIMIENTOS.push(proc);
+    } catch(e) { console.error("Error guardando procedimiento:", e); throw e; }
+  };
+
+  window.PROC_delete = async function(id) {
+    try {
+      await deleteDoc(doc(fdb, COL_PROC, id));
+      const idx = window.PROCEDIMIENTOS.findIndex(p => p.id === id);
+      if (idx !== -1) window.PROCEDIMIENTOS.splice(idx, 1);
+    } catch(e) { console.error("Error eliminando procedimiento:", e); throw e; }
+  };
+
   window.ESP_save = async function(esp) {
     // esp = { nombre, icon, desc }
     try {
@@ -227,6 +277,44 @@
     return results.slice(0, 12);
   };
 
+  const MAX_LOG = 5;
+
+  // Verifica si hay que resetear el log (primer día del mes)
+  async function _checkMonthlyReset() {
+    try {
+      const hoy = new Date();
+      if (hoy.getDate() !== 1) return; // Solo el día 1
+      const resetRef = doc(fdb, "config", "log_reset");
+      const resetSnap = await getDocs(query(collection(fdb, "config")));
+      let ultimoReset = null;
+      resetSnap.forEach(d => { if(d.id === "log_reset") ultimoReset = d.data().fecha?.toDate(); });
+      if (ultimoReset) {
+        const mismoMes = ultimoReset.getMonth() === hoy.getMonth() && ultimoReset.getFullYear() === hoy.getFullYear();
+        if (mismoMes) return; // Ya se reseteó este mes
+      }
+      // Borrar todos los logs
+      const snap = await getDocs(collection(fdb, COL_LOG));
+      for (const d of snap.docs) await deleteDoc(doc(fdb, COL_LOG, d.id));
+      // Registrar fecha de reset
+      await setDoc(doc(fdb, "config", "log_reset"), { fecha: Timestamp.now() });
+    } catch(e) { console.warn("Reset mensual:", e); }
+  }
+
+  // Mantiene solo los últimos MAX_LOG registros eliminando los más antiguos
+  async function _enforceLogLimit() {
+    try {
+      const q = query(collection(fdb, COL_LOG), orderBy("fecha", "desc"));
+      const snap = await getDocs(q);
+      if (snap.docs.length > MAX_LOG) {
+        const toDelete = snap.docs.slice(MAX_LOG);
+        for (const d of toDelete) await deleteDoc(doc(fdb, COL_LOG, d.id));
+      }
+    } catch(e) {}
+  }
+
+  // Ejecutar reset mensual al cargar
+  _checkMonthlyReset();
+
   window.STORE_save = async function(accion, entrada) {
     try {
       await setDoc(doc(fdb, COL_DIAG, entrada.cie10), entrada);
@@ -240,6 +328,7 @@
         especialidad: entrada.especialidad,
         prioridad: entrada.prioridad
       });
+      await _enforceLogLimit(); // Elimina registros sobrantes
     } catch(e) { console.error("Error guardando:", e); }
   };
 
@@ -255,6 +344,7 @@
         cie10: d.cie10, nombre: d.nombre,
         especialidad: d.especialidad, prioridad: d.prioridad
       });
+      await _enforceLogLimit();
     } catch(e) { console.error("Error eliminando:", e); }
   };
 

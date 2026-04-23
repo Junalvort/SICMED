@@ -15,8 +15,8 @@
   var statEsp     = document.getElementById('statEsp');
   if (!input) return;
 
-  if (statDiag) statDiag.textContent = DB.length;
-  if (statEsp)  statEsp.textContent  = (new Set(DB.map(function(d){return d.especialidad;}))).size;
+  if (statDiag) statDiag.textContent = window.DB.length;
+  if (statEsp)  statEsp.textContent  = window.ESPECIALIDADES ? window.ESPECIALIDADES.length : (new Set(window.DB.map(function(d){return d.especialidad;}))).size;
 
   if (hamburger && navList) {
     hamburger.addEventListener('click', function () { navList.classList.toggle('open'); });
@@ -28,7 +28,7 @@
     var q = input.value.trim();
     clearBtn.classList.toggle('visible', q.length > 0);
     if (q.length < 2) { closeDropdown(); return; }
-    currentResults = searchDB(q);
+    currentResults = window.searchDB(q);
     renderDropdown(currentResults, q);
   });
 
@@ -84,7 +84,7 @@
   }
   function doSearch() {
     var q = input.value.trim(); if (!q) return;
-    var results = searchDB(q);
+    var results = window.searchDB(q);
     if (results.length === 1)     showResult(results[0]);
     else if (results.length > 1)  showResult(results[0], results.slice(1));
     else                          showNoResult(q);

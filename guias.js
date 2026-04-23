@@ -27,6 +27,7 @@
       if (tab.dataset.seccion === 'escalas') {
         secGuias.style.display   = 'none';
         secEscalas.style.display = 'block';
+        renderEscalas();
       } else {
         secGuias.style.display   = 'block';
         secEscalas.style.display = 'none';
@@ -108,8 +109,21 @@
   guiaPanel.addEventListener('click', function(e){ if(e.target===guiaPanel){ guiaPanel.classList.remove('open'); document.body.style.overflow=''; } });
   document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ guiaPanel.classList.remove('open'); document.body.style.overflow=''; } });
 
-  buildGuiaFiltros();
-  renderGuiaCards(guias);
+  // Si window.GUIAS ya está disponible, renderizar
+  // Si aún no (Firestore tardó más), esperar el evento sicmed:ready
+  function initGuias() {
+    guias = window.GUIAS || [];
+    buildGuiaFiltros();
+    renderGuiaCards(guias);
+  }
+
+  if (window.GUIAS && window.GUIAS.length >= 0) {
+    initGuias();
+  } else {
+    document.addEventListener("sicmed:ready", function() {
+      initGuias();
+    });
+  }
 
   // ── ESCALAS ───────────────────────────────────────────────────────────────
   var ESCALAS = [
@@ -212,6 +226,8 @@
     },
   ];
 
+  function renderEscalas() {
+    if (escalasGrid.children.length > 0) return; // ya renderizadas
   ESCALAS.forEach(function(escala) {
     var color = escala.color;
     var card = document.createElement('div');
@@ -239,5 +255,6 @@
 
     escalasGrid.appendChild(card);
   });
+  } // end renderEscalas
 
 })();

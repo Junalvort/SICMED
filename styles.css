@@ -1120,15 +1120,21 @@ body {
   margin-bottom: 20px;
 }
 .guia-tab {
-  padding: 10px 22px; background: transparent;
-  border: none; border-bottom: 3px solid transparent;
-  color: rgba(255,255,255,.45);
+  padding: 10px 22px;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 3px solid transparent !important;
+  color: rgba(255,255,255,.55) !important;
   font-family: 'Nunito', sans-serif; font-size: .95rem; font-weight: 600;
   cursor: pointer; transition: all .2s; margin-bottom: -1px;
   border-radius: 8px 8px 0 0;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: none;
 }
-.guia-tab:hover { color: rgba(255,255,255,.75); background: rgba(79,195,247,.06); }
-.guia-tab.active { color: #4FC3F7; border-bottom-color: #4FC3F7; background: rgba(79,195,247,.08); }
+.guia-tab:hover { color: rgba(255,255,255,.85) !important; background: rgba(79,195,247,.08) !important; }
+.guia-tab.active { color: #4FC3F7 !important; border-bottom-color: #4FC3F7 !important; background: rgba(79,195,247,.1) !important; }
 
 .guia-cards-grid {
   display: grid;

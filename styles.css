@@ -726,9 +726,12 @@ body {
 
 .proc-cards-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
 }
+@media (max-width: 860px) { .proc-cards-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .proc-cards-row { grid-template-columns: 1fr; } }
 .proc-card {
   background: rgba(255,255,255,0.65);
   backdrop-filter: blur(14px);

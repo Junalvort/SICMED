@@ -348,6 +348,45 @@
     } catch(e) { console.error("Error eliminando especialidad:", e); throw e; }
   };
 
+
+  // ── Escalas aplicadas (Calculadora) ──────────────────────────────────────
+  const COL_ESCALAS = "escalas_aplicadas";
+  const ESCALAS_TTL_MS = 5 * 24 * 60 * 60 * 1000; // 5 días
+
+  window.ESCALAS_save = async function(record) {
+    // record = { paciente, escala, puntaje, interpretacion, respuestas, fecha }
+    try {
+      const ref = await addDoc(collection(fdb, COL_ESCALAS), {
+        ...record,
+        fecha: Timestamp.now()
+      });
+      return ref.id;
+    } catch(e) { console.error("Error guardando escala:", e); return null; }
+  };
+
+  window.ESCALAS_getRecent = async function() {
+    try {
+      const cutoff = Timestamp.fromDate(new Date(Date.now() - ESCALAS_TTL_MS));
+      const q = query(
+        collection(fdb, COL_ESCALAS),
+        orderBy("fecha", "desc")
+      );
+      const snap = await getDocs(q);
+      const results = [];
+      for (const d of snap.docs) {
+        const data = d.data();
+        const fecha = data.fecha?.toDate();
+        if (fecha && (Date.now() - fecha.getTime()) > ESCALAS_TTL_MS) {
+          // Auto-delete expired records
+          await deleteDoc(doc(fdb, COL_ESCALAS, d.id));
+        } else {
+          results.push({ id: d.id, ...data, fecha: fecha?.toISOString() });
+        }
+      }
+      return results;
+    } catch(e) { return []; }
+  };
+
   window.searchDB = function(query_str) {
     if (!query_str || query_str.trim().length < 2) return [];
     const q = query_str.trim().toLowerCase();
@@ -365,43 +404,26 @@
     return results.slice(0, 12);
   };
 
-  const MAX_LOG = 5;
+  const LOG_TTL_MS = 72 * 60 * 60 * 1000; // 72 horas
 
-  // Verifica si hay que resetear el log (primer día del mes)
-  async function _checkMonthlyReset() {
+  // Elimina registros de log con más de 72h de antigüedad
+  async function _purgeOldLogs() {
     try {
-      const hoy = new Date();
-      if (hoy.getDate() !== 1) return; // Solo el día 1
-      const resetRef = doc(fdb, "config", "log_reset");
-      const resetSnap = await getDocs(query(collection(fdb, "config")));
-      let ultimoReset = null;
-      resetSnap.forEach(d => { if(d.id === "log_reset") ultimoReset = d.data().fecha?.toDate(); });
-      if (ultimoReset) {
-        const mismoMes = ultimoReset.getMonth() === hoy.getMonth() && ultimoReset.getFullYear() === hoy.getFullYear();
-        if (mismoMes) return; // Ya se reseteó este mes
-      }
-      // Borrar todos los logs
+      const cutoff = new Date(Date.now() - LOG_TTL_MS);
       const snap = await getDocs(collection(fdb, COL_LOG));
-      for (const d of snap.docs) await deleteDoc(doc(fdb, COL_LOG, d.id));
-      // Registrar fecha de reset
-      await setDoc(doc(fdb, "config", "log_reset"), { fecha: Timestamp.now() });
-    } catch(e) { console.warn("Reset mensual:", e); }
-  }
-
-  // Mantiene solo los últimos MAX_LOG registros eliminando los más antiguos
-  async function _enforceLogLimit() {
-    try {
-      const q = query(collection(fdb, COL_LOG), orderBy("fecha", "desc"));
-      const snap = await getDocs(q);
-      if (snap.docs.length > MAX_LOG) {
-        const toDelete = snap.docs.slice(MAX_LOG);
-        for (const d of toDelete) await deleteDoc(doc(fdb, COL_LOG, d.id));
+      for (const d of snap.docs) {
+        const fecha = d.data().fecha?.toDate();
+        if (fecha && fecha < cutoff) await deleteDoc(doc(fdb, COL_LOG, d.id));
       }
-    } catch(e) {}
+    } catch(e) { console.warn("Purge logs:", e); }
   }
 
-  // Ejecutar reset mensual al cargar
-  _checkMonthlyReset();
+  async function _enforceLogLimit() {
+    await _purgeOldLogs();
+  }
+
+  // Ejecutar purge al cargar
+  _purgeOldLogs();
 
   window.STORE_save = async function(accion, entrada) {
     try {

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>SICMED – Derivaciones Médicas</title>
 <link rel="icon" type="image/png" href="favicon32x32.png"/>
+<link rel="shortcut icon" href="favicon.ico"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
 </head>
@@ -119,39 +120,46 @@
 
 <script type="module" src="db.js"></script>
 <script>
-  // Hamburger — iOS-safe, runs immediately before db.js
-  (function() {
+  // Hamburger — bulletproof iOS + desktop
+  function _initHam() {
     var btn  = document.getElementById('menuBtn');
     var menu = document.getElementById('hamMenu');
     if (!btn || !menu) return;
+    var _touching = false;
 
-    function toggle(e) {
+    btn.addEventListener('touchstart', function(e) {
+      _touching = true;
       e.preventDefault();
-      e.stopPropagation();
-      var isOpen = menu.classList.toggle('open');
-      btn.classList.toggle('open', isOpen);
-      btn.setAttribute('aria-expanded', String(isOpen));
-    }
-    function closeMenu() {
-      menu.classList.remove('open');
-      btn.classList.remove('open');
-      btn.setAttribute('aria-expanded', 'false');
-    }
+      var o = menu.classList.toggle('open');
+      btn.classList.toggle('open', o);
+      btn.setAttribute('aria-expanded', String(o));
+    }, { passive: false });
 
-    // Both click and touchend for iOS Safari
-    btn.addEventListener('click', toggle);
-    btn.addEventListener('touchend', toggle, { passive: false });
-
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) closeMenu();
+    btn.addEventListener('click', function(e) {
+      if (_touching) { _touching = false; return; }
+      var o = menu.classList.toggle('open');
+      btn.classList.toggle('open', o);
+      btn.setAttribute('aria-expanded', String(o));
     });
-    document.addEventListener('touchend', function(e) {
-      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) closeMenu();
-    }, { passive: true });
+
+    function closeMenu(e) {
+      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) {
+        menu.classList.remove('open');
+        btn.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    }
+    document.addEventListener('touchstart', closeMenu, { passive: true });
+    document.addEventListener('click', closeMenu);
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeMenu();
+      if (e.key === 'Escape') { menu.classList.remove('open'); btn.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
     });
-  })();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _initHam);
+  } else {
+    _initHam();
+  }
 
   document.addEventListener("sicmed:ready", function() {
     var s = document.createElement("script");

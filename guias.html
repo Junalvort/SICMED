@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Guías – SICMED</title>
+<title>Guías y Protocolos – SICMED</title>
 <link rel="icon" type="image/png" href="favicon32x32.png"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
+
 </head>
 <body data-page="guias">
-<div class="bg-blob bg-blob-1"></div>
-<div class="bg-blob bg-blob-2"></div>
-
-<nav class="nav" id="mainNav">
+<div class="bg-blob bg-blob-1"></div><div class="bg-blob bg-blob-2"></div><div class="bg-blob bg-blob-3"></div>
+<nav class="nav">
   <div class="nav-inner">
     <a href="index.html" class="logo">
       <span class="logo-dot"></span>
@@ -21,133 +20,102 @@
     <ul class="nav-tabs">
       <li><a href="especialidades.html" class="nav-tab">Especialidades</a></li>
       <li><a href="procedimientos.html" class="nav-tab">Procedimientos</a></li>
-      <li><a href="guias.html" class="nav-tab active">Guías</a></li>
+      <li><a href="guias.html"          class="nav-tab  active">Guías</a></li>
     </ul>
     <div class="nav-right">
-      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
-        <span class="theme-icon theme-icon-sun">☀️</span>
-        <span class="theme-icon theme-icon-moon">🌙</span>
+      <button class="theme-toggle" id="themeToggle" aria-label="Modo oscuro/claro">
+        <span class="theme-icon theme-icon-sun">&#9728;&#65039;</span>
+        <span class="theme-icon theme-icon-moon">&#127769;</span>
       </button>
-      <button class="menu-btn" id="menuBtn" aria-label="Menú" aria-expanded="false">
+      <button class="menu-btn" id="menuBtn" aria-label="Menú">
         <span></span><span></span><span></span>
       </button>
     </div>
   </div>
 </nav>
-<div class="ham-menu" id="hamMenu" role="menu">
+
+<div class="ham-menu" id="hamMenu">
   <div class="ham-menu-inner">
-    <a href="index.html" class="ham-link"><span class="ham-icon">🏠</span> Inicio</a>
-    <a href="especialidades.html" class="ham-link"><span class="ham-icon">🩺</span> Especialidades</a>
-    <a href="procedimientos.html" class="ham-link"><span class="ham-icon">📋</span> Procedimientos</a>
-    <a href="guias.html" class="ham-link active"><span class="ham-icon">📖</span> Guías</a>
-    <a href="calculadora.html" class="ham-link"><span class="ham-icon">🧮</span> Calculadora y escalas</a>
-    <a href="actualizaciones.html" class="ham-link"><span class="ham-icon">🕐</span> Actualizaciones</a>
+    <a href="index.html"          class="ham-link"><span class="ham-icon">&#127968;</span> Inicio</a>
+    <a href="especialidades.html" class="ham-link"><span class="ham-icon">&#129658;</span> Especialidades</a>
+    <a href="procedimientos.html" class="ham-link"><span class="ham-icon">&#128203;</span> Procedimientos</a>
+    <a href="guias.html"          class="ham-link  active"><span class="ham-icon">&#128218;</span> Guías</a>
+    <a href="calculadora.html"    class="ham-link"><span class="ham-icon">&#129518;</span> Calculadora y escalas</a>
+    <a href="actualizaciones.html"class="ham-link"><span class="ham-icon">&#128336;</span> Actualizaciones</a>
     <div class="ham-divider"></div>
-    <a href="admin.html" class="ham-link ham-admin"><span class="ham-icon">🔐</span> Administrador</a>
+    <a href="admin.html"          class="ham-link ham-admin"><span class="ham-icon">&#128274;</span> Administrador</a>
   </div>
 </div>
-
 <main class="main">
   <div class="page-header">
     <p class="page-eyebrow">Recursos Clínicos</p>
     <h1 class="page-title">Guías y <span>Protocolos</span></h1>
-    <p class="page-sub">Protocolos clínicos, guías de práctica y documentos de referencia</p>
+    <p class="page-sub">Protocolos clínicos y documentos de referencia para APS</p>
   </div>
-
-  <div class="guia-tabs-wrap">
-    <div class="guia-tabs" id="guiaTabs"></div>
-  </div>
-
-  <div class="esp-grid" id="guiaGrid">
-    <div class="proc-loading">Cargando guías…</div>
-  </div>
-
-  <div class="escalas-grid" id="escalasGrid" style="display:none"></div>
-
-  <!-- Panel -->
-  <div class="proc-panel" id="guiaPanel">
-    <div class="proc-box" style="max-width:700px">
-      <div class="proc-box-header">
-        <div>
-          <div class="proc-box-tipo" id="guiaPanelCat"></div>
-          <div class="proc-box-title" id="guiaPanelTitle"></div>
-        </div>
-        <button class="diag-close-btn" id="guiaClose">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div id="guiaPanelBody"></div>
-    </div>
-  </div>
-
-  <footer class="footer">
-    <span>Junior Alvarez &nbsp;·&nbsp; CESFAM Lo Amor</span>
-    <span class="footer-sep">|</span>
-    <span>SICMED © 2026</span>
-  </footer>
+  <div class="esp-grid" id="guiaGrid"><div class="proc-loading">Cargando guías…</div></div>
+  <footer class="footer"><span>Junior Alvarez &nbsp;&middot;&nbsp; CESFAM Lo Amor</span><span class="footer-sep">|</span><span>SICMED &copy; 2026</span></footer>
 </main>
-
-<script type="module" src="db.js">
-  document.addEventListener('sicmed:ready', function() { var s = document.createElement('script'); s.src = 'guias.js'; document.body.appendChild(s); });
-</script>
+<div class="proc-panel" id="guiaPanel">
+  <div class="proc-box" style="max-width:700px">
+    <div class="proc-box-header">
+      <div><div class="proc-box-tipo" id="guiaPanelCat"></div><div class="proc-box-title" id="guiaPanelTitle"></div></div>
+      <button class="diag-close-btn" id="guiaClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="guiaPanelBody"></div>
+  </div>
+</div>
+<script type="module" src="db.js"></script>
 <script>
-(function() {
-  'use strict';
-  var THEME_KEY = 'sicmed_theme';
-  var themeBtn = document.getElementById('themeToggle');
-  function applyTheme(dark) {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-    localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
-  }
-  var saved = localStorage.getItem(THEME_KEY);
-  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  applyTheme(saved ? saved === 'dark' : prefersDark);
-  if (themeBtn) {
-    themeBtn.addEventListener('click', function() {
-      applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
-    });
-  }
-  var btn = document.getElementById('menuBtn');
-  var menu = document.getElementById('hamMenu');
-  if (btn && menu) {
-    var _t = false;
-    btn.addEventListener('touchstart', function(e) {
-      _t = true; e.preventDefault();
-      var o = menu.classList.toggle('open');
-      btn.classList.toggle('open', o);
-    }, { passive: false });
-    btn.addEventListener('click', function() {
-      if (_t) { _t = false; return; }
-      var o = menu.classList.toggle('open');
-      btn.classList.toggle('open', o);
-    });
-    function close(e) {
-      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) {
-        menu.classList.remove('open'); btn.classList.remove('open');
-      }
-    }
-    document.addEventListener('touchstart', close, { passive: true });
-    document.addEventListener('click', close);
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { menu.classList.remove('open'); btn.classList.remove('open'); }
-    });
-  }
+// ── Theme ─────────────────────────────────────────────────────────────────
+(function(){
+  var saved = localStorage.getItem('sicmed_theme');
+  var dark  = saved ? saved==='dark' : (window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark?'dark':'light');
 })();
 
-  document.addEventListener('sicmed:ready', function() { var s = document.createElement('script'); s.src = 'guias.js'; document.body.appendChild(s); });
-</script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Theme toggle
+  var tt = document.getElementById('themeToggle');
+  if(tt) tt.addEventListener('click', function(){
+    var d = document.documentElement.getAttribute('data-theme')==='dark';
+    document.documentElement.setAttribute('data-theme', d?'light':'dark');
+    localStorage.setItem('sicmed_theme', d?'light':'dark');
+  });
 
-<div class="ham-menu" id="hamMenu">
-    <div class="ham-menu-inner">
-      <a href="index.html"          class="ham-link"><span class="ham-icon">🏠</span> Inicio</a>
-      <a href="especialidades.html" class="ham-link"><span class="ham-icon">🩺</span> Especialidades</a>
-      <a href="procedimientos.html" class="ham-link"><span class="ham-icon">📋</span> Procedimientos</a>
-      <a href="guias.html"          class="ham-link active"><span class="ham-icon">📖</span> Guías</a>
-      <a href="calculadora.html"    class="ham-link"><span class="ham-icon">🧮</span> Calculadora y escalas</a>
-      <a href="actualizaciones.html"class="ham-link"><span class="ham-icon">🕐</span> Actualizaciones</a>
-      <div class="ham-divider"></div>
-      <a href="admin.html" class="ham-link ham-admin"><span class="ham-icon">🔐</span> Administrador</a>
-    </div>
-  </div>
-</body>
-</html>
+  // Hamburger
+  var btn  = document.getElementById('menuBtn');
+  var menu = document.getElementById('hamMenu');
+  if(btn && menu){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var o = !menu.classList.contains('open');
+      menu.classList.toggle('open', o);
+      btn.classList.toggle('open', o);
+    });
+    document.addEventListener('click', function(e){
+      if(!menu.contains(e.target) && !btn.contains(e.target)){
+        menu.classList.remove('open');
+        btn.classList.remove('open');
+      }
+    });
+    btn.addEventListener('touchend', function(e){
+      e.preventDefault();
+      var o = !menu.classList.contains('open');
+      menu.classList.toggle('open', o);
+      btn.classList.toggle('open', o);
+    }, {passive:false});
+    document.addEventListener('touchend', function(e){
+      if(!menu.contains(e.target) && !btn.contains(e.target)){
+        menu.classList.remove('open');
+        btn.classList.remove('open');
+      }
+    }, {passive:true});
+  }
+});
+
+// ── Load page JS after db ready ───────────────────────────────────────────
+document.addEventListener('sicmed:ready', function(){var s=document.createElement('script');s.src='guias.js';document.body.appendChild(s);});
+</script>
+</body></html>

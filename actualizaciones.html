@@ -79,8 +79,12 @@
   (function(){
     var btn = document.getElementById('menuBtn'), menu = document.getElementById('hamMenu');
     if (!btn||!menu) return;
-    btn.addEventListener('click', function(e){ e.stopPropagation(); var o=menu.classList.toggle('open'); btn.classList.toggle('open',o); });
-    document.addEventListener('click', function(e){ if(!e.target.closest('#hamMenu')&&!e.target.closest('#menuBtn')){ menu.classList.remove('open'); btn.classList.remove('open'); } });
+    function toggle(e){ e.preventDefault(); e.stopPropagation(); var o=menu.classList.toggle('open'); btn.classList.toggle('open',o); }
+    function close(){ menu.classList.remove('open'); btn.classList.remove('open'); }
+    btn.addEventListener('click', toggle);
+    btn.addEventListener('touchend', toggle, {passive:false});
+    document.addEventListener('click', function(e){ if(!e.target.closest('#hamMenu')&&!e.target.closest('#menuBtn')) close(); });
+    document.addEventListener('touchend', function(e){ if(!e.target.closest('#hamMenu')&&!e.target.closest('#menuBtn')) close(); }, {passive:true});
   })();
   document.addEventListener("sicmed:ready", function() {
     var s = document.createElement("script"); s.src = "actualizaciones.js"; document.body.appendChild(s);

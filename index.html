@@ -119,30 +119,37 @@
 
 <script type="module" src="db.js"></script>
 <script>
-  // Hamburger — runs immediately, no dependency on db.js
+  // Hamburger — iOS-safe, runs immediately before db.js
   (function() {
     var btn  = document.getElementById('menuBtn');
     var menu = document.getElementById('hamMenu');
     if (!btn || !menu) return;
-    btn.addEventListener('click', function(e) {
+
+    function toggle(e) {
+      e.preventDefault();
       e.stopPropagation();
       var isOpen = menu.classList.toggle('open');
       btn.classList.toggle('open', isOpen);
-      btn.setAttribute('aria-expanded', isOpen);
-    });
+      btn.setAttribute('aria-expanded', String(isOpen));
+    }
+    function closeMenu() {
+      menu.classList.remove('open');
+      btn.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    // Both click and touchend for iOS Safari
+    btn.addEventListener('click', toggle);
+    btn.addEventListener('touchend', toggle, { passive: false });
+
     document.addEventListener('click', function(e) {
-      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) {
-        menu.classList.remove('open');
-        btn.classList.remove('open');
-        btn.setAttribute('aria-expanded', 'false');
-      }
+      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) closeMenu();
     });
+    document.addEventListener('touchend', function(e) {
+      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) closeMenu();
+    }, { passive: true });
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        menu.classList.remove('open');
-        btn.classList.remove('open');
-        btn.setAttribute('aria-expanded', 'false');
-      }
+      if (e.key === 'Escape') closeMenu();
     });
   })();
 

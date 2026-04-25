@@ -1,85 +1,151 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>SICMED – Derivaciones Médicas</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SICMED – Derivaciones Médicas</title>
+<link rel="icon" type="image/png" href="favicon32x32.png"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
 </head>
 <body data-page="inicio">
 
-<header class="navbar">
-  <div class="navbar-brand">
-    <span class="brand-icon"></span>
-    <span class="brand-name">SIC<span class="brand-accent">MED</span></span>
-  </div>
-  <nav class="navbar-nav">
-    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
-    <ul class="nav-list" id="navList">
-      <li class="nav-item active"><a href="index.html" class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
-      <li class="nav-item"><a href="especialidades.html" class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
-      <li class="nav-item"><a href="procedimientos.html" class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
-      <li class="nav-item"><a href="guias.html" class="nav-link"><span class="nav-icon">📖</span> Guías</a></li>
-      <li class="nav-item"><a href="actualizaciones.html" class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
-      <li class="nav-item"><a href="admin.html" class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
+<!-- BACKGROUND BLOBS -->
+<div class="bg-blob bg-blob-1"></div>
+<div class="bg-blob bg-blob-2"></div>
+<div class="bg-blob bg-blob-3"></div>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <img src="favicon32x32.png" alt="SICMED" class="logo-img" onerror="this.style.display='none'"/>
+      <span class="logo-dot"></span>
+      <span class="logo-text">SIC<span>MED</span></span>
+    </a>
+
+    <!-- Desktop tabs: Especialidades | Procedimientos | Guías -->
+    <ul class="nav-tabs" id="navTabs">
+      <li><a href="especialidades.html" class="nav-tab">Especialidades</a></li>
+      <li><a href="procedimientos.html" class="nav-tab">Procedimientos</a></li>
+      <li><a href="guias.html" class="nav-tab">Guías</a></li>
     </ul>
-  </nav>
-</header>
 
-<main class="main-content">
-  <section class="hero-section">
-    <div class="hero-inner">
-      <div class="hero-text">
-        <h1 class="hero-title">Protocolo de Derivación<br/>
-          <span class="hero-subtitle">Nivel Secundario</span>
-        </h1>
-        <p class="hero-desc">Busca diagnósticos por nombre o código CIE-10</p>
-      </div>
+    <div class="nav-right">
+      <button class="menu-btn" id="menuBtn" aria-label="Menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
 
-      <div class="search-container" id="searchContainer">
-        <div class="search-bar">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" class="search-input"
-            placeholder="Buscar diagnóstico o código CIE-10…" autocomplete="off"/>
-          <button class="search-clear" id="searchClear">✕</button>
-        </div>
-        <div class="search-dropdown" id="searchDropdown">
-          <div class="dropdown-inner" id="dropdownInner"></div>
-        </div>
-        <button class="btn-buscar" id="btnBuscar">
-          <span class="btn-icon">🔎</span> Buscar
+  <!-- Hamburger dropdown -->
+  <div class="ham-menu" id="hamMenu" role="menu">
+    <div class="ham-menu-inner">
+      <a href="index.html" class="ham-link active" role="menuitem">
+        <span class="ham-icon">🏠</span> Inicio
+      </a>
+      <a href="especialidades.html" class="ham-link" role="menuitem">
+        <span class="ham-icon">🩺</span> Especialidades
+      </a>
+      <a href="procedimientos.html" class="ham-link" role="menuitem">
+        <span class="ham-icon">📋</span> Procedimientos
+      </a>
+      <a href="guias.html" class="ham-link" role="menuitem">
+        <span class="ham-icon">📖</span> Guías
+      </a>
+      <a href="calculadora.html" class="ham-link" role="menuitem">
+        <span class="ham-icon">🧮</span> Calculadora y escalas
+      </a>
+      <a href="actualizaciones.html" class="ham-link" role="menuitem">
+        <span class="ham-icon">🕐</span> Actualizaciones
+      </a>
+      <div class="ham-divider"></div>
+      <a href="admin.html" class="ham-link ham-admin" role="menuitem">
+        <span class="ham-icon">🔐</span> Administrador
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+  <section class="hero">
+    <h1 class="hero-title">Protocolo de<br/><span>Derivaciones</span> Médicas</h1>
+    <p class="hero-sub">Busca diagnósticos por nombre, código CIE-10 o especialidad</p>
+
+    <!-- BUSCADOR -->
+    <div class="search-wrap" id="searchContainer">
+      <div class="search-pill" id="searchPill">
+        <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Código, diagnóstico o término clínico…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="search-clear" id="searchClear" aria-label="Limpiar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
 
-      <div class="result-panel" id="resultPanel" hidden>
-        <div class="result-header">
-          <h3 id="resultTitle">Resultado</h3>
-          <button class="result-close" id="resultClose">✕</button>
-        </div>
-        <div id="resultBody"></div>
+      <!-- Dropdown autocomplete -->
+      <div class="search-dropdown" id="searchDropdown">
+        <div id="dropdownInner"></div>
       </div>
     </div>
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
   </section>
 
-  <section class="stats-section">
-    <div class="stat-card"><span class="stat-num" id="statEsp">7</span><span class="stat-label">Especialidades</span></div>
-    <div class="stat-card"><span class="stat-num" id="statDiag">–</span><span class="stat-label">Diagnósticos</span></div>
-   
-  </section>
-
-  <footer class="site-footer">
-    <div>
+  <!-- RESULT PANEL -->
+  <section class="result-panel" id="resultPanel" hidden>
+    <div class="result-header">
+      <h3 class="result-title" id="resultTitle">Resultado</h3>
+      <button class="result-close" id="resultClose" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
-     <div class="footer-credits">Junior Alvarez &nbsp;|&nbsp; CESFAM Lo Amor &nbsp;·&nbsp; SICMED © 2026</div>
+    <div id="resultBody"></div>
+  </section>
+
+  <footer class="footer">
+    <span>Junior Alvarez &nbsp;·&nbsp; CESFAM Lo Amor</span>
+    <span class="footer-sep">|</span>
+    <span>SICMED © 2026</span>
   </footer>
 </main>
 
 <script type="module" src="db.js"></script>
 <script>
+  // Hamburger — runs immediately, no dependency on db.js
+  (function() {
+    var btn  = document.getElementById('menuBtn');
+    var menu = document.getElementById('hamMenu');
+    if (!btn || !menu) return;
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var isOpen = menu.classList.toggle('open');
+      btn.classList.toggle('open', isOpen);
+      btn.setAttribute('aria-expanded', isOpen);
+    });
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) {
+        menu.classList.remove('open');
+        btn.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        menu.classList.remove('open');
+        btn.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+
   document.addEventListener("sicmed:ready", function() {
     var s = document.createElement("script");
     s.src = "app.js";

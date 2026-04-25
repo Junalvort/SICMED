@@ -1,151 +1,118 @@
-// ─── SICMED – Especialidades ──────────────────────────────────────────────────
+// ─── SICMED – Especialidades (Light Theme) ────────────────────────────────────
 
-var PRIOR_COLOR = { P0:"#EF5350", P1:"#FFA726", P2:"#42A5F5", GES:"#66BB6A" };
 var PRIOR_LABEL = { P0:"P0 – Urgencia", P1:"P1 – menos 30 días", P2:"P2 – menos 6 meses", GES:"GES" };
 
-function escaparHTML(s) {
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-var hamburger   = document.getElementById("hamburger");
-var navList     = document.getElementById("navList");
-var grid        = document.getElementById("cardsGrid");
-var panel       = document.getElementById("diagPanel");
-var diagTitle   = document.getElementById("diagTitle");
-var diagIcon    = document.getElementById("diagIcon");
-var diagList    = document.getElementById("diagList");
-var diagClose   = document.getElementById("diagClose");
-var priorFilter = document.getElementById("priorFilter");
+var grid      = document.getElementById('cardsGrid');
+var panel     = document.getElementById('diagPanel');
+var diagTitle = document.getElementById('diagTitle');
+var diagIcon  = document.getElementById('diagIcon');
+var diagSub   = document.getElementById('diagSub');
+var diagList  = document.getElementById('diagList');
+var diagClose = document.getElementById('diagClose');
+var priorFilter = document.getElementById('priorFilter');
 
-if (hamburger && navList) {
-  hamburger.addEventListener("click", function() {
-    navList.classList.toggle("open");
-  });
-}
-
-// ── Construir tarjetas desde window.ESPECIALIDADES ───────────────────────────
+// ── Build grid ──────────────────────────────────────────────────────────────
 function buildCards() {
-  grid.innerHTML = "";
-
-  // Agrupar diagnósticos por especialidad
+  grid.innerHTML = '';
   var groups = {};
-  for (var i = 0; i < window.DB.length; i++) {
-    var d = window.DB[i];
+  window.DB.forEach(function(d) {
     if (!groups[d.especialidad]) groups[d.especialidad] = [];
     groups[d.especialidad].push(d);
-  }
-
-  // Usar el orden y metadata de window.ESPECIALIDADES
-  var esps = window.ESPECIALIDADES;
-
-  // Agregar especialidades que tengan diagnósticos pero no estén en ESPECIALIDADES
-  var nombresConocidos = esps.map(function(e){ return e.nombre; });
-  Object.keys(groups).forEach(function(nombre) {
-    if (nombresConocidos.indexOf(nombre) === -1) {
-      esps = esps.concat([{ nombre: nombre, icon: "🏥", desc: "" }]);
-    }
   });
 
-  esps.forEach(function(esp) {
-    var diags = groups[esp.nombre] || [];
-    var card  = document.createElement("div");
-    card.className = "specialty-card";
-    card.innerHTML =
-      '<div class="sc-icon">' + (esp.icon || "🏥") + "</div>" +
-      '<div class="sc-title">' + escaparHTML(esp.nombre) + "</div>" +
-      '<div class="sc-count">' + diags.length + " diagnóstico" + (diags.length !== 1 ? "s" : "") + "</div>" +
-      '<p style="font-size:.82rem;color:rgba(255,255,255,.45);margin-top:6px;line-height:1.4">' + escaparHTML(esp.desc || "") + "</p>" +
-      '<span class="sc-arrow">→</span>';
+  var esps = window.ESPECIALIDADES ? window.ESPECIALIDADES.slice() : [];
+  var known = esps.map(function(e){ return e.nombre; });
+  Object.keys(groups).forEach(function(n) {
+    if (known.indexOf(n) === -1) esps.push({ nombre: n, icon: '🏥', desc: '' });
+  });
 
-    card.addEventListener("click", function() { openPanel(esp, groups[esp.nombre] || []); });
+  esps.forEach(function(esp, idx) {
+    var diags = groups[esp.nombre] || [];
+    var card = document.createElement('div');
+    card.className = 'specialty-card';
+    card.style.animationDelay = (idx * 0.04) + 's';
+    card.style.animation = 'fadeUp 0.4s cubic-bezier(0.4,0,0.2,1) both';
+    card.innerHTML =
+      '<div class="sc-icon">' + (esp.icon || '🏥') + '</div>' +
+      '<div class="sc-title">' + esc(esp.nombre) + '</div>' +
+      '<div class="sc-count">' + diags.length + ' diagnóstico' + (diags.length !== 1 ? 's' : '') + '</div>' +
+      (esp.desc ? '<p class="sc-desc">' + esc(esp.desc) + '</p>' : '') +
+      '<span class="sc-arrow">→</span>';
+    card.addEventListener('click', function() { openPanel(esp, groups[esp.nombre] || []); });
     grid.appendChild(card);
   });
 }
 
 buildCards();
 
-// ─── Panel lateral ────────────────────────────────────────────────────────────
+// ── Panel ───────────────────────────────────────────────────────────────────
 var currentDatos = [];
 
 function openPanel(esp, datos) {
   currentDatos = datos;
-  diagIcon.textContent  = esp.icon || "🏥";
+  diagIcon.textContent  = esp.icon || '🏥';
   diagTitle.textContent = esp.nombre;
+  diagSub.textContent   = datos.length + ' diagnóstico' + (datos.length !== 1 ? 's' : '');
 
-  priorFilter.innerHTML = "";
+  // Priority filter pills
+  priorFilter.innerHTML = '';
   var prios = [];
-  for (var x = 0; x < datos.length; x++) {
-    if (prios.indexOf(datos[x].prioridad) === -1) prios.push(datos[x].prioridad);
-  }
+  datos.forEach(function(d) { if (prios.indexOf(d.prioridad) === -1) prios.push(d.prioridad); });
   prios.sort();
 
-  priorFilter.appendChild(makePill("Todos", null, true));
-  for (var p = 0; p < prios.length; p++) {
-    priorFilter.appendChild(makePill(PRIOR_LABEL[prios[p]] || prios[p], prios[p], false));
-  }
+  priorFilter.appendChild(makePill('Todos', null, true));
+  prios.forEach(function(p) {
+    priorFilter.appendChild(makePill(PRIOR_LABEL[p] || p, p, false));
+  });
 
-  renderDiagList(datos, null);
-  panel.classList.add("open");
-  document.body.style.overflow = "hidden";
+  renderList(datos, null);
+  panel.classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 function makePill(label, val, active) {
-  var btn = document.createElement("button");
+  var btn = document.createElement('button');
+  btn.className = 'prior-pill' + (active ? ' active' : '');
   btn.textContent = label;
-  btn.style.cssText =
-    "padding:5px 14px;border-radius:20px;cursor:pointer;" +
-    "font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:600;" +
-    "background:" + (active ? "rgba(79,195,247,.25)" : "rgba(255,255,255,.08)") + ";" +
-    "color:"      + (active ? "#4FC3F7" : "rgba(255,255,255,.6)") + ";" +
-    "border:1px solid " + (active ? "rgba(79,195,247,.4)" : "rgba(255,255,255,.12)") + ";" +
-    "transition:.2s;margin-bottom:4px;";
-
-  btn.addEventListener("click", function() {
-    priorFilter.querySelectorAll("button").forEach(function(b) {
-      b.style.background  = "rgba(255,255,255,.08)";
-      b.style.color       = "rgba(255,255,255,.6)";
-      b.style.borderColor = "rgba(255,255,255,.12)";
-    });
-    btn.style.background  = "rgba(79,195,247,.25)";
-    btn.style.color       = "#4FC3F7";
-    btn.style.borderColor = "rgba(79,195,247,.4)";
-    renderDiagList(currentDatos, val);
+  btn.addEventListener('click', function() {
+    priorFilter.querySelectorAll('.prior-pill').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    renderList(currentDatos, val);
   });
   return btn;
 }
 
-function renderDiagList(data, filterP) {
-  diagList.innerHTML = "";
-  var list = data.filter(function(d) { return !filterP || d.prioridad === filterP; });
-
+function renderList(data, filterP) {
+  diagList.innerHTML = '';
+  var list = filterP ? data.filter(function(d){ return d.prioridad === filterP; }) : data;
   if (!list.length) {
-    diagList.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,.4);">Sin diagnósticos en esta prioridad</div>';
+    diagList.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:.875rem">Sin diagnósticos en esta prioridad</div>';
     return;
   }
-
   list.forEach(function(d) {
-    var row = document.createElement("div");
-    row.className = "diag-row";
-    var criterHTML = d.criterios ? '<div class="dr-notas"><strong style="color:#80CBC4">Criterios:</strong> ' + escaparHTML(d.criterios) + "</div>" : "";
-    var examHTML   = d.examenes  ? '<div class="dr-notas"><strong style="color:#FFCC80">EMBD:</strong> '     + escaparHTML(d.examenes)  + "</div>" : "";
-    var notasHTML  = d.notas     ? '<div class="dr-notas">💡 ' + escaparHTML(d.notas) + "</div>" : "";
+    var row = document.createElement('div');
+    row.className = 'diag-row';
+    var criterMeta = d.criterios ? '<div class="dr-meta"><strong style="color:var(--blue-700)">Criterios:</strong> ' + esc(d.criterios) + '</div>' : '';
+    var examMeta   = d.examenes  ? '<div class="dr-meta"><strong style="color:var(--blue-500)">EMBD:</strong> ' + esc(d.examenes) + '</div>' : '';
+    var notasMeta  = d.notas     ? '<div class="dr-meta" style="color:var(--blue-500)">💡 ' + esc(d.notas) + '</div>' : '';
     row.innerHTML =
-      '<span class="dr-cie">' + escaparHTML(d.cie10) + "</span>" +
+      '<span class="dr-cie">' + esc(d.cie10) + '</span>' +
       '<div class="dr-info">' +
-        '<div class="dr-nombre">' + escaparHTML(d.nombre) + "</div>" +
-        '<div class="dr-notas" style="margin-top:4px"><strong style="color:#90CAF9">Destino:</strong> ' + escaparHTML(d.destino) + "</div>" +
-        criterHTML + examHTML + notasHTML +
-      "</div>" +
-      '<span class="badge-urgencia ' + d.prioridad + '" style="flex-shrink:0;align-self:flex-start;">' + escaparHTML(d.prioridad) + "</span>";
+        '<div class="dr-nombre">' + esc(d.nombre) + '</div>' +
+        (d.destino ? '<div class="dr-meta"><strong>Destino:</strong> ' + esc(d.destino) + '</div>' : '') +
+        criterMeta + examMeta + notasMeta +
+      '</div>' +
+      '<span class="badge-urgencia ' + d.prioridad + '">' + esc(d.prioridad) + '</span>';
     diagList.appendChild(row);
   });
 }
 
 function closePanel() {
-  panel.classList.remove("open");
-  document.body.style.overflow = "";
+  panel.classList.remove('open');
+  document.body.style.overflow = '';
 }
-
-diagClose.addEventListener("click", closePanel);
-panel.addEventListener("click", function(e) { if (e.target === panel) closePanel(); });
-document.addEventListener("keydown", function(e) { if (e.key === "Escape") closePanel(); });
+diagClose.addEventListener('click', closePanel);
+panel.addEventListener('click', function(e) { if (e.target === panel) closePanel(); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePanel(); });

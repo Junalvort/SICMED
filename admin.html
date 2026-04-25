@@ -1,87 +1,230 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Administrador – SICMED</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Administrador – SICMED</title>
+<link rel="icon" type="image/png" href="favicon32x32.png"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  /* Login screen — sits in normal flow BELOW the nav */
+  .login-overlay {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: center;
+    flex: 1;
+    padding: 60px 24px 40px;
+  }
+  .login-card {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    border: 1.5px solid rgba(255,255,255,0.90);
+    border-radius: 28px;
+    padding: 48px 40px 44px;
+    width: 100%; max-width: 400px;
+    box-shadow: 0 16px 60px rgba(30,90,153,0.16);
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .login-header {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .login-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 700;
+    color: var(--blue-900);
+  }
+  .login-logo-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--blue-500);
+    box-shadow: 0 0 0 3px rgba(58,134,200,0.22);
+  }
+  .login-logo span { color: var(--blue-500); }
+  .login-title {
+    font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 700;
+    color: var(--blue-900); text-align: center; line-height: 1.3;
+  }
+  .login-sub {
+    font-size: 0.84rem; color: var(--text-muted); text-align: center;
+    line-height: 1.5;
+  }
+  .login-field { display: flex; flex-direction: column; gap: 7px; }
+  .login-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gray-400); }
+  .login-input {
+    background: rgba(255,255,255,0.90); border: 1.5px solid var(--gray-200);
+    border-radius: 12px; padding: 13px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--text);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%;
+  }
+  .login-input:focus { border-color: var(--blue-300); box-shadow: 0 0 0 3px rgba(58,134,200,0.12); }
+  .login-btn {
+    background: var(--blue-500); color: white;
+    border: none; border-radius: 50px; padding: 15px;
+    font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    box-shadow: 0 4px 16px rgba(58,134,200,0.30);
+    width: 100%; margin-top: 4px;
+  }
+  .login-btn:hover { background: var(--blue-700); transform: translateY(-1px); box-shadow: 0 6px 22px rgba(58,134,200,0.40); }
+  .login-error {
+    background: var(--p0-bg); border: 1px solid var(--p0-bd);
+    color: var(--p0-text); border-radius: 10px; padding: 11px 14px;
+    font-size: 0.83rem; text-align: center; display: none;
+  }
+  /* Admin panel hidden by default */
+  #adminPanel { display: none; }
+</style>
 </head>
 <body data-page="admin">
+<div class="bg-blob bg-blob-1"></div>
+<div class="bg-blob bg-blob-2"></div>
 
-<header class="navbar">
-  <div class="navbar-brand">
-    <span class="brand-icon"></span>
-    <a href="index.html" style="text-decoration:none">
-      <span class="brand-name">SIC<span class="brand-accent">MED</span></span>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <img src="favicon32x32.png" alt="SICMED" class="logo-img" onerror="this.style.display='none'"/>
+      <span class="logo-dot"></span>
+      <span class="logo-text">SIC<span>MED</span></span>
     </a>
-  </div>
-  <nav class="navbar-nav">
-    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
-    <ul class="nav-list" id="navList">
-      <li class="nav-item"><a href="index.html" class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
-      <li class="nav-item"><a href="especialidades.html" class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
-      <li class="nav-item"><a href="procedimientos.html" class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
-      <li class="nav-item"><a href="guias.html" class="nav-link"><span class="nav-icon">📖</span> Guías</a></li>
-      <li class="nav-item"><a href="actualizaciones.html" class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
-      <li class="nav-item active"><a href="admin.html" class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
+    <ul class="nav-tabs">
+      <li><a href="especialidades.html" class="nav-tab">Especialidades</a></li>
+      <li><a href="procedimientos.html" class="nav-tab">Procedimientos</a></li>
+      <li><a href="guias.html" class="nav-tab">Guías</a></li>
     </ul>
-  </nav>
-</header>
+    <div class="nav-right">
+      <button class="menu-btn" id="menuBtn" aria-label="Menú"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="ham-menu" id="hamMenu">
+    <div class="ham-menu-inner">
+      <a href="index.html"          class="ham-link"><span class="ham-icon">🏠</span> Inicio</a>
+      <a href="especialidades.html" class="ham-link"><span class="ham-icon">🩺</span> Especialidades</a>
+      <a href="procedimientos.html" class="ham-link"><span class="ham-icon">📋</span> Procedimientos</a>
+      <a href="guias.html"          class="ham-link"><span class="ham-icon">📖</span> Guías</a>
+      <a href="calculadora.html"    class="ham-link"><span class="ham-icon">🧮</span> Calculadora y escalas</a>
+      <a href="actualizaciones.html"class="ham-link"><span class="ham-icon">🕐</span> Actualizaciones</a>
+      <div class="ham-divider"></div>
+      <a href="admin.html" class="ham-link ham-admin active"><span class="ham-icon">🔐</span> Administrador</a>
+    </div>
+  </div>
+</nav>
 
-<!-- ── LOGIN ── -->
-<div class="admin-login-wrap" id="loginWrap">
-  <div class="admin-login-box">
-    <div class="admin-login-icon">🔐</div>
-    <div class="admin-login-title">Acceso Administrador</div>
-    <div class="admin-login-sub">Ingresa tus credenciales para gestionar la base de datos</div>
-    <div class="admin-field">
-      <label class="admin-label">Usuario</label>
-      <input type="text" id="loginUser" class="admin-input" placeholder="usuario" autocomplete="username"/>
+<!-- ── LOGIN SCREEN ────────────────────────────────────────────────────── -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">
+        <div class="login-logo-dot"></div>
+        SIC<span>MED</span>
+      </div>
+      <div>
+        <div class="login-title">Acceso Administrador</div>
+        <div class="login-sub">Ingresa tus credenciales para continuar</div>
+      </div>
     </div>
-    <div class="admin-field">
-      <label class="admin-label">Código de acceso</label>
-      <input type="password" id="loginPass" class="admin-input" placeholder="••••••" autocomplete="current-password"/>
+    <div class="login-field">
+      <label class="login-label" for="loginUser">Usuario</label>
+      <input type="text" id="loginUser" class="login-input" placeholder="admin" autocomplete="username"/>
     </div>
-    <button class="btn-admin-login" id="btnLogin">Ingresar</button>
-    <div class="admin-error" id="loginError"></div>
+    <div class="login-field">
+      <label class="login-label" for="loginPass">Contraseña</label>
+      <input type="password" id="loginPass" class="login-input" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <div class="login-error" id="loginError">Usuario o contraseña incorrectos</div>
+    <button class="login-btn" id="loginBtn">Ingresar</button>
   </div>
 </div>
 
-<!-- ── PANEL ── -->
-<div style="display:none" id="adminWrap">
-  <div class="admin-panel">
-    <div class="admin-panel-title">🛠️ Panel de Administración</div>
-    <div class="admin-panel-sub">
-      SICMED &nbsp;·&nbsp; <span id="diagCount">0</span> diagnósticos &nbsp;·&nbsp; <span id="espCount">0</span> especialidades
+<!-- ── ADMIN PANEL ─────────────────────────────────────────────────────── -->
+<div id="adminPanel">
+<main class="main">
+  <div class="page-header">
+    <p class="page-eyebrow">Panel de Control</p>
+    <h1 class="page-title">Administrador <span>SICMED</span></h1>
+    <p class="page-sub">Gestión de diagnósticos y base de datos del protocolo SSMOCC</p>
+  </div>
+
+  <div class="admin-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="nuevo">Nuevo diagnóstico</button>
+        <button class="admin-tab" data-tab="lista">Base de datos</button>
+        <button class="admin-tab" data-tab="acciones">Acciones</button>
+      </div>
+      <button class="btn btn-ghost" id="btnLogout" style="font-size:.8rem;padding:6px 16px">🔓 Cerrar sesión</button>
     </div>
 
-    <!-- Pestañas -->
-    <div class="admin-tabs" id="adminTabs">
-      <button class="admin-tab active" data-tab="diagnosticos">🔬 Diagnósticos</button>
-      <button class="admin-tab"        data-tab="especialidades">🩺 Especialidades</button>
-      <button class="admin-tab"        data-tab="procedimientos">📋 Procedimientos</button>
-      <button class="admin-tab"        data-tab="guias">📖 Guías</button>
+    <!-- Tab: Nuevo -->
+    <div id="tabNuevo">
+      <div class="admin-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Código CIE-10 *</label>
+            <input type="text" id="fCie10" class="form-control" placeholder="Ej: E039"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Prioridad *</label>
+            <select id="fPrioridad" class="form-control form-select">
+              <option value="">Seleccionar…</option>
+              <option value="P0">P0 – Urgencia inmediata</option>
+              <option value="P1">P1 – Alta prioridad (&lt;30 días)</option>
+              <option value="P2">P2 – Normal (&lt;6 meses)</option>
+              <option value="GES">GES – Garantía Explícita</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Diagnóstico / Nombre *</label>
+            <input type="text" id="fNombre" class="form-control" placeholder="Nombre del diagnóstico"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Especialidad *</label>
+            <input type="text" id="fEspecialidad" class="form-control" placeholder="Ej: Endocrinología" list="espList"/>
+            <datalist id="espList"></datalist>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Destino de derivación</label>
+            <input type="text" id="fDestino" class="form-control" placeholder="Ej: Urgencia / Especialidad"/>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Criterios de derivación</label>
+            <textarea id="fCriterios" class="form-control" rows="3" style="resize:vertical" placeholder="Criterios para la derivación…"></textarea>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Exámenes mínimos (EMBD)</label>
+            <input type="text" id="fExamenes" class="form-control" placeholder="Ej: TSH, T4L, Hemograma"/>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Sinónimos (separados por coma)</label>
+            <input type="text" id="fSinonimos" class="form-control" placeholder="Ej: hipotiroidismo, tiroides baja"/>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Notas</label>
+            <input type="text" id="fNotas" class="form-control" placeholder="Notas adicionales…"/>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" id="btnGuardar">💾 Guardar diagnóstico</button>
+          <button class="btn btn-ghost" id="btnLimpiar">Limpiar</button>
+        </div>
+        <div id="adminMsg" style="margin-top:12px;font-size:.85rem;display:none"></div>
+      </div>
     </div>
 
-    <!-- ── PESTAÑA DIAGNÓSTICOS ── -->
-    <div class="admin-tab-content" id="tabDiagnosticos">
-      <div class="admin-toolbar">
-        <button class="btn-new-diag" id="btnNew">➕ Nuevo diagnóstico</button>
-        <input type="text" class="admin-search-input" id="adminSearch" placeholder="Filtrar por nombre, CIE-10 o especialidad…"/>
-        <button class="btn-export-excel" id="btnResetDB"
-          style="background:rgba(229,57,53,.1);border-color:rgba(229,57,53,.3);color:#EF9A9A;">
-          🔄 Resetear BD
-        </button>
-        <button class="btn-logout" id="btnLogout">🚪 Cerrar sesión</button>
+    <!-- Tab: Lista -->
+    <div id="tabLista" style="display:none">
+      <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center">
+        <input type="text" id="adminSearch" class="form-control" placeholder="Buscar en la tabla…" style="max-width:300px"/>
+        <span id="tableCount" style="font-size:.82rem;color:var(--text-muted)"></span>
       </div>
       <div class="admin-table-wrap">
-        <table class="admin-table">
+        <table class="admin-table" id="adminTable">
           <thead>
             <tr>
-              <th>CIE-10</th><th>Diagnóstico</th><th>Especialidad</th>
-              <th>Destino</th><th>Prioridad</th><th>Acciones</th>
+              <th>CIE-10</th>
+              <th>Diagnóstico</th>
+              <th>Especialidad</th>
+              <th>Prioridad</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody id="adminTbody"></tbody>
@@ -89,309 +232,96 @@
       </div>
     </div>
 
-    <!-- ── PESTAÑA ESPECIALIDADES ── -->
-    <div class="admin-tab-content" id="tabEspecialidades" style="display:none">
-      <div class="admin-toolbar">
-        <button class="btn-new-diag" id="btnNewEsp">➕ Nueva especialidad</button>
-        <div style="margin-left:auto;color:rgba(255,255,255,.4);font-size:.85rem">
-          Las especialidades se sincronizan en toda la plataforma
-        </div>
-      </div>
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead>
-            <tr><th>Emoji</th><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr>
-          </thead>
-          <tbody id="espTbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-  </div><!-- /admin-panel -->
-</div><!-- /adminWrap -->
-
-<!-- ── MODAL DIAGNÓSTICO ── -->
-<div class="admin-modal-bg" id="modalBg">
-  <div class="admin-modal">
-    <div class="admin-modal-title">
-      <span id="modalTitleText">Nuevo diagnóstico</span>
-      <button class="modal-close-btn" id="modalClose">✕</button>
-    </div>
-    <div class="modal-grid">
-      <div class="modal-field">
-        <label>CIE-10 *</label>
-        <input class="modal-input" id="mCie10" placeholder="Ej: E039"/>
-      </div>
-      <div class="modal-field">
-        <label>Prioridad *</label>
-        <select class="modal-select" id="mPrioridad">
-          <option value="P0">P0 – Urgencia</option>
-          <option value="P1">P1 – Alta prioridad (&lt;30 días)</option>
-          <option value="P2" selected>P2 – Normal (&lt;6 meses)</option>
-          <option value="GES">GES – Garantía Explícita</option>
-        </select>
-      </div>
-      <div class="modal-field full">
-        <label>Nombre del diagnóstico *</label>
-        <input class="modal-input" id="mNombre" placeholder="Ej: Hipotiroidismo no especificado refractario"/>
-      </div>
-      <div class="modal-field">
-        <label>Especialidad *</label>
-        <select class="modal-select" id="mEspecialidad">
-          <!-- Se puebla dinámicamente desde window.ESPECIALIDADES -->
-        </select>
-      </div>
-      <div class="modal-field">
-        <label>Destino de derivación *</label>
-        <input class="modal-input" id="mDestino" placeholder="Ej: Medicina Interna, Urgencia"/>
-      </div>
-      <div class="modal-field full">
-        <label>Sinónimos (separados por coma)</label>
-        <input class="modal-input" id="mSinonimos" placeholder="Ej: TSH alto, tiroides baja"/>
-      </div>
-      <div class="modal-field full">
-        <label>Criterios de derivación *</label>
-        <textarea class="modal-textarea" id="mCriterios" rows="3" placeholder="Criterios clínicos para indicar esta derivación…"></textarea>
-      </div>
-      <div class="modal-field full">
-        <label>Exámenes mínimos (EMBD)</label>
-        <textarea class="modal-textarea" id="mExamenes" rows="2" placeholder="Ej: TSH, T4L, hemograma, VHS…"></textarea>
-      </div>
-      <div class="modal-field full">
-        <label>Notas adicionales</label>
-        <textarea class="modal-textarea" id="mNotas" rows="2" placeholder="Advertencias, GES, instrucciones especiales…"></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal-cancel" id="modalCancel">Cancelar</button>
-      <button class="btn-modal-save"   id="modalSave">💾 Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── MODAL ESPECIALIDAD ── -->
-<div class="admin-modal-bg" id="modalEspBg">
-  <div class="admin-modal" style="max-width:500px">
-    <div class="admin-modal-title">
-      <span id="modalEspTitle">Nueva especialidad</span>
-      <button class="modal-close-btn" id="modalEspClose">✕</button>
-    </div>
-
-    <div class="modal-grid" style="grid-template-columns:1fr">
-
-      <!-- Selector de emoji -->
-      <div class="modal-field">
-        <label>Emoji / Ícono *</label>
-        <div style="display:flex;gap:10px;align-items:center">
-          <div id="emojiPreview" style="
-            font-size:2.4rem;width:56px;height:56px;
-            background:rgba(79,195,247,.1);border:1px solid rgba(79,195,247,.25);
-            border-radius:12px;display:flex;align-items:center;justify-content:center;
-            cursor:pointer;flex-shrink:0;" title="Clic para cambiar">🏥</div>
-          <input class="modal-input" id="mEspIcon" placeholder="Escribe o pega un emoji…" maxlength="8"
-            style="font-size:1.4rem;text-align:center;letter-spacing:4px"/>
-        </div>
-        <!-- Paleta de emojis médicos -->
-        <div id="emojiPalette" style="
-          display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;
-          background:rgba(255,255,255,.04);border-radius:10px;padding:10px;">
-        </div>
-      </div>
-
-      <div class="modal-field">
-        <label>Nombre de la especialidad *</label>
-        <input class="modal-input" id="mEspNombre" placeholder="Ej: Cardiología"/>
-      </div>
-
-      <div class="modal-field">
-        <label>Descripción corta</label>
-        <input class="modal-input" id="mEspDesc" placeholder="Ej: Corazón, hipertensión, arritmias"/>
-      </div>
-
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal-cancel" id="modalEspCancel">Cancelar</button>
-      <button class="btn-modal-save"   id="modalEspSave">💾 Guardar especialidad</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── MODAL PROCEDIMIENTO ── -->
-<div class="admin-modal-bg" id="modalProcBg">
-  <div class="admin-modal" style="max-width:660px">
-    <div class="admin-modal-title">
-      <span id="modalProcTitle">Nuevo procedimiento</span>
-      <button class="modal-close-btn" id="modalProcClose">✕</button>
-    </div>
-    <div class="modal-grid">
-      <div class="modal-field">
-        <label>ID único *</label>
-        <input class="modal-input" id="pId" placeholder="Ej: eco_abdominal (sin espacios)"/>
-      </div>
-      <div class="modal-field">
-        <label>Tipo *</label>
-        <select class="modal-select" id="pTipo">
-          <option value="Prueba Diagnóstica">Prueba Diagnóstica</option>
-          <option value="Imagenología">Imagenología</option>
-          <option value="Procedimiento">Procedimiento</option>
-          <option value="Cirugía Menor">Cirugía Menor</option>
-          <option value="Rehabilitación Física">Rehabilitación Física</option>
-          <option value="Dermatología APS">Dermatología APS</option>
-          <option value="Órtesis">Órtesis</option>
-          <option value="Otro">Otro</option>
-        </select>
-      </div>
-      <div class="modal-field full">
-        <label>Nombre del procedimiento *</label>
-        <input class="modal-input" id="pNombre" placeholder="Ej: Ecotomografía Abdominal"/>
-      </div>
-      <div class="modal-field">
-        <label>Modalidad</label>
-        <input class="modal-input" id="pModalidad" placeholder="Ej: Ecografía, Radiología…"/>
-      </div>
-      <div class="modal-field">
-        <label>Establecimiento</label>
-        <input class="modal-input" id="pEstablecimiento" placeholder="Ej: UAPO Cerro Navia"/>
-      </div>
-      <div class="modal-field">
-        <label>Prioridad</label>
-        <input class="modal-input" id="pPrioridad" placeholder="Normal / Alta (sospecha Ca)"/>
-      </div>
-      <div class="modal-field full">
-        <label>Diagnósticos asociados (CIE-10)</label>
-        <textarea class="modal-textarea" id="pDiagnosticos" rows="2" placeholder="Ej: K80 Colelitiasis, R10 Dolor abdominal…"></textarea>
-      </div>
-      <div class="modal-field full">
-        <label>Criterios y pasos en Rayen *</label>
-        <textarea class="modal-textarea" id="pCriterios" rows="4" placeholder="Pasos para realizar la orden en Rayen, criterios clínicos…"></textarea>
-      </div>
-      <div class="modal-field full">
-        <label>Notas / Advertencias</label>
-        <textarea class="modal-textarea" id="pNotas" rows="2" placeholder="Contraindicaciones, advertencias especiales…"></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal-cancel" id="modalProcCancel">Cancelar</button>
-      <button class="btn-modal-save"   id="modalProcSave">💾 Guardar procedimiento</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── MODAL PROCEDIMIENTO ── -->
-<div class="admin-modal-bg" id="modalProcBg">
-  <div class="admin-modal" style="max-width:660px">
-    <div class="admin-modal-title">
-      <span id="modalProcTitle">Nuevo procedimiento</span>
-      <button class="modal-close-btn" id="modalProcClose">✕</button>
-    </div>
-    <div class="modal-grid">
-      <div class="modal-field">
-        <label>ID único *</label>
-        <input class="modal-input" id="pId" placeholder="Ej: eco_abdominal (sin espacios)"/>
-      </div>
-      <div class="modal-field">
-        <label>Tipo *</label>
-        <select class="modal-select" id="pTipo">
-          <option value="Prueba Diagnóstica">Prueba Diagnóstica</option>
-          <option value="Imagenología">Imagenología</option>
-          <option value="Procedimiento">Procedimiento</option>
-          <option value="Cirugía Menor">Cirugía Menor</option>
-          <option value="Rehabilitación Física">Rehabilitación Física</option>
-          <option value="Dermatología APS">Dermatología APS</option>
-          <option value="Órtesis">Órtesis</option>
-          <option value="Otro">Otro</option>
-        </select>
-      </div>
-      <div class="modal-field full">
-        <label>Nombre del procedimiento *</label>
-        <input class="modal-input" id="pNombre" placeholder="Ej: Ecotomografía Abdominal"/>
-      </div>
-      <div class="modal-field">
-        <label>Modalidad</label>
-        <input class="modal-input" id="pModalidad" placeholder="Ej: Ecografía, Radiología…"/>
-      </div>
-      <div class="modal-field">
-        <label>Establecimiento</label>
-        <input class="modal-input" id="pEstablecimiento" placeholder="Ej: UAPO Cerro Navia"/>
-      </div>
-      <div class="modal-field">
-        <label>Prioridad</label>
-        <input class="modal-input" id="pPrioridad" placeholder="Normal / Alta (sospecha Ca)"/>
-      </div>
-      <div class="modal-field full">
-        <label>Diagnósticos asociados (CIE-10)</label>
-        <textarea class="modal-textarea" id="pDiagnosticos" rows="2" placeholder="Ej: K80 Colelitiasis, R10 Dolor abdominal…"></textarea>
-      </div>
-      <div class="modal-field full">
-        <label>Criterios y pasos en Rayen *</label>
-        <textarea class="modal-textarea" id="pCriterios" rows="4" placeholder="Pasos para realizar la orden en Rayen, criterios clínicos…"></textarea>
-      </div>
-      <div class="modal-field full">
-        <label>Notas / Advertencias</label>
-        <textarea class="modal-textarea" id="pNotas" rows="2" placeholder="Contraindicaciones, advertencias especiales…"></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal-cancel" id="modalProcCancel">Cancelar</button>
-      <button class="btn-modal-save"   id="modalProcSave">💾 Guardar procedimiento</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── MODAL GUÍA ── -->
-<div class="admin-modal-bg" id="modalGuiaBg">
-  <div class="admin-modal" style="max-width:660px">
-    <div class="admin-modal-title">
-      <span id="modalGuiaTitle">Nueva guía</span>
-      <button class="modal-close-btn" id="modalGuiaClose">✕</button>
-    </div>
-    <div class="modal-grid">
-      <div class="modal-field">
-        <label>ID único *</label>
-        <input class="modal-input" id="gId" placeholder="Ej: guia_diabetes (sin espacios)"/>
-      </div>
-      <div class="modal-field">
-        <label>Ícono (emoji)</label>
-        <input class="modal-input" id="gIcono" placeholder="📋" maxlength="4" style="font-size:1.4rem;text-align:center"/>
-      </div>
-      <div class="modal-field full">
-        <label>Título *</label>
-        <input class="modal-input" id="gTitulo" placeholder="Ej: Control CV / PADI / PDS"/>
-      </div>
-      <div class="modal-field full">
-        <label>Descripción</label>
-        <input class="modal-input" id="gDescripcion" placeholder="Breve descripción de la guía…"/>
-      </div>
-      <div class="modal-field full">
-        <label>Color (hex)</label>
-        <div style="display:flex;gap:10px;align-items:center">
-          <input class="modal-input" id="gColor" placeholder="#42A5F5" style="flex:1"/>
-          <input type="color" id="gColorPicker" value="#42A5F5"
-            style="width:40px;height:40px;border:none;border-radius:8px;cursor:pointer;background:none;padding:2px"/>
-        </div>
-      </div>
-      <div class="modal-field full">
-        <label>Secciones (JSON) *</label>
-        <textarea class="modal-textarea" id="gSecciones" rows="6"
-          placeholder='[{"subtitulo":"1. Diagnósticos","contenido":"Texto aquí..."}]'></textarea>
-        <div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:4px">
-          Formato: array JSON con objetos {"subtitulo":"...","contenido":"..."}
+    <!-- Tab: Acciones -->
+    <div id="tabAcciones" style="display:none">
+      <div class="admin-form" style="max-width:480px">
+        <h3 style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;color:var(--blue-900);margin-bottom:16px">Acciones globales</h3>
+        <div style="padding:16px;background:var(--gray-50);border-radius:var(--r-md);border:1.5px solid var(--gray-200)">
+          <div style="font-weight:600;color:var(--text);margin-bottom:6px">Resetear base de datos</div>
+          <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px">Vuelve al protocolo SSMOCC original. Esta acción no se puede deshacer.</div>
+          <button class="btn btn-danger" onclick="window.STORE_reset && window.STORE_reset()">⚠️ Resetear todo</button>
         </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-modal-cancel" id="modalGuiaCancel">Cancelar</button>
-      <button class="btn-modal-save"   id="modalGuiaSave">💾 Guardar guía</button>
-    </div>
   </div>
-</div>
+
+  <footer class="footer">
+    <span>Junior Alvarez &nbsp;·&nbsp; CESFAM Lo Amor</span>
+    <span class="footer-sep">|</span>
+    <span>SICMED © 2026</span>
+  </footer>
+</main>
+</div><!-- end adminPanel -->
 
 <script type="module" src="db.js"></script>
 <script>
+  // ── Hamburger (immediate, no db dependency)
+  (function() {
+    var btn = document.getElementById('menuBtn'), menu = document.getElementById('hamMenu');
+    if (!btn || !menu) return;
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var o = menu.classList.toggle('open'); btn.classList.toggle('open', o);
+    });
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) {
+        menu.classList.remove('open'); btn.classList.remove('open');
+      }
+    });
+  })();
+
+  // ── Login logic
+  (function() {
+    var CREDS = { user: 'admin', pass: 'admin123' };
+    var SESSION_KEY = 'sicmed_admin_auth';
+
+    var overlay  = document.getElementById('loginOverlay');
+    var panel    = document.getElementById('adminPanel');
+    var userEl   = document.getElementById('loginUser');
+    var passEl   = document.getElementById('loginPass');
+    var errEl    = document.getElementById('loginError');
+    var loginBtn = document.getElementById('loginBtn');
+    var logoutBtn= document.getElementById('btnLogout');
+
+    function unlock() {
+      overlay.style.display = 'none';
+      panel.style.display = 'block';
+    }
+    function lock() {
+      sessionStorage.removeItem(SESSION_KEY);
+      overlay.style.display = '';
+      panel.style.display = 'none';
+      if (userEl) userEl.value = '';
+      if (passEl) passEl.value = '';
+    }
+
+    // Check existing session
+    if (sessionStorage.getItem(SESSION_KEY) === '1') { unlock(); }
+
+    loginBtn.addEventListener('click', function() {
+      var u = userEl.value.trim(), p = passEl.value;
+      if (u === CREDS.user && p === CREDS.pass) {
+        sessionStorage.setItem(SESSION_KEY, '1');
+        errEl.style.display = 'none';
+        unlock();
+      } else {
+        errEl.style.display = 'block';
+        passEl.value = '';
+        passEl.focus();
+      }
+    });
+
+    // Allow Enter key on inputs
+    [userEl, passEl].forEach(function(el) {
+      el.addEventListener('keydown', function(e) { if (e.key === 'Enter') loginBtn.click(); });
+    });
+
+    if (logoutBtn) logoutBtn.addEventListener('click', lock);
+  })();
+
+  // ── Load admin.js after db is ready
   document.addEventListener("sicmed:ready", function() {
-    var s = document.createElement("script");
-    s.src = "admin.js";
-    document.body.appendChild(s);
+    var s = document.createElement("script"); s.src = "admin.js"; document.body.appendChild(s);
   });
 </script>
 </body>

@@ -1,51 +1,63 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Procedimientos – SICMED</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Procedimientos – SICMED</title>
+<link rel="icon" type="image/png" href="favicon32x32.png"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
 </head>
 <body data-page="procedimientos">
-<header class="navbar">
-  <div class="navbar-brand">
-    <span class="brand-icon"></span>
-    <a href="index.html" style="text-decoration:none">
-      <span class="brand-name">SIC<span class="brand-accent">MED</span></span>
+<div class="bg-blob bg-blob-1"></div>
+<div class="bg-blob bg-blob-2"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <img src="favicon32x32.png" alt="SICMED" class="logo-img" onerror="this.style.display='none'"/>
+      <span class="logo-dot"></span>
+      <span class="logo-text">SIC<span>MED</span></span>
     </a>
-  </div>
-  <nav class="navbar-nav">
-    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
-    <ul class="nav-list" id="navList">
-      <li class="nav-item"><a href="index.html" class="nav-link"><span class="nav-icon">🏠</span> Inicio</a></li>
-      <li class="nav-item"><a href="especialidades.html" class="nav-link"><span class="nav-icon">🩺</span> Especialidades</a></li>
-      <li class="nav-item active"><a href="procedimientos.html" class="nav-link"><span class="nav-icon">📋</span> Procedimientos</a></li>
-      <li class="nav-item"><a href="guias.html" class="nav-link"><span class="nav-icon">📖</span> Guías</a></li>
-      <li class="nav-item"><a href="actualizaciones.html" class="nav-link"><span class="nav-icon">🕐</span> Actualizaciones</a></li>
-      <li class="nav-item"><a href="admin.html" class="nav-link"><span class="nav-icon">🔐</span> Administrador</a></li>
+        <ul class="nav-tabs">
+      <li><a href="especialidades.html" class="nav-tab">Especialidades</a></li>
+      <li><a href="procedimientos.html" class="nav-tab active">Procedimientos</a></li>
+      <li><a href="guias.html" class="nav-tab">Guías</a></li>
     </ul>
-  </nav>
-</header>
+    <div class="nav-right">
+      <button class="menu-btn" id="menuBtn" aria-label="Menú"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="ham-menu" id="hamMenu">
+    <div class="ham-menu-inner">
+      <a href="index.html"          class="ham-link"><span class="ham-icon">🏠</span> Inicio</a>
+      <a href="especialidades.html" class="ham-link"><span class="ham-icon">🩺</span> Especialidades</a>
+      <a href="procedimientos.html" class="ham-link active"><span class="ham-icon">📋</span> Procedimientos</a>
+      <a href="guias.html"          class="ham-link"><span class="ham-icon">📖</span> Guías</a>
+      <a href="calculadora.html"    class="ham-link"><span class="ham-icon">🧮</span> Calculadora y escalas</a>
+      <a href="actualizaciones.html"class="ham-link"><span class="ham-icon">🕐</span> Actualizaciones</a>
+      <div class="ham-divider"></div>
+      <a href="admin.html" class="ham-link ham-admin"><span class="ham-icon">🔐</span> Administrador</a>
+    </div>
+  </div>
+</nav>
 
-<main class="main-content">
+<main class="main">
   <div class="page-header">
-    <h1 class="page-title">📋 Procedimientos</h1>
-    <p class="page-subtitle">Instructivo de órdenes de procedimientos diagnósticos y derivaciones — CESFAM Lo Amor</p>
+    <p class="page-eyebrow">CESFAM Lo Amor</p>
+    <h1 class="page-title">Procedimientos <span>Diagnósticos</span></h1>
+    <p class="page-sub">Instructivo de órdenes de procedimientos y derivaciones</p>
   </div>
 
-  <!-- Barra de filtro por tipo -->
-  <div class="proc-filtros" id="procFiltros">
+  <div class="proc-filters" id="procFiltros">
     <button class="proc-pill active" data-tipo="">Todos</button>
   </div>
 
-  <!-- Grid de procedimientos -->
   <div class="proc-grid" id="procGrid">
     <div class="proc-loading">Cargando procedimientos…</div>
   </div>
 
-  <!-- Panel detalle -->
+  <!-- Detail panel -->
   <div class="proc-panel" id="procPanel">
     <div class="proc-box">
       <div class="proc-box-header">
@@ -53,30 +65,31 @@
           <div class="proc-box-tipo" id="panelTipo"></div>
           <div class="proc-box-title" id="panelNombre"></div>
         </div>
-        <button class="diag-close" id="procClose">✕</button>
+        <button class="diag-close-btn" id="procClose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
       <div class="proc-detail" id="procDetail"></div>
     </div>
   </div>
 
-  <footer class="site-footer">
-    <div class="footer-links">
-      <a href="https://clinico.rayenaps.cl/"           target="_blank" class="footer-link">Rayen Clínico</a>
-      <a href="http://10.0.11.47/ADMIN.aspx"           target="_blank" class="footer-link">Laboratorio Cerro Navia</a>
-      <a href="https://teleradiologia.redclinica.cl/LoginInicio.aspx" target="_blank" class="footer-link">Radiología Red Unichile</a>
-      <a href="https://www.licencia.cl/sesiones/nueva/" target="_blank" class="footer-link">Licencias Médicas</a>
-      <a href="https://farmaciapopularonline.cl/consultor?farmacia=cerro%20navia" target="_blank" class="footer-link">Farmacia Popular</a>
-    </div>
-    <div class="footer-credits">Junior Alvarez &nbsp;|&nbsp; CESFAM Lo Amor &nbsp;·&nbsp; SICMED © 2026</div>
+  <footer class="footer">
+    <span>Junior Alvarez &nbsp;·&nbsp; CESFAM Lo Amor</span>
+    <span class="footer-sep">|</span>
+    <span>SICMED © 2026</span>
   </footer>
 </main>
 
 <script type="module" src="db.js"></script>
 <script>
+  (function(){
+    var btn = document.getElementById('menuBtn'), menu = document.getElementById('hamMenu');
+    if (!btn||!menu) return;
+    btn.addEventListener('click', function(e){ e.stopPropagation(); var o=menu.classList.toggle('open'); btn.classList.toggle('open',o); });
+    document.addEventListener('click', function(e){ if(!e.target.closest('#hamMenu')&&!e.target.closest('#menuBtn')){ menu.classList.remove('open'); btn.classList.remove('open'); } });
+  })();
   document.addEventListener("sicmed:ready", function() {
-    var s = document.createElement("script");
-    s.src = "procedimientos.js";
-    document.body.appendChild(s);
+    var s = document.createElement("script"); s.src = "procedimientos.js"; document.body.appendChild(s);
   });
 </script>
 </body>

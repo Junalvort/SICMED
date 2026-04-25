@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="es">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
@@ -8,26 +8,74 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
 <style>
-.login-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px);padding:40px 20px}
-.login-card{background:rgba(255,255,255,0.88);backdrop-filter:blur(28px) saturate(200%);border:1.5px solid rgba(255,255,255,0.92);border-radius:28px;padding:48px 40px 44px;width:100%;max-width:400px;box-shadow:0 16px 60px rgba(30,90,153,0.18);display:flex;flex-direction:column;gap:22px}
-.login-brand{display:flex;flex-direction:column;align-items:center;gap:12px}
-.login-brand-logo{display:flex;align-items:center;gap:9px;font-family:'Sora',sans-serif;font-size:1.5rem;font-weight:700;color:var(--blue-900)}
-.login-brand-dot{width:10px;height:10px;border-radius:50%;background:var(--blue-500);box-shadow:0 0 0 3px rgba(58,134,200,0.22)}
-.login-brand-logo span{color:var(--blue-500)}
-.login-heading{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--blue-900);text-align:center}
-.login-sub{font-size:.83rem;color:var(--text-muted);text-align:center;line-height:1.5;margin-top:-6px}
-.login-field{display:flex;flex-direction:column;gap:6px}
-.login-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400)}
-.login-input{background:rgba(255,255,255,0.98);border:1.5px solid var(--gray-200);border-radius:12px;padding:13px 16px;font-family:'DM Sans',sans-serif;font-size:.95rem;color:var(--text);outline:none;width:100%;transition:border-color .2s,box-shadow .2s}
-.login-input:focus{border-color:var(--blue-300);box-shadow:0 0 0 3px rgba(58,134,200,0.12)}
-.login-btn{background:var(--blue-500);color:#fff;border:none;border-radius:50px;padding:15px;font-family:'Sora',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;width:100%;margin-top:4px;box-shadow:0 4px 16px rgba(58,134,200,0.32)}
-.login-btn:hover{background:var(--blue-700)}
-.login-btn:active{transform:scale(0.99)}
-.login-err{background:var(--p0-bg);border:1px solid var(--p0-bd);color:var(--p0-text);border-radius:10px;padding:11px 14px;font-size:.83rem;text-align:center;display:none}
-.admin-wrap{width:100%;max-width:960px}
-[data-theme="dark"] .login-card{background:rgba(10,22,42,0.94);border-color:rgba(60,110,160,0.35)}
-[data-theme="dark"] .login-input{background:rgba(15,30,55,0.88);border-color:rgba(60,110,160,0.35);color:var(--text)}
-[data-theme="dark"] .login-heading,[data-theme="dark"] .login-brand-logo{color:var(--blue-900)}
+  .login-overlay {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: center;
+    flex: 1; min-height: calc(100vh - 64px);
+    padding: 40px 24px;
+  }
+  .login-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    border: 1.5px solid rgba(255,255,255,0.90);
+    border-radius: 28px;
+    padding: 48px 40px 44px;
+    width: 100%; max-width: 400px;
+    box-shadow: 0 16px 60px rgba(30,90,153,0.16);
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  .login-header { display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .login-logo {
+    display:flex; align-items:center; gap:10px;
+    font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700;
+    color:var(--blue-900);
+  }
+  .login-logo-dot {
+    width:10px; height:10px; border-radius:50%;
+    background:var(--blue-500); box-shadow:0 0 0 3px rgba(58,134,200,0.22);
+  }
+  .login-logo span { color:var(--blue-500); }
+  .login-title { font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--blue-900); text-align:center; }
+  .login-sub   { font-size:0.84rem; color:var(--text-muted); text-align:center; line-height:1.5; margin-top:-8px; }
+  .login-field { display:flex; flex-direction:column; gap:7px; }
+  .login-label { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--gray-400); }
+  .login-input {
+    background:rgba(255,255,255,0.95); border:1.5px solid var(--gray-200);
+    border-radius:12px; padding:13px 16px;
+    font-family:'DM Sans',sans-serif; font-size:0.95rem; color:var(--text);
+    outline:none; transition:border-color 0.2s, box-shadow 0.2s; width:100%;
+  }
+  .login-input:focus { border-color:var(--blue-300); box-shadow:0 0 0 3px rgba(58,134,200,0.12); }
+  .login-btn {
+    background:var(--blue-500); color:white;
+    border:none; border-radius:50px; padding:15px;
+    font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:600;
+    cursor:pointer; transition:background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow:0 4px 16px rgba(58,134,200,0.30); width:100%; margin-top:4px;
+  }
+  .login-btn:hover { background:var(--blue-700); transform:translateY(-1px); box-shadow:0 6px 22px rgba(58,134,200,0.40); }
+  .login-btn:active { transform:translateY(0); }
+  .login-error {
+    background:var(--p0-bg); border:1px solid var(--p0-bd);
+    color:var(--p0-text); border-radius:10px; padding:11px 14px;
+    font-size:0.83rem; text-align:center; display:none;
+    animation: fadeUp 0.2s ease;
+  }
+  #adminPanel { display:none; }
+
+  /* Dark mode login */
+  [data-theme="dark"] .login-card {
+    background:rgba(10,22,42,0.92);
+    border-color:rgba(60,110,160,0.35);
+  }
+  [data-theme="dark"] .login-input {
+    background:rgba(15,30,55,0.85);
+    border-color:rgba(60,110,160,0.35);
+    color:var(--text);
+  }
+  [data-theme="dark"] .login-title { color:var(--blue-900); }
+  [data-theme="dark"] .login-logo  { color:var(--blue-900); }
 </style>
 </head>
 <body data-page="admin">
@@ -36,7 +84,7 @@
 <div class="bg-blob bg-blob-2"></div>
 
 <!-- NAV -->
-<nav class="nav">
+<nav class="nav" id="mainNav">
   <div class="nav-inner">
     <a href="index.html" class="logo">
       <span class="logo-dot"></span>
@@ -48,19 +96,19 @@
       <li><a href="guias.html"          class="nav-tab">Guías</a></li>
     </ul>
     <div class="nav-right">
-      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Modo oscuro/claro">
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
         <span class="theme-icon theme-icon-sun">☀️</span>
         <span class="theme-icon theme-icon-moon">🌙</span>
       </button>
-      <button class="menu-btn" id="menuBtn" type="button" aria-label="Menú">
+      <button class="menu-btn" id="menuBtn" aria-label="Menú" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
   </div>
 </nav>
 
-<!-- HAM MENU — direct body child, before any scripts -->
-<div class="ham-menu" id="hamMenu">
+<!-- Ham menu — single instance, before all scripts -->
+<div class="ham-menu" id="hamMenu" role="menu">
   <div class="ham-menu-inner">
     <a href="index.html"          class="ham-link"><span class="ham-icon">🏠</span> Inicio</a>
     <a href="especialidades.html" class="ham-link"><span class="ham-icon">🩺</span> Especialidades</a>
@@ -69,16 +117,16 @@
     <a href="calculadora.html"    class="ham-link"><span class="ham-icon">🧮</span> Calculadora y escalas</a>
     <a href="actualizaciones.html"class="ham-link"><span class="ham-icon">🕐</span> Actualizaciones</a>
     <div class="ham-divider"></div>
-    <a href="admin.html"          class="ham-link ham-admin active"><span class="ham-icon">🔐</span> Administrador</a>
+    <a href="admin.html" class="ham-link ham-admin active"><span class="ham-icon">🔐</span> Administrador</a>
   </div>
 </div>
 
-<!-- LOGIN PANEL — visible by default -->
-<div class="login-wrap" id="loginWrap">
+<!-- ── LOGIN SCREEN ─────────────────────────────────────────────────────── -->
+<div class="login-overlay" id="loginOverlay">
   <div class="login-card">
-    <div class="login-brand">
-      <div class="login-brand-logo"><div class="login-brand-dot"></div>SIC<span>MED</span></div>
-      <div class="login-heading">Acceso Administrador</div>
+    <div class="login-header">
+      <div class="login-logo"><div class="login-logo-dot"></div>SIC<span>MED</span></div>
+      <div class="login-title">Acceso Administrador</div>
       <div class="login-sub">Ingresa tus credenciales para continuar</div>
     </div>
     <div class="login-field">
@@ -89,31 +137,31 @@
       <label class="login-label" for="loginPass">Contraseña</label>
       <input type="password" id="loginPass" class="login-input" placeholder="••••••••" autocomplete="current-password"/>
     </div>
-    <div class="login-err" id="loginErr">Usuario o contraseña incorrectos</div>
-    <button type="button" class="login-btn" id="loginBtn">Ingresar</button>
+    <div class="login-error" id="loginError">Usuario o contraseña incorrectos</div>
+    <button class="login-btn" id="loginBtn">Ingresar</button>
   </div>
 </div>
 
-<!-- ADMIN PANEL — hidden by default -->
-<div id="adminPanel" style="display:none;width:100%">
+<!-- ── ADMIN PANEL ──────────────────────────────────────────────────────── -->
+<div id="adminPanel">
 <main class="main">
   <div class="page-header">
     <p class="page-eyebrow">Panel de Control</p>
     <h1 class="page-title">Administrador <span>SICMED</span></h1>
     <p class="page-sub">Gestión de diagnósticos y base de datos del protocolo SSMOCC</p>
   </div>
+
   <div class="admin-wrap">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px">
       <div class="admin-tabs">
-        <button type="button" class="admin-tab active" data-tab="nuevo">Nuevo diagnóstico</button>
-        <button type="button" class="admin-tab" data-tab="lista">Base de datos</button>
-        <button type="button" class="admin-tab" data-tab="nueva-esp">Nueva especialidad</button>
-        <button type="button" class="admin-tab" data-tab="esp">Especialidades</button>
-        <button type="button" class="admin-tab" data-tab="acciones">Acciones</button>
+        <button class="admin-tab active" data-tab="nuevo">Nuevo diagnóstico</button>
+        <button class="admin-tab" data-tab="lista">Base de datos</button>
+        <button class="admin-tab" data-tab="acciones">Acciones</button>
       </div>
-      <button type="button" class="btn btn-ghost" id="btnLogout" style="font-size:.8rem;padding:6px 16px">🔓 Cerrar sesión</button>
+      <button class="btn btn-ghost" id="btnLogout" style="font-size:.8rem;padding:6px 16px">🔓 Cerrar sesión</button>
     </div>
-    <!-- Tab Nuevo -->
+
+    <!-- Tab: Nuevo -->
     <div id="tabNuevo">
       <div class="admin-form">
         <div class="form-grid">
@@ -142,7 +190,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">Destino de derivación</label>
-            <input type="text" id="fDestino" class="form-control" placeholder="Urgencia / Especialidad"/>
+            <input type="text" id="fDestino" class="form-control" placeholder="Ej: Urgencia / Especialidad"/>
           </div>
           <div class="form-group full">
             <label class="form-label">Criterios de derivación</label>
@@ -150,11 +198,11 @@
           </div>
           <div class="form-group full">
             <label class="form-label">Exámenes mínimos (EMBD)</label>
-            <input type="text" id="fExamenes" class="form-control" placeholder="TSH, T4L, Hemograma"/>
+            <input type="text" id="fExamenes" class="form-control" placeholder="Ej: TSH, T4L, Hemograma"/>
           </div>
           <div class="form-group full">
             <label class="form-label">Sinónimos (separados por coma)</label>
-            <input type="text" id="fSinonimos" class="form-control" placeholder="hipotiroidismo, tiroides baja"/>
+            <input type="text" id="fSinonimos" class="form-control" placeholder="Ej: hipotiroidismo, tiroides baja"/>
           </div>
           <div class="form-group full">
             <label class="form-label">Notas</label>
@@ -162,448 +210,246 @@
           </div>
         </div>
         <div class="form-actions">
-          <button type="button" class="btn btn-primary" id="btnGuardar">💾 Guardar diagnóstico</button>
-          <button type="button" class="btn btn-ghost"   id="btnLimpiar">Limpiar</button>
+          <button class="btn btn-primary" id="btnGuardar">💾 Guardar diagnóstico</button>
+          <button class="btn btn-ghost"   id="btnLimpiar">Limpiar</button>
         </div>
-        <div id="adminMsg" style="margin-top:12px;font-size:.85rem;display:none;padding:10px 14px;border-radius:10px"></div>
+        <div id="adminMsg" style="margin-top:12px;font-size:.85rem;display:none"></div>
       </div>
     </div>
-    <!-- Tab Lista -->
+
+    <!-- Tab: Lista -->
     <div id="tabLista" style="display:none">
       <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <input type="text" id="adminSearch" class="form-control" placeholder="Buscar diagnóstico…" style="max-width:300px"/>
+        <input type="text" id="adminSearch" class="form-control" placeholder="Buscar en la tabla…" style="max-width:300px"/>
         <span id="tableCount" style="font-size:.82rem;color:var(--text-muted)"></span>
       </div>
       <div class="admin-table-wrap">
         <table class="admin-table">
-          <thead><tr><th>CIE-10</th><th>Diagnóstico</th><th>Especialidad</th><th>Prioridad</th><th>Acciones</th></tr></thead>
+          <thead>
+            <tr>
+              <th>CIE-10</th><th>Diagnóstico</th><th>Especialidad</th><th>Prioridad</th><th>Acciones</th>
+            </tr>
+          </thead>
           <tbody id="adminTbody"></tbody>
         </table>
       </div>
     </div>
-    <!-- Tab Nueva Especialidad -->
-    <div id="tabNuevaEsp" style="display:none">
-      <div class="admin-form" style="max-width:560px">
-        <div class="form-grid">
-          <div class="form-group full">
-            <label class="form-label">Nombre de la especialidad *</label>
-            <input type="text" id="espNombre" class="form-control" placeholder="Ej: Reumatología"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Ícono (emoji)</label>
-            <input type="text" id="espIcon" class="form-control" placeholder="🏥" maxlength="4" style="font-size:1.3rem;text-align:center;letter-spacing:2px"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Descripción breve</label>
-            <input type="text" id="espDesc" class="form-control" placeholder="Articulaciones, enfermedades autoinmunes"/>
-          </div>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn-primary" id="btnEspGuardar">💾 Guardar especialidad</button>
-          <button type="button" class="btn btn-ghost"   id="btnEspLimpiar">Limpiar</button>
-        </div>
-        <div id="espMsg" style="margin-top:12px;font-size:.85rem;display:none;padding:10px 14px;border-radius:10px"></div>
-      </div>
-    </div>
 
-    <!-- Tab Gestión de Especialidades -->
-    <div id="tabEsp" style="display:none">
-      <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <input type="text" id="espSearch" class="form-control" placeholder="Buscar especialidad…" style="max-width:280px"/>
-        <span id="espCount" style="font-size:.82rem;color:var(--text-muted)"></span>
-      </div>
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead><tr><th>Ícono</th><th>Nombre</th><th>Descripción</th><th>Diagnósticos</th><th>Acciones</th></tr></thead>
-          <tbody id="espTbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Tab Acciones -->
+    <!-- Tab: Acciones -->
     <div id="tabAcciones" style="display:none">
       <div class="admin-form" style="max-width:480px">
         <h3 style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;color:var(--blue-900);margin-bottom:16px">Acciones globales</h3>
         <div style="padding:16px;background:var(--gray-50);border-radius:var(--r-md);border:1.5px solid var(--gray-200)">
           <div style="font-weight:600;color:var(--text);margin-bottom:6px">Resetear base de datos</div>
-          <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px">Vuelve al protocolo SSMOCC original. No se puede deshacer.</div>
-          <button type="button" class="btn btn-danger" id="btnReset">⚠️ Resetear todo</button>
+          <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px">Vuelve al protocolo SSMOCC original. Esta acción no se puede deshacer.</div>
+          <button class="btn btn-danger" id="btnReset">⚠️ Resetear todo</button>
         </div>
       </div>
     </div>
   </div>
-  <footer class="footer"><span>Junior Alvarez &nbsp;·&nbsp; CESFAM Lo Amor</span><span class="footer-sep">|</span><span>SICMED © 2026</span></footer>
+
+  <footer class="footer">
+    <span>Junior Alvarez &nbsp;·&nbsp; CESFAM Lo Amor</span>
+    <span class="footer-sep">|</span>
+    <span>SICMED © 2026</span>
+  </footer>
 </main>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     SCRIPTS — all at bottom, all DOM elements exist above
-     ═══════════════════════════════════════════════════════════ -->
+<!-- db.js loads Firebase — separate tag, no inline code inside module src tags -->
 <script type="module" src="db.js"></script>
 
+<!-- All UI logic inline — runs immediately, no external dependency for login -->
 <script>
-// Apply theme immediately (before DOMContentLoaded) to avoid flash
-(function(){
-  var s = localStorage.getItem('sicmed_theme');
-  var d = s ? s==='dark' : (window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches);
-  document.documentElement.setAttribute('data-theme', d?'dark':'light');
-})();
-</script>
+(function() {
+  'use strict';
 
-<script>
-// All UI — runs after DOM is fully parsed (this script is at bottom of body)
-
-// ── THEME TOGGLE ──────────────────────────────────────────────────────────
-var _themeBtn = document.getElementById('themeToggle');
-if (_themeBtn) {
-  _themeBtn.addEventListener('click', function() {
-    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
-    localStorage.setItem('sicmed_theme', dark ? 'light' : 'dark');
-  });
-}
-
-// ── HAMBURGER ─────────────────────────────────────────────────────────────
-var _menuBtn  = document.getElementById('menuBtn');
-var _hamMenu  = document.getElementById('hamMenu');
-if (_menuBtn && _hamMenu) {
-  _menuBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    var open = !_hamMenu.classList.contains('open');
-    _hamMenu.classList.toggle('open', open);
-    _menuBtn.classList.toggle('open', open);
-  });
-  _menuBtn.addEventListener('touchend', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    var open = !_hamMenu.classList.contains('open');
-    _hamMenu.classList.toggle('open', open);
-    _menuBtn.classList.toggle('open', open);
-  }, { passive: false });
-  document.addEventListener('click', function(e) {
-    if (!_hamMenu.contains(e.target) && e.target !== _menuBtn && !_menuBtn.contains(e.target)) {
-      _hamMenu.classList.remove('open');
-      _menuBtn.classList.remove('open');
-    }
-  });
-}
-
-// ── LOGIN ─────────────────────────────────────────────────────────────────
-var _loginWrap  = document.getElementById('loginWrap');
-var _adminPanel = document.getElementById('adminPanel');
-var _loginUser  = document.getElementById('loginUser');
-var _loginPass  = document.getElementById('loginPass');
-var _loginErr   = document.getElementById('loginErr');
-var _loginBtn   = document.getElementById('loginBtn');
-var _logoutBtn  = document.getElementById('btnLogout');
-
-var ADMIN_USER = 'admin';
-var ADMIN_PASS = 'admin123';
-var SK = 'sicmed_admin';
-
-function showAdmin() {
-  sessionStorage.setItem(SK, '1');
-  _loginWrap.style.display  = 'none';
-  _adminPanel.style.display = 'block';
-}
-function showLogin() {
-  sessionStorage.removeItem(SK);
-  _loginWrap.style.display  = '';
-  _adminPanel.style.display = 'none';
-  _loginUser.value = '';
-  _loginPass.value = '';
-  _loginErr.style.display = 'none';
-}
-function doLogin() {
-  var u = _loginUser.value.trim();
-  var p = _loginPass.value;
-  if (u === ADMIN_USER && p === ADMIN_PASS) {
-    _loginErr.style.display = 'none';
-    showAdmin();
-  } else {
-    _loginErr.style.display = 'block';
-    _loginPass.value = '';
-    _loginPass.focus();
+  /* ── Theme ──────────────────────────────────────────────────────────────── */
+  var THEME_KEY = 'sicmed_theme';
+  function applyTheme(dark) {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
   }
-}
-
-// Restore session if still valid
-if (sessionStorage.getItem(SK) === '1') { showAdmin(); }
-
-// Wire up the button — explicit type="button" prevents any form submit behavior
-_loginBtn.addEventListener('click', doLogin);
-_loginUser.addEventListener('keydown', function(e) { if (e.key === 'Enter') { _loginPass.focus(); } });
-_loginPass.addEventListener('keydown', function(e) { if (e.key === 'Enter') { doLogin(); } });
-if (_logoutBtn) _logoutBtn.addEventListener('click', showLogin);
-
-// ── ADMIN TABS ────────────────────────────────────────────────────────────
-document.querySelectorAll('.admin-tab').forEach(function(tab) {
-  tab.addEventListener('click', function() {
-    document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
-    tab.classList.add('active');
-    var which = tab.getAttribute('data-tab');
-    document.getElementById('tabNuevo').style.display    = which === 'nuevo'     ? '' : 'none';
-    document.getElementById('tabLista').style.display    = which === 'lista'     ? '' : 'none';
-    document.getElementById('tabNuevaEsp').style.display = which === 'nueva-esp' ? '' : 'none';
-    document.getElementById('tabEsp').style.display      = which === 'esp'       ? '' : 'none';
-    document.getElementById('tabAcciones').style.display = which === 'acciones'  ? '' : 'none';
-    if (which === 'lista')     _renderTable('');
-    if (which === 'esp')       _renderEspTable('');
+  var _saved = localStorage.getItem(THEME_KEY);
+  var _prefers = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(_saved ? _saved === 'dark' : _prefers);
+  var themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) themeBtn.addEventListener('click', function() {
+    applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
   });
-});
 
-// ── FORM SAVE ─────────────────────────────────────────────────────────────
-var _editMode = false;
-var _btnG     = document.getElementById('btnGuardar');
-var _btnL     = document.getElementById('btnLimpiar');
-var _adminMsg = document.getElementById('adminMsg');
-
-function _showMsg(text, ok) {
-  _adminMsg.textContent = text;
-  _adminMsg.style.display = 'block';
-  _adminMsg.style.background = ok ? 'var(--ges-bg)' : 'var(--p0-bg)';
-  _adminMsg.style.color      = ok ? 'var(--ges-text)' : 'var(--p0-text)';
-  _adminMsg.style.border     = '1px solid ' + (ok ? 'var(--ges-bd)' : 'var(--p0-bd)');
-  setTimeout(function() { _adminMsg.style.display = 'none'; }, 3500);
-}
-function _clearForm() {
-  ['fCie10','fNombre','fEspecialidad','fPrioridad','fDestino','fCriterios','fExamenes','fSinonimos','fNotas']
-    .forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
-  _editMode = false;
-  if (_btnG) _btnG.textContent = '💾 Guardar diagnóstico';
-}
-
-if (_btnG) _btnG.addEventListener('click', function() {
-  var cie   = document.getElementById('fCie10').value.trim();
-  var nom   = document.getElementById('fNombre').value.trim();
-  var esp   = document.getElementById('fEspecialidad').value.trim();
-  var prio  = document.getElementById('fPrioridad').value;
-  if (!cie || !nom || !esp || !prio) { _showMsg('⚠️ Completa los campos obligatorios (*)', false); return; }
-  var entry = {
-    cie10: cie, nombre: nom, especialidad: esp, prioridad: prio,
-    destino:   document.getElementById('fDestino').value.trim(),
-    criterios: document.getElementById('fCriterios').value.trim(),
-    examenes:  document.getElementById('fExamenes').value.trim(),
-    notas:     document.getElementById('fNotas').value.trim(),
-    sinonimos: document.getElementById('fSinonimos').value.split(',').map(function(s){return s.trim();}).filter(Boolean)
-  };
-  var accion = _editMode ? 'EDITADO' : 'NUEVO';
-  if (window.STORE_save) {
-    window.STORE_save(accion, entry).then(function() {
-      _showMsg('✅ Diagnóstico guardado correctamente', true);
-      _clearForm();
-    }).catch(function(e) { _showMsg('❌ Error: ' + e.message, false); });
-  } else {
-    _showMsg('⚠️ Firebase no disponible aún. Intenta de nuevo.', false);
-  }
-});
-
-if (_btnL) _btnL.addEventListener('click', _clearForm);
-
-var _btnReset = document.getElementById('btnReset');
-if (_btnReset) _btnReset.addEventListener('click', function() {
-  if (window.STORE_reset) window.STORE_reset();
-});
-
-// ── TABLE ─────────────────────────────────────────────────────────────────
-function _esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function _renderTable(q) {
-  var tbody = document.getElementById('adminTbody');
-  var cnt   = document.getElementById('tableCount');
-  if (!tbody || !window.DB) return;
-  var data  = q ? window.DB.filter(function(d) {
-    var ql = q.toLowerCase();
-    return d.cie10.toLowerCase().includes(ql) || d.nombre.toLowerCase().includes(ql) || d.especialidad.toLowerCase().includes(ql);
-  }) : window.DB;
-  if (cnt) cnt.textContent = data.length + ' diagnósticos';
-  tbody.innerHTML = '';
-  data.forEach(function(d) {
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td><b style="font-family:\'Sora\',sans-serif;color:var(--blue-700)">' + _esc(d.cie10) + '</b></td>' +
-      '<td>' + _esc(d.nombre) + '</td>' +
-      '<td style="color:var(--text-muted)">' + _esc(d.especialidad) + '</td>' +
-      '<td><span class="badge-urgencia ' + d.prioridad + '">' + _esc(d.prioridad) + '</span></td>' +
-      '<td><div class="tbl-actions">' +
-        '<button type="button" class="tbl-btn edit" data-cie="' + _esc(d.cie10) + '">✏️</button>' +
-        '<button type="button" class="tbl-btn del"  data-cie="' + _esc(d.cie10) + '">🗑</button>' +
-      '</div></td>';
-    tbody.appendChild(tr);
-  });
-  tbody.querySelectorAll('.edit').forEach(function(b) {
-    b.addEventListener('click', function() {
-      var d = window.DB.find(function(x) { return x.cie10 === b.dataset.cie; });
-      if (!d) return;
-      document.getElementById('fCie10').value        = d.cie10;
-      document.getElementById('fNombre').value       = d.nombre;
-      document.getElementById('fEspecialidad').value = d.especialidad;
-      document.getElementById('fPrioridad').value    = d.prioridad;
-      document.getElementById('fDestino').value      = d.destino   || '';
-      document.getElementById('fCriterios').value    = d.criterios || '';
-      document.getElementById('fExamenes').value     = d.examenes  || '';
-      document.getElementById('fSinonimos').value    = (d.sinonimos||[]).join(', ');
-      document.getElementById('fNotas').value        = d.notas     || '';
-      _editMode = true;
-      if (_btnG) _btnG.textContent = '💾 Actualizar diagnóstico';
-      document.querySelector('[data-tab="nuevo"]').click();
+  /* ── Hamburger ───────────────────────────────────────────────────────────── */
+  var btn = document.getElementById('menuBtn');
+  var menu = document.getElementById('hamMenu');
+  if (btn && menu) {
+    var _t = false;
+    btn.addEventListener('touchstart', function(e) {
+      _t = true; e.preventDefault();
+      var o = menu.classList.toggle('open'); btn.classList.toggle('open', o);
+    }, { passive: false });
+    btn.addEventListener('click', function() {
+      if (_t) { _t = false; return; }
+      var o = menu.classList.toggle('open'); btn.classList.toggle('open', o);
     });
-  });
-  tbody.querySelectorAll('.del').forEach(function(b) {
-    b.addEventListener('click', function() {
-      var d = window.DB.find(function(x) { return x.cie10 === b.dataset.cie; });
-      if (!d || !confirm('¿Eliminar "' + d.nombre + '"?')) return;
-      if (window.STORE_delete) window.STORE_delete(d.cie10).then(function() { _renderTable(document.getElementById('adminSearch').value||''); });
-    });
-  });
-}
-
-var _adminSearch = document.getElementById('adminSearch');
-if (_adminSearch) _adminSearch.addEventListener('input', function() { _renderTable(this.value.trim()); });
-
-
-// ── ESPECIALIDADES ────────────────────────────────────────────────────────
-var _espEditMode = false;
-var _espEditNombre = '';
-var _btnEspG  = document.getElementById('btnEspGuardar');
-var _btnEspL  = document.getElementById('btnEspLimpiar');
-var _espMsg   = document.getElementById('espMsg');
-
-function _showEspMsg(text, ok) {
-  _espMsg.textContent = text;
-  _espMsg.style.display = 'block';
-  _espMsg.style.background = ok ? 'var(--ges-bg)' : 'var(--p0-bg)';
-  _espMsg.style.color      = ok ? 'var(--ges-text)' : 'var(--p0-text)';
-  _espMsg.style.border     = '1px solid ' + (ok ? 'var(--ges-bd)' : 'var(--p0-bd)');
-  setTimeout(function() { _espMsg.style.display = 'none'; }, 3500);
-}
-
-function _clearEspForm() {
-  document.getElementById('espNombre').value = '';
-  document.getElementById('espIcon').value   = '';
-  document.getElementById('espDesc').value   = '';
-  _espEditMode   = false;
-  _espEditNombre = '';
-  if (_btnEspG) _btnEspG.textContent = '💾 Guardar especialidad';
-}
-
-if (_btnEspG) _btnEspG.addEventListener('click', function() {
-  var nombre = document.getElementById('espNombre').value.trim();
-  var icon   = document.getElementById('espIcon').value.trim() || '🏥';
-  var desc   = document.getElementById('espDesc').value.trim();
-  if (!nombre) { _showEspMsg('⚠️ Ingresa el nombre de la especialidad', false); return; }
-
-  // If editing and name changed, delete old entry first
-  var doSave = function(n, ic, de) {
-    var entry = { nombre: n, icon: ic, desc: de };
-    if (window.ESP_save) {
-      window.ESP_save(entry).then(function() {
-        _showEspMsg('✅ Especialidad guardada correctamente', true);
-        _clearEspForm();
-        // Update datalist in "Nuevo diagnóstico" tab
-        _refreshEspDatalist();
-      }).catch(function(e) { _showEspMsg('❌ Error: ' + e.message, false); });
-    } else {
-      // Fallback: update local array directly
-      if (!window.ESPECIALIDADES) window.ESPECIALIDADES = [];
-      var idx = window.ESPECIALIDADES.findIndex(function(x) { return x.nombre === n; });
-      if (idx >= 0) window.ESPECIALIDADES[idx] = entry; else window.ESPECIALIDADES.push(entry);
-      _showEspMsg('✅ Guardado localmente', true);
-      _clearEspForm();
-      _refreshEspDatalist();
-    }
-  };
-
-  if (_espEditMode && _espEditNombre && _espEditNombre !== nombre) {
-    // Name changed: delete old, save new
-    if (window.ESP_delete) {
-      window.ESP_delete(_espEditNombre).then(function() { doSave(nombre, icon, desc); });
-    } else { doSave(nombre, icon, desc); }
-  } else {
-    doSave(nombre, icon, desc);
-  }
-});
-
-if (_btnEspL) _btnEspL.addEventListener('click', _clearEspForm);
-
-function _renderEspTable(q) {
-  var tbody = document.getElementById('espTbody');
-  var cnt   = document.getElementById('espCount');
-  if (!tbody) return;
-  var data = window.ESPECIALIDADES || [];
-  if (q) {
-    var ql = q.toLowerCase();
-    data = data.filter(function(e) { return e.nombre.toLowerCase().includes(ql); });
-  }
-  if (cnt) cnt.textContent = data.length + ' especialidad' + (data.length !== 1 ? 'es' : '');
-  tbody.innerHTML = '';
-  if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted)">Sin especialidades registradas</td></tr>';
-    return;
-  }
-  data.forEach(function(e) {
-    var diagCount = window.DB ? window.DB.filter(function(d) { return d.especialidad === e.nombre; }).length : '–';
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td style="font-size:1.4rem;text-align:center">' + (e.icon || '🏥') + '</td>' +
-      '<td><b style="font-family:'Sora',sans-serif;color:var(--blue-700)">' + _esc(e.nombre) + '</b></td>' +
-      '<td style="color:var(--text-muted);font-size:.85rem">' + _esc(e.desc || '–') + '</td>' +
-      '<td style="text-align:center"><span style="font-family:'Sora',sans-serif;font-weight:700;color:var(--blue-500)">' + diagCount + '</span></td>' +
-      '<td><div class="tbl-actions">' +
-        '<button type="button" class="tbl-btn edit" data-nombre="' + _esc(e.nombre) + '">✏️</button>' +
-        '<button type="button" class="tbl-btn del"  data-nombre="' + _esc(e.nombre) + '">🗑</button>' +
-      '</div></td>';
-    tbody.appendChild(tr);
-  });
-  tbody.querySelectorAll('.edit').forEach(function(b) {
-    b.addEventListener('click', function() {
-      var e = (window.ESPECIALIDADES||[]).find(function(x) { return x.nombre === b.dataset.nombre; });
-      if (!e) return;
-      document.getElementById('espNombre').value = e.nombre;
-      document.getElementById('espIcon').value   = e.icon || '';
-      document.getElementById('espDesc').value   = e.desc || '';
-      _espEditMode   = true;
-      _espEditNombre = e.nombre;
-      if (_btnEspG) _btnEspG.textContent = '💾 Actualizar especialidad';
-      document.querySelector('[data-tab="nueva-esp"]').click();
-    });
-  });
-  tbody.querySelectorAll('.del').forEach(function(b) {
-    b.addEventListener('click', function() {
-      if (!confirm('¿Eliminar la especialidad "' + b.dataset.nombre + '"?')) return;
-      if (window.ESP_delete) {
-        window.ESP_delete(b.dataset.nombre).then(function() {
-          _renderEspTable(document.getElementById('espSearch').value || '');
-          _refreshEspDatalist();
-        });
-      } else {
-        if (window.ESPECIALIDADES) {
-          var idx = window.ESPECIALIDADES.findIndex(function(x){ return x.nombre === b.dataset.nombre; });
-          if (idx >= 0) window.ESPECIALIDADES.splice(idx, 1);
-        }
-        _renderEspTable(document.getElementById('espSearch').value || '');
-        _refreshEspDatalist();
+    function closeMenu(e) {
+      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) {
+        menu.classList.remove('open'); btn.classList.remove('open');
       }
+    }
+    document.addEventListener('touchstart', closeMenu, { passive: true });
+    document.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { menu.classList.remove('open'); btn.classList.remove('open'); }
+    });
+  }
+
+  /* ── Login ───────────────────────────────────────────────────────────────── */
+  var CREDS = { user: 'admin', pass: 'admin123' };
+  var SESSION_KEY = 'sicmed_admin_ok';
+
+  var overlay  = document.getElementById('loginOverlay');
+  var panel    = document.getElementById('adminPanel');
+  var userEl   = document.getElementById('loginUser');
+  var passEl   = document.getElementById('loginPass');
+  var errEl    = document.getElementById('loginError');
+  var loginBtn = document.getElementById('loginBtn');
+  var logoutBtn= document.getElementById('btnLogout');
+
+  function unlock() {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    overlay.style.display = 'none';
+    panel.style.display   = 'block';
+  }
+  function lock() {
+    sessionStorage.removeItem(SESSION_KEY);
+    overlay.style.display = '';
+    panel.style.display   = 'none';
+    if (userEl) userEl.value = '';
+    if (passEl) passEl.value = '';
+    if (errEl)  errEl.style.display = 'none';
+  }
+
+  // Restore session
+  if (sessionStorage.getItem(SESSION_KEY) === '1') unlock();
+
+  function tryLogin() {
+    var u = userEl.value.trim();
+    var p = passEl.value;
+    if (u === CREDS.user && p === CREDS.pass) {
+      errEl.style.display = 'none';
+      unlock();
+    } else {
+      errEl.style.display = 'block';
+      passEl.value = '';
+      passEl.focus();
+    }
+  }
+
+  if (loginBtn) loginBtn.addEventListener('click', tryLogin);
+  if (userEl)   userEl.addEventListener('keydown',  function(e) { if (e.key === 'Enter') passEl.focus(); });
+  if (passEl)   passEl.addEventListener('keydown',  function(e) { if (e.key === 'Enter') tryLogin(); });
+  if (logoutBtn) logoutBtn.addEventListener('click', lock);
+
+  /* ── Admin tabs ──────────────────────────────────────────────────────────── */
+  document.querySelectorAll('.admin-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      var t = tab.dataset.tab;
+      document.getElementById('tabNuevo').style.display    = t === 'nuevo'    ? '' : 'none';
+      document.getElementById('tabLista').style.display    = t === 'lista'    ? '' : 'none';
+      document.getElementById('tabAcciones').style.display = t === 'acciones' ? '' : 'none';
+      if (t === 'lista' && window.DB) renderTable('');
     });
   });
-}
 
-function _refreshEspDatalist() {
-  var espList = document.getElementById('espList');
-  if (!espList || !window.ESPECIALIDADES) return;
-  espList.innerHTML = '';
-  window.ESPECIALIDADES.forEach(function(e) {
-    var o = document.createElement('option'); o.value = e.nombre; espList.appendChild(o);
+  /* ── Reset button ────────────────────────────────────────────────────────── */
+  var btnReset = document.getElementById('btnReset');
+  if (btnReset) btnReset.addEventListener('click', function() {
+    if (window.STORE_reset) window.STORE_reset();
   });
-}
 
-var _espSearch = document.getElementById('espSearch');
-if (_espSearch) _espSearch.addEventListener('input', function() { _renderEspTable(this.value.trim()); });
+  /* ── Load admin.js when DB is ready ─────────────────────────────────────── */
+  document.addEventListener('sicmed:ready', function() {
+    // Populate especialidad datalist
+    var espList = document.getElementById('espList');
+    if (espList && window.ESPECIALIDADES) {
+      window.ESPECIALIDADES.forEach(function(e) {
+        var opt = document.createElement('option');
+        opt.value = e.nombre;
+        espList.appendChild(opt);
+      });
+    }
+    // Load admin.js for CRUD
+    var s = document.createElement('script');
+    s.src = 'admin.js';
+    document.body.appendChild(s);
+    // Render table if lista tab active
+    if (window.DB) renderTable('');
+  });
 
-// ── Firebase ready ────────────────────────────────────────────────────────
-document.addEventListener('sicmed:ready', function() {
-  _refreshEspDatalist();
-});
+  /* ── Table render ────────────────────────────────────────────────────────── */
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderTable(query) {
+    var tbody = document.getElementById('adminTbody');
+    var count = document.getElementById('tableCount');
+    if (!tbody || !window.DB) return;
+    var data = query
+      ? window.DB.filter(function(d) {
+          var q = query.toLowerCase();
+          return d.cie10.toLowerCase().includes(q) || d.nombre.toLowerCase().includes(q) || d.especialidad.toLowerCase().includes(q);
+        })
+      : window.DB;
+    if (count) count.textContent = data.length + ' diagnósticos';
+    tbody.innerHTML = '';
+    data.forEach(function(d) {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><span style="font-family:\'Sora\',sans-serif;font-weight:700;color:var(--blue-700)">' + esc(d.cie10) + '</span></td>' +
+        '<td>' + esc(d.nombre) + '</td>' +
+        '<td style="color:var(--text-muted)">' + esc(d.especialidad) + '</td>' +
+        '<td><span class="badge-urgencia ' + d.prioridad + '">' + esc(d.prioridad) + '</span></td>' +
+        '<td><div class="tbl-actions">' +
+          '<button class="tbl-btn edit" data-cie="' + esc(d.cie10) + '">✏️ Editar</button>' +
+          '<button class="tbl-btn del"  data-cie="' + esc(d.cie10) + '">🗑</button>' +
+        '</div></td>';
+      tbody.appendChild(tr);
+    });
+    tbody.querySelectorAll('.tbl-btn.edit').forEach(function(b) {
+      b.addEventListener('click', function() {
+        var d = window.DB.find(function(x) { return x.cie10 === b.dataset.cie; });
+        if (!d) return;
+        document.getElementById('fCie10').value        = d.cie10;
+        document.getElementById('fNombre').value       = d.nombre;
+        document.getElementById('fEspecialidad').value = d.especialidad;
+        document.getElementById('fPrioridad').value    = d.prioridad;
+        document.getElementById('fDestino').value      = d.destino    || '';
+        document.getElementById('fCriterios').value    = d.criterios  || '';
+        document.getElementById('fExamenes').value     = d.examenes   || '';
+        document.getElementById('fSinonimos').value    = (d.sinonimos || []).join(', ');
+        document.getElementById('fNotas').value        = d.notas      || '';
+        document.querySelector('[data-tab="nuevo"]').click();
+        var btnG = document.getElementById('btnGuardar');
+        if (btnG) btnG.textContent = '💾 Actualizar diagnóstico';
+      });
+    });
+    tbody.querySelectorAll('.tbl-btn.del').forEach(function(b) {
+      b.addEventListener('click', function() {
+        var d = window.DB.find(function(x) { return x.cie10 === b.dataset.cie; });
+        if (!d || !confirm('¿Eliminar "' + d.nombre + '"?')) return;
+        if (window.STORE_delete) window.STORE_delete(d.cie10).then(function() { renderTable(''); });
+      });
+    });
+  }
+
+  // Expose for admin.js
+  window._adminRenderTable = renderTable;
+
+  var adminSearch = document.getElementById('adminSearch');
+  if (adminSearch) adminSearch.addEventListener('input', function() { renderTable(adminSearch.value.trim()); });
+
+})();
 </script>
 </body>
 </html>

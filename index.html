@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>SICMED – Derivaciones Médicas</title>
 <link rel="icon" type="image/png" href="favicon32x32.png"/>
-<link rel="shortcut icon" href="favicon.ico"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
 </head>
 <body data-page="inicio">
 
-<!-- BACKGROUND BLOBS -->
 <div class="bg-blob bg-blob-1"></div>
 <div class="bg-blob bg-blob-2"></div>
 <div class="bg-blob bg-blob-3"></div>
@@ -20,60 +18,65 @@
 <nav class="nav" id="mainNav">
   <div class="nav-inner">
     <a href="index.html" class="logo">
-      <img src="favicon32x32.png" alt="SICMED" class="logo-img" onerror="this.style.display='none'"/>
       <span class="logo-dot"></span>
       <span class="logo-text">SIC<span>MED</span></span>
     </a>
-
-    <!-- Desktop tabs: Especialidades | Procedimientos | Guías -->
-    <ul class="nav-tabs" id="navTabs">
+    <ul class="nav-tabs">
       <li><a href="especialidades.html" class="nav-tab">Especialidades</a></li>
       <li><a href="procedimientos.html" class="nav-tab">Procedimientos</a></li>
       <li><a href="guias.html" class="nav-tab">Guías</a></li>
     </ul>
-
     <div class="nav-right">
+      <!-- Dark mode toggle -->
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema" title="Modo oscuro / claro">
+        <span class="theme-icon theme-icon-sun">☀️</span>
+        <span class="theme-icon theme-icon-moon">🌙</span>
+      </button>
+      <!-- Hamburger -->
       <button class="menu-btn" id="menuBtn" aria-label="Menú" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
   </div>
-
 </nav>
+
+<!-- Ham menu — direct child of body, AFTER nav so DOM is ready -->
+<div class="ham-menu" id="hamMenu" role="menu">
+  <div class="ham-menu-inner">
+    <a href="index.html"          class="ham-link active"><span class="ham-icon">🏠</span> Inicio</a>
+    <a href="especialidades.html" class="ham-link"><span class="ham-icon">🩺</span> Especialidades</a>
+    <a href="procedimientos.html" class="ham-link"><span class="ham-icon">📋</span> Procedimientos</a>
+    <a href="guias.html"          class="ham-link"><span class="ham-icon">📖</span> Guías</a>
+    <a href="calculadora.html"    class="ham-link"><span class="ham-icon">🧮</span> Calculadora y escalas</a>
+    <a href="actualizaciones.html"class="ham-link"><span class="ham-icon">🕐</span> Actualizaciones</a>
+    <div class="ham-divider"></div>
+    <a href="admin.html"          class="ham-link ham-admin"><span class="ham-icon">🔐</span> Administrador</a>
+  </div>
+</div>
 
 <!-- MAIN -->
 <main class="main">
   <section class="hero">
     <h1 class="hero-title">Protocolo de<br/><span>Derivaciones</span> Médicas</h1>
     <p class="hero-sub">Busca diagnósticos por nombre, código CIE-10 o especialidad</p>
-
-    <!-- BUSCADOR -->
     <div class="search-wrap" id="searchContainer">
       <div class="search-pill" id="searchPill">
         <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
         </svg>
-        <input
-          type="text"
-          id="searchInput"
-          class="search-input"
+        <input type="text" id="searchInput" class="search-input"
           placeholder="Código, diagnóstico o término clínico…"
-          autocomplete="off"
-          spellcheck="false"
-        />
+          autocomplete="off" spellcheck="false"/>
         <button class="search-clear" id="searchClear" aria-label="Limpiar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-
-      <!-- Dropdown autocomplete -->
       <div class="search-dropdown" id="searchDropdown">
         <div id="dropdownInner"></div>
       </div>
     </div>
   </section>
 
-  <!-- RESULT PANEL -->
   <section class="result-panel" id="resultPanel" hidden>
     <div class="result-header">
       <h3 class="result-title" id="resultTitle">Resultado</h3>
@@ -91,28 +94,53 @@
   </footer>
 </main>
 
+<!-- Scripts at the very bottom — all DOM elements exist by now -->
 <script type="module" src="db.js"></script>
 <script>
-  // Hamburger — bulletproof iOS + desktop
-  function _initHam() {
-    var btn  = document.getElementById('menuBtn');
-    var menu = document.getElementById('hamMenu');
-    if (!btn || !menu) return;
-    var _touching = false;
+(function() {
+  'use strict';
+
+  // ── Theme (dark/light) ─────────────────────────────────────────────────────
+  var THEME_KEY = 'sicmed_theme';
+  var themeBtn = document.getElementById('themeToggle');
+
+  function applyTheme(dark) {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+  }
+  // Apply saved or system preference immediately
+  var saved = localStorage.getItem(THEME_KEY);
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved ? saved === 'dark' : prefersDark);
+
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function() {
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      applyTheme(!isDark);
+    });
+  }
+
+  // ── Hamburger ──────────────────────────────────────────────────────────────
+  var btn  = document.getElementById('menuBtn');
+  var menu = document.getElementById('hamMenu');
+
+  // Guard — both elements must exist (they do since ham-menu is above this script)
+  if (btn && menu) {
+    var _isTouching = false;
 
     btn.addEventListener('touchstart', function(e) {
-      _touching = true;
+      _isTouching = true;
       e.preventDefault();
-      var o = menu.classList.toggle('open');
-      btn.classList.toggle('open', o);
-      btn.setAttribute('aria-expanded', String(o));
+      var open = menu.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
     }, { passive: false });
 
-    btn.addEventListener('click', function(e) {
-      if (_touching) { _touching = false; return; }
-      var o = menu.classList.toggle('open');
-      btn.classList.toggle('open', o);
-      btn.setAttribute('aria-expanded', String(o));
+    btn.addEventListener('click', function() {
+      if (_isTouching) { _isTouching = false; return; }
+      var open = menu.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
     });
 
     function closeMenu(e) {
@@ -125,48 +153,21 @@
     document.addEventListener('touchstart', closeMenu, { passive: true });
     document.addEventListener('click', closeMenu);
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { menu.classList.remove('open'); btn.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+      if (e.key === 'Escape') {
+        menu.classList.remove('open');
+        btn.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
     });
   }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', _initHam);
-  } else {
-    _initHam();
-  }
 
-  document.addEventListener("sicmed:ready", function() {
-    var s = document.createElement("script");
-    s.src = "app.js";
+  // ── Load app.js when db is ready ───────────────────────────────────────────
+  document.addEventListener('sicmed:ready', function() {
+    var s = document.createElement('script');
+    s.src = 'app.js';
     document.body.appendChild(s);
   });
+})();
 </script>
-
-<!-- Ham menu (outside nav to avoid stacking context) -->
-<div class="ham-menu" id="hamMenu" role="menu">
-    <div class="ham-menu-inner">
-      <a href="index.html" class="ham-link active" role="menuitem">
-        <span class="ham-icon">🏠</span> Inicio
-      </a>
-      <a href="especialidades.html" class="ham-link" role="menuitem">
-        <span class="ham-icon">🩺</span> Especialidades
-      </a>
-      <a href="procedimientos.html" class="ham-link" role="menuitem">
-        <span class="ham-icon">📋</span> Procedimientos
-      </a>
-      <a href="guias.html" class="ham-link" role="menuitem">
-        <span class="ham-icon">📖</span> Guías
-      </a>
-      <a href="calculadora.html" class="ham-link" role="menuitem">
-        <span class="ham-icon">🧮</span> Calculadora y escalas
-      </a>
-      <a href="actualizaciones.html" class="ham-link" role="menuitem">
-        <span class="ham-icon">🕐</span> Actualizaciones
-      </a>
-      <div class="ham-divider"></div>
-      <a href="admin.html" class="ham-link ham-admin" role="menuitem">
-        <span class="ham-icon">🔐</span> Administrador
-      </a>
-    </div>
-  </div>
 </body>
 </html>

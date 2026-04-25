@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Especialidades – SICMED</title>
 <link rel="icon" type="image/png" href="favicon32x32.png"/>
-<link rel="shortcut icon" href="favicon.ico"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
 </head>
@@ -18,22 +17,37 @@
 <nav class="nav" id="mainNav">
   <div class="nav-inner">
     <a href="index.html" class="logo">
-      <img src="favicon32x32.png" alt="SICMED" class="logo-img" onerror="this.style.display='none'"/>
       <span class="logo-dot"></span>
       <span class="logo-text">SIC<span>MED</span></span>
     </a>
-        <ul class="nav-tabs">
+    <ul class="nav-tabs">
       <li><a href="especialidades.html" class="nav-tab active">Especialidades</a></li>
       <li><a href="procedimientos.html" class="nav-tab">Procedimientos</a></li>
       <li><a href="guias.html" class="nav-tab">Guías</a></li>
     </ul>
     <div class="nav-right">
-      <button class="menu-btn" id="menuBtn" aria-label="Menú">
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+        <span class="theme-icon theme-icon-sun">☀️</span>
+        <span class="theme-icon theme-icon-moon">🌙</span>
+      </button>
+      <button class="menu-btn" id="menuBtn" aria-label="Menú" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
   </div>
 </nav>
+<div class="ham-menu" id="hamMenu" role="menu">
+  <div class="ham-menu-inner">
+    <a href="index.html" class="ham-link"><span class="ham-icon">🏠</span> Inicio</a>
+    <a href="especialidades.html" class="ham-link active"><span class="ham-icon">🩺</span> Especialidades</a>
+    <a href="procedimientos.html" class="ham-link"><span class="ham-icon">📋</span> Procedimientos</a>
+    <a href="guias.html" class="ham-link"><span class="ham-icon">📖</span> Guías</a>
+    <a href="calculadora.html" class="ham-link"><span class="ham-icon">🧮</span> Calculadora y escalas</a>
+    <a href="actualizaciones.html" class="ham-link"><span class="ham-icon">🕐</span> Actualizaciones</a>
+    <div class="ham-divider"></div>
+    <a href="admin.html" class="ham-link ham-admin"><span class="ham-icon">🔐</span> Administrador</a>
+  </div>
+</div>
 
 <main class="main">
   <div class="page-header">
@@ -68,28 +82,54 @@
   </div>
 </aside>
 
-<script type="module" src="db.js"></script>
+<script type="module" src="db.js">
+  document.addEventListener('sicmed:ready', function() { var s = document.createElement('script'); s.src = 'especialidades.js'; document.body.appendChild(s); });
+</script>
 <script>
-  // Hamburger — bulletproof iOS + desktop
-  (function(){
-    function _initHam() {
-      var btn = document.getElementById('menuBtn'), menu = document.getElementById('hamMenu');
-      if (!btn||!menu) return;
-      var _t = false;
-      btn.addEventListener('touchstart', function(e){ _t=true; e.preventDefault(); var o=menu.classList.toggle('open'); btn.classList.toggle('open',o); }, {passive:false});
-      btn.addEventListener('click', function(){ if(_t){_t=false;return;} var o=menu.classList.toggle('open'); btn.classList.toggle('open',o); });
-      function close(e){ if(!e.target.closest('#hamMenu')&&!e.target.closest('#menuBtn')){ menu.classList.remove('open'); btn.classList.remove('open'); } }
-      document.addEventListener('touchstart', close, {passive:true});
-      document.addEventListener('click', close);
+(function() {
+  'use strict';
+  var THEME_KEY = 'sicmed_theme';
+  var themeBtn = document.getElementById('themeToggle');
+  function applyTheme(dark) {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+  }
+  var saved = localStorage.getItem(THEME_KEY);
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved ? saved === 'dark' : prefersDark);
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function() {
+      applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
+    });
+  }
+  var btn = document.getElementById('menuBtn');
+  var menu = document.getElementById('hamMenu');
+  if (btn && menu) {
+    var _t = false;
+    btn.addEventListener('touchstart', function(e) {
+      _t = true; e.preventDefault();
+      var o = menu.classList.toggle('open');
+      btn.classList.toggle('open', o);
+    }, { passive: false });
+    btn.addEventListener('click', function() {
+      if (_t) { _t = false; return; }
+      var o = menu.classList.toggle('open');
+      btn.classList.toggle('open', o);
+    });
+    function close(e) {
+      if (!e.target.closest('#hamMenu') && !e.target.closest('#menuBtn')) {
+        menu.classList.remove('open'); btn.classList.remove('open');
+      }
     }
-    if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',_initHam); } else { _initHam(); }
-  })();
+    document.addEventListener('touchstart', close, { passive: true });
+    document.addEventListener('click', close);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { menu.classList.remove('open'); btn.classList.remove('open'); }
+    });
+  }
+})();
 
-  document.addEventListener("sicmed:ready", function() {
-    var s = document.createElement("script");
-    s.src = "especialidades.js";
-    document.body.appendChild(s);
-  });
+  document.addEventListener('sicmed:ready', function() { var s = document.createElement('script'); s.src = 'especialidades.js'; document.body.appendChild(s); });
 </script>
 
 <div class="ham-menu" id="hamMenu">

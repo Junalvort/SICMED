@@ -107,6 +107,8 @@
       <div class="admin-tabs">
         <button type="button" class="admin-tab active" data-tab="nuevo">Nuevo diagnóstico</button>
         <button type="button" class="admin-tab" data-tab="lista">Base de datos</button>
+        <button type="button" class="admin-tab" data-tab="nueva-esp">Nueva especialidad</button>
+        <button type="button" class="admin-tab" data-tab="esp">Especialidades</button>
         <button type="button" class="admin-tab" data-tab="acciones">Acciones</button>
       </div>
       <button type="button" class="btn btn-ghost" id="btnLogout" style="font-size:.8rem;padding:6px 16px">🔓 Cerrar sesión</button>
@@ -179,6 +181,45 @@
         </table>
       </div>
     </div>
+    <!-- Tab Nueva Especialidad -->
+    <div id="tabNuevaEsp" style="display:none">
+      <div class="admin-form" style="max-width:560px">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label">Nombre de la especialidad *</label>
+            <input type="text" id="espNombre" class="form-control" placeholder="Ej: Reumatología"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ícono (emoji)</label>
+            <input type="text" id="espIcon" class="form-control" placeholder="🏥" maxlength="4" style="font-size:1.3rem;text-align:center;letter-spacing:2px"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descripción breve</label>
+            <input type="text" id="espDesc" class="form-control" placeholder="Articulaciones, enfermedades autoinmunes"/>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" id="btnEspGuardar">💾 Guardar especialidad</button>
+          <button type="button" class="btn btn-ghost"   id="btnEspLimpiar">Limpiar</button>
+        </div>
+        <div id="espMsg" style="margin-top:12px;font-size:.85rem;display:none;padding:10px 14px;border-radius:10px"></div>
+      </div>
+    </div>
+
+    <!-- Tab Gestión de Especialidades -->
+    <div id="tabEsp" style="display:none">
+      <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input type="text" id="espSearch" class="form-control" placeholder="Buscar especialidad…" style="max-width:280px"/>
+        <span id="espCount" style="font-size:.82rem;color:var(--text-muted)"></span>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Ícono</th><th>Nombre</th><th>Descripción</th><th>Diagnósticos</th><th>Acciones</th></tr></thead>
+          <tbody id="espTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Tab Acciones -->
     <div id="tabAcciones" style="display:none">
       <div class="admin-form" style="max-width:480px">
@@ -301,10 +342,13 @@ document.querySelectorAll('.admin-tab').forEach(function(tab) {
     document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
     tab.classList.add('active');
     var which = tab.getAttribute('data-tab');
-    document.getElementById('tabNuevo').style.display    = which === 'nuevo'    ? '' : 'none';
-    document.getElementById('tabLista').style.display    = which === 'lista'    ? '' : 'none';
-    document.getElementById('tabAcciones').style.display = which === 'acciones' ? '' : 'none';
-    if (which === 'lista') _renderTable('');
+    document.getElementById('tabNuevo').style.display    = which === 'nuevo'     ? '' : 'none';
+    document.getElementById('tabLista').style.display    = which === 'lista'     ? '' : 'none';
+    document.getElementById('tabNuevaEsp').style.display = which === 'nueva-esp' ? '' : 'none';
+    document.getElementById('tabEsp').style.display      = which === 'esp'       ? '' : 'none';
+    document.getElementById('tabAcciones').style.display = which === 'acciones'  ? '' : 'none';
+    if (which === 'lista')     _renderTable('');
+    if (which === 'esp')       _renderEspTable('');
   });
 });
 
@@ -417,15 +461,148 @@ function _renderTable(q) {
 var _adminSearch = document.getElementById('adminSearch');
 if (_adminSearch) _adminSearch.addEventListener('input', function() { _renderTable(this.value.trim()); });
 
+
+// ── ESPECIALIDADES ────────────────────────────────────────────────────────
+var _espEditMode = false;
+var _espEditNombre = '';
+var _btnEspG  = document.getElementById('btnEspGuardar');
+var _btnEspL  = document.getElementById('btnEspLimpiar');
+var _espMsg   = document.getElementById('espMsg');
+
+function _showEspMsg(text, ok) {
+  _espMsg.textContent = text;
+  _espMsg.style.display = 'block';
+  _espMsg.style.background = ok ? 'var(--ges-bg)' : 'var(--p0-bg)';
+  _espMsg.style.color      = ok ? 'var(--ges-text)' : 'var(--p0-text)';
+  _espMsg.style.border     = '1px solid ' + (ok ? 'var(--ges-bd)' : 'var(--p0-bd)');
+  setTimeout(function() { _espMsg.style.display = 'none'; }, 3500);
+}
+
+function _clearEspForm() {
+  document.getElementById('espNombre').value = '';
+  document.getElementById('espIcon').value   = '';
+  document.getElementById('espDesc').value   = '';
+  _espEditMode   = false;
+  _espEditNombre = '';
+  if (_btnEspG) _btnEspG.textContent = '💾 Guardar especialidad';
+}
+
+if (_btnEspG) _btnEspG.addEventListener('click', function() {
+  var nombre = document.getElementById('espNombre').value.trim();
+  var icon   = document.getElementById('espIcon').value.trim() || '🏥';
+  var desc   = document.getElementById('espDesc').value.trim();
+  if (!nombre) { _showEspMsg('⚠️ Ingresa el nombre de la especialidad', false); return; }
+
+  // If editing and name changed, delete old entry first
+  var doSave = function(n, ic, de) {
+    var entry = { nombre: n, icon: ic, desc: de };
+    if (window.ESP_save) {
+      window.ESP_save(entry).then(function() {
+        _showEspMsg('✅ Especialidad guardada correctamente', true);
+        _clearEspForm();
+        // Update datalist in "Nuevo diagnóstico" tab
+        _refreshEspDatalist();
+      }).catch(function(e) { _showEspMsg('❌ Error: ' + e.message, false); });
+    } else {
+      // Fallback: update local array directly
+      if (!window.ESPECIALIDADES) window.ESPECIALIDADES = [];
+      var idx = window.ESPECIALIDADES.findIndex(function(x) { return x.nombre === n; });
+      if (idx >= 0) window.ESPECIALIDADES[idx] = entry; else window.ESPECIALIDADES.push(entry);
+      _showEspMsg('✅ Guardado localmente', true);
+      _clearEspForm();
+      _refreshEspDatalist();
+    }
+  };
+
+  if (_espEditMode && _espEditNombre && _espEditNombre !== nombre) {
+    // Name changed: delete old, save new
+    if (window.ESP_delete) {
+      window.ESP_delete(_espEditNombre).then(function() { doSave(nombre, icon, desc); });
+    } else { doSave(nombre, icon, desc); }
+  } else {
+    doSave(nombre, icon, desc);
+  }
+});
+
+if (_btnEspL) _btnEspL.addEventListener('click', _clearEspForm);
+
+function _renderEspTable(q) {
+  var tbody = document.getElementById('espTbody');
+  var cnt   = document.getElementById('espCount');
+  if (!tbody) return;
+  var data = window.ESPECIALIDADES || [];
+  if (q) {
+    var ql = q.toLowerCase();
+    data = data.filter(function(e) { return e.nombre.toLowerCase().includes(ql); });
+  }
+  if (cnt) cnt.textContent = data.length + ' especialidad' + (data.length !== 1 ? 'es' : '');
+  tbody.innerHTML = '';
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted)">Sin especialidades registradas</td></tr>';
+    return;
+  }
+  data.forEach(function(e) {
+    var diagCount = window.DB ? window.DB.filter(function(d) { return d.especialidad === e.nombre; }).length : '–';
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td style="font-size:1.4rem;text-align:center">' + (e.icon || '🏥') + '</td>' +
+      '<td><b style="font-family:'Sora',sans-serif;color:var(--blue-700)">' + _esc(e.nombre) + '</b></td>' +
+      '<td style="color:var(--text-muted);font-size:.85rem">' + _esc(e.desc || '–') + '</td>' +
+      '<td style="text-align:center"><span style="font-family:'Sora',sans-serif;font-weight:700;color:var(--blue-500)">' + diagCount + '</span></td>' +
+      '<td><div class="tbl-actions">' +
+        '<button type="button" class="tbl-btn edit" data-nombre="' + _esc(e.nombre) + '">✏️</button>' +
+        '<button type="button" class="tbl-btn del"  data-nombre="' + _esc(e.nombre) + '">🗑</button>' +
+      '</div></td>';
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('.edit').forEach(function(b) {
+    b.addEventListener('click', function() {
+      var e = (window.ESPECIALIDADES||[]).find(function(x) { return x.nombre === b.dataset.nombre; });
+      if (!e) return;
+      document.getElementById('espNombre').value = e.nombre;
+      document.getElementById('espIcon').value   = e.icon || '';
+      document.getElementById('espDesc').value   = e.desc || '';
+      _espEditMode   = true;
+      _espEditNombre = e.nombre;
+      if (_btnEspG) _btnEspG.textContent = '💾 Actualizar especialidad';
+      document.querySelector('[data-tab="nueva-esp"]').click();
+    });
+  });
+  tbody.querySelectorAll('.del').forEach(function(b) {
+    b.addEventListener('click', function() {
+      if (!confirm('¿Eliminar la especialidad "' + b.dataset.nombre + '"?')) return;
+      if (window.ESP_delete) {
+        window.ESP_delete(b.dataset.nombre).then(function() {
+          _renderEspTable(document.getElementById('espSearch').value || '');
+          _refreshEspDatalist();
+        });
+      } else {
+        if (window.ESPECIALIDADES) {
+          var idx = window.ESPECIALIDADES.findIndex(function(x){ return x.nombre === b.dataset.nombre; });
+          if (idx >= 0) window.ESPECIALIDADES.splice(idx, 1);
+        }
+        _renderEspTable(document.getElementById('espSearch').value || '');
+        _refreshEspDatalist();
+      }
+    });
+  });
+}
+
+function _refreshEspDatalist() {
+  var espList = document.getElementById('espList');
+  if (!espList || !window.ESPECIALIDADES) return;
+  espList.innerHTML = '';
+  window.ESPECIALIDADES.forEach(function(e) {
+    var o = document.createElement('option'); o.value = e.nombre; espList.appendChild(o);
+  });
+}
+
+var _espSearch = document.getElementById('espSearch');
+if (_espSearch) _espSearch.addEventListener('input', function() { _renderEspTable(this.value.trim()); });
+
 // ── Firebase ready ────────────────────────────────────────────────────────
 document.addEventListener('sicmed:ready', function() {
-  // Populate especialidades datalist
-  var espList = document.getElementById('espList');
-  if (espList && window.ESPECIALIDADES) {
-    window.ESPECIALIDADES.forEach(function(e) {
-      var o = document.createElement('option'); o.value = e.nombre; espList.appendChild(o);
-    });
-  }
+  _refreshEspDatalist();
 });
 </script>
 </body>

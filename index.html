@@ -39,33 +39,6 @@
     </div>
   </div>
 
-  <!-- Hamburger dropdown -->
-  <div class="ham-menu" id="hamMenu" role="menu">
-    <div class="ham-menu-inner">
-      <a href="index.html" class="ham-link active" role="menuitem">
-        <span class="ham-icon">🏠</span> Inicio
-      </a>
-      <a href="especialidades.html" class="ham-link" role="menuitem">
-        <span class="ham-icon">🩺</span> Especialidades
-      </a>
-      <a href="procedimientos.html" class="ham-link" role="menuitem">
-        <span class="ham-icon">📋</span> Procedimientos
-      </a>
-      <a href="guias.html" class="ham-link" role="menuitem">
-        <span class="ham-icon">📖</span> Guías
-      </a>
-      <a href="calculadora.html" class="ham-link" role="menuitem">
-        <span class="ham-icon">🧮</span> Calculadora y escalas
-      </a>
-      <a href="actualizaciones.html" class="ham-link" role="menuitem">
-        <span class="ham-icon">🕐</span> Actualizaciones
-      </a>
-      <div class="ham-divider"></div>
-      <a href="admin.html" class="ham-link ham-admin" role="menuitem">
-        <span class="ham-icon">🔐</span> Administrador
-      </a>
-    </div>
-  </div>
 </nav>
 
 <!-- MAIN -->
@@ -167,5 +140,33 @@
     document.body.appendChild(s);
   });
 </script>
+
+<!-- Ham menu (outside nav to avoid stacking context) -->
+<div class="ham-menu" id="hamMenu" role="menu">
+    <div class="ham-menu-inner">
+      <a href="index.html" class="ham-link active" role="menuitem">
+        <span class="ham-icon">🏠</span> Inicio
+      </a>
+      <a href="especialidades.html" class="ham-link" role="menuitem">
+        <span class="ham-icon">🩺</span> Especialidades
+      </a>
+      <a href="procedimientos.html" class="ham-link" role="menuitem">
+        <span class="ham-icon">📋</span> Procedimientos
+      </a>
+      <a href="guias.html" class="ham-link" role="menuitem">
+        <span class="ham-icon">📖</span> Guías
+      </a>
+      <a href="calculadora.html" class="ham-link" role="menuitem">
+        <span class="ham-icon">🧮</span> Calculadora y escalas
+      </a>
+      <a href="actualizaciones.html" class="ham-link" role="menuitem">
+        <span class="ham-icon">🕐</span> Actualizaciones
+      </a>
+      <div class="ham-divider"></div>
+      <a href="admin.html" class="ham-link ham-admin" role="menuitem">
+        <span class="ham-icon">🔐</span> Administrador
+      </a>
+    </div>
+  </div>
 </body>
 </html>

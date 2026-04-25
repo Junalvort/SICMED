@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Actualizaciones – SICMED</title>
 <link rel="icon" type="image/png" href="favicon32x32.png"/>
+<link rel="shortcut icon" href="favicon.ico"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
 </head>
@@ -26,18 +27,6 @@
     </ul>
     <div class="nav-right">
       <button class="menu-btn" id="menuBtn" aria-label="Menú"><span></span><span></span><span></span></button>
-    </div>
-  </div>
-  <div class="ham-menu" id="hamMenu">
-    <div class="ham-menu-inner">
-      <a href="index.html"          class="ham-link"><span class="ham-icon">🏠</span> Inicio</a>
-      <a href="especialidades.html" class="ham-link"><span class="ham-icon">🩺</span> Especialidades</a>
-      <a href="procedimientos.html" class="ham-link"><span class="ham-icon">📋</span> Procedimientos</a>
-      <a href="guias.html"          class="ham-link"><span class="ham-icon">📖</span> Guías</a>
-      <a href="calculadora.html"    class="ham-link"><span class="ham-icon">🧮</span> Calculadora y escalas</a>
-      <a href="actualizaciones.html"class="ham-link active"><span class="ham-icon">🕐</span> Actualizaciones</a>
-      <div class="ham-divider"></div>
-      <a href="admin.html" class="ham-link ham-admin"><span class="ham-icon">🔐</span> Administrador</a>
     </div>
   </div>
 </nav>
@@ -76,19 +65,36 @@
 
 <script type="module" src="db.js"></script>
 <script>
+  // Hamburger — bulletproof iOS + desktop
   (function(){
-    var btn = document.getElementById('menuBtn'), menu = document.getElementById('hamMenu');
-    if (!btn||!menu) return;
-    function toggle(e){ e.preventDefault(); e.stopPropagation(); var o=menu.classList.toggle('open'); btn.classList.toggle('open',o); }
-    function close(){ menu.classList.remove('open'); btn.classList.remove('open'); }
-    btn.addEventListener('click', toggle);
-    btn.addEventListener('touchend', toggle, {passive:false});
-    document.addEventListener('click', function(e){ if(!e.target.closest('#hamMenu')&&!e.target.closest('#menuBtn')) close(); });
-    document.addEventListener('touchend', function(e){ if(!e.target.closest('#hamMenu')&&!e.target.closest('#menuBtn')) close(); }, {passive:true});
+    function _initHam() {
+      var btn = document.getElementById('menuBtn'), menu = document.getElementById('hamMenu');
+      if (!btn||!menu) return;
+      var _t = false;
+      btn.addEventListener('touchstart', function(e){ _t=true; e.preventDefault(); var o=menu.classList.toggle('open'); btn.classList.toggle('open',o); }, {passive:false});
+      btn.addEventListener('click', function(){ if(_t){_t=false;return;} var o=menu.classList.toggle('open'); btn.classList.toggle('open',o); });
+      function close(e){ if(!e.target.closest('#hamMenu')&&!e.target.closest('#menuBtn')){ menu.classList.remove('open'); btn.classList.remove('open'); } }
+      document.addEventListener('touchstart', close, {passive:true});
+      document.addEventListener('click', close);
+    }
+    if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',_initHam); } else { _initHam(); }
   })();
   document.addEventListener("sicmed:ready", function() {
     var s = document.createElement("script"); s.src = "actualizaciones.js"; document.body.appendChild(s);
   });
 </script>
+
+<div class="ham-menu" id="hamMenu">
+    <div class="ham-menu-inner">
+      <a href="index.html"          class="ham-link"><span class="ham-icon">🏠</span> Inicio</a>
+      <a href="especialidades.html" class="ham-link"><span class="ham-icon">🩺</span> Especialidades</a>
+      <a href="procedimientos.html" class="ham-link"><span class="ham-icon">📋</span> Procedimientos</a>
+      <a href="guias.html"          class="ham-link"><span class="ham-icon">📖</span> Guías</a>
+      <a href="calculadora.html"    class="ham-link"><span class="ham-icon">🧮</span> Calculadora y escalas</a>
+      <a href="actualizaciones.html"class="ham-link active"><span class="ham-icon">🕐</span> Actualizaciones</a>
+      <div class="ham-divider"></div>
+      <a href="admin.html" class="ham-link ham-admin"><span class="ham-icon">🔐</span> Administrador</a>
+    </div>
+  </div>
 </body>
 </html>

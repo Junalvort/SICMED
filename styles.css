@@ -48,13 +48,12 @@
 
 /* ─── RESET ──────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; overflow-x: hidden; }
 body {
   font-family: 'DM Sans', system-ui, sans-serif;
   background: linear-gradient(145deg, #d5eaf9 0%, #e8f3fb 40%, #f3f8ff 100%);
   min-height: 100vh;
   color: var(--text);
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }

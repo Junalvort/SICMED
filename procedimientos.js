@@ -2,21 +2,110 @@
 (function() {
 
   var MOCK = [
-    { tipo:'Prueba Diagnóstica', nombre:'Espirometría', modalidad:'Ambulatorio', establecimiento:'CESFAM Lo Amor', prioridad:'Normal', diagnosticos:'J44.1, J45.9, J96.0', criterios:'1. Solicitar en Rayen → Procedimientos → Espirometría\n2. Suspender broncodilatadores 4h antes\n3. No fumar 4h antes\n4. Traer orden médica firmada', notas:'Contraindicado en infarto reciente (<1 mes) o neumotórax activo.' },
-    { tipo:'Prueba Diagnóstica', nombre:'Electrocardiograma (ECG)', modalidad:'Ambulatorio', establecimiento:'CESFAM Lo Amor', prioridad:'Urgente', diagnosticos:'I10, I25.9, R00.1, I48', criterios:'1. Solicitar en Rayen → Procedimientos → ECG\n2. Reposo 10 min previos\n3. Retirar objetos metálicos\n4. Registrar en ficha clínica', notas:'' },
-    { tipo:'Prueba Diagnóstica', nombre:'Holter de ritmo 24h', modalidad:'Ambulatorio', establecimiento:'Hospital de referencia', prioridad:'Preferente', diagnosticos:'R00.1, I48, I49.9', criterios:'1. Derivar a cardiología vía SOME\n2. Adjuntar ECG reciente\n3. No bañarse durante el examen', notas:'Tiempo de espera estimado: 30–60 días.' },
-    { tipo:'Imagenología', nombre:'Radiografía de tórax', modalidad:'Ambulatorio', establecimiento:'CESFAM Lo Amor', prioridad:'Normal', diagnosticos:'J18.9, J44.1, R91, C34', criterios:'1. Solicitar en Rayen → Imágenes → RX Tórax\n2. Indicar proyección: PA y Lateral\n3. Adjuntar clínica en orden', notas:'' },
-    { tipo:'Imagenología', nombre:'Ecotomografía abdominal', modalidad:'Ambulatorio', establecimiento:'Hospital de referencia', prioridad:'Normal', diagnosticos:'K80.2, K86.1, D376, K75.0', criterios:'1. Solicitar en Rayen → Imágenes → Ecografía\n2. Ayuno de 6h (vesícula biliar)\n3. Beber 1L de agua 1h antes para vejiga', notas:'' },
-    { tipo:'Imagenología', nombre:'Ecotomografía mamaria', modalidad:'Ambulatorio', establecimiento:'Hospital de referencia', prioridad:'Preferente', diagnosticos:'N60, C50.9, Z12.3', criterios:'1. Solicitar en Rayen → Imágenes → Eco mamaria\n2. Sin contraindicaciones especiales\n3. Complementa mamografía si nódulo < 30 años', notas:'Complementaria a mamografía en mujeres jóvenes.' },
-    { tipo:'Imagenología', nombre:'Mamografía bilateral', modalidad:'Ambulatorio', establecimiento:'Hospital de referencia', prioridad:'Preferente', diagnosticos:'Z12.3, C50.9, N60', criterios:'1. Solicitar en Rayen → Imágenes → Mamografía\n2. No aplicar desodorante el día del examen\n3. Adjuntar historia mamaria', notas:'GES: Mujeres 50–69 años cada 2 años.' },
-    { tipo:'Imagenología', nombre:'Ecotomografía tiroidea', modalidad:'Ambulatorio', establecimiento:'Hospital de referencia', prioridad:'Normal', diagnosticos:'E04.1, E04.2, C73', criterios:'1. Solicitar en Rayen → Imágenes → Eco tiroidea\n2. No requiere ayuno\n3. Informar uso de levotiroxina', notas:'Incluir clasificación TIRADS en informe.' },
-    { tipo:'Procedimiento', nombre:'Curación avanzada', modalidad:'Ambulatorio', establecimiento:'CESFAM Lo Amor', prioridad:'Normal', diagnosticos:'L89, L97, T14.1', criterios:'1. Ingresar en Rayen → Procedimientos → Curación\n2. Seleccionar tipo: simple / avanzada\n3. Registrar características de herida\n4. Fotografiar si es posible', notas:'Coordinar con SOME para turnos.' },
-    { tipo:'Procedimiento', nombre:'Inyectología / Administración de medicamentos', modalidad:'Ambulatorio', establecimiento:'CESFAM Lo Amor', prioridad:'Normal', diagnosticos:'Varios', criterios:'1. Verificar prescripción médica vigente\n2. Registrar en Rayen → Procedimientos → Inyectología\n3. Confirmar alergias\n4. Observar 15 min post administración', notas:'' },
-    { tipo:'Cirugía Menor', nombre:'Biopsia de piel (punch)', modalidad:'Ambulatorio', establecimiento:'CESFAM Lo Amor', prioridad:'Preferente', diagnosticos:'L70, L57, D23', criterios:'1. Consentimiento informado\n2. Registrar en Rayen → Procedimientos → Cirugía menor\n3. Enviar muestra en formol al laboratorio\n4. Indicar curaciones en casa', notas:'Requiere médico capacitado. Resultado biopsia ~15 días.' },
-    { tipo:'Cirugía Menor', nombre:'Crioterapia (nitrógeno líquido)', modalidad:'Ambulatorio', establecimiento:'CESFAM Lo Amor', prioridad:'Normal', diagnosticos:'L82, B07, L57.0', criterios:'1. Consentimiento informado\n2. Registrar en Rayen → Procedimientos → Crioterapia\n3. Aplicar 10–30 seg según lesión\n4. Control en 3–4 semanas', notas:'No aplicar en cara sin evaluación previa.' },
-    { tipo:'Rehabilitación Física', nombre:'Kinesioterapia respiratoria', modalidad:'Ambulatorio', establecimiento:'CESFAM Lo Amor', prioridad:'Normal', diagnosticos:'J44.1, J45.9, J96.0', criterios:'1. IC kinesiología en Rayen\n2. Adjuntar espirometría reciente\n3. Frecuencia: 2–3 sesiones/semana\n4. Evaluar a los 30 días', notas:'' },
-    { tipo:'Rehabilitación Física', nombre:'Kinesioterapia traumatológica', modalidad:'Ambulatorio', establecimiento:'CESFAM Lo Amor', prioridad:'Normal', diagnosticos:'M54.5, M75.1, S82, M17.1', criterios:'1. IC kinesiología en Rayen\n2. Adjuntar imágenes si hay\n3. Indicar área y diagnóstico\n4. Sesiones: 10–15 habitualmente', notas:'' },
-    { tipo:'Órtesis', nombre:'Confección órtesis pie diabético', modalidad:'Ambulatorio', establecimiento:'Hospital de referencia', prioridad:'Preferente', diagnosticos:'E11.5, E14.5', criterios:'1. Derivar a podología / órtesis vía SOME\n2. Adjuntar evaluación LUND 1999\n3. Indicar tipo de calzado actual\n4. Control post órtesis a los 30 días', notas:'GES Diabetes Mellitus tipo 2.' },
+    // ── A. PRUEBAS DIAGNÓSTICAS ─────────────────────────────────────────────────
+    { tipo:'Prueba Diagnóstica', nombre:'Endoscopia Digestiva Alta con test de Ureasa', modalidad:'Endoscopia', establecimiento:'Contralor (CESFAM)', prioridad:'Normal / Alta (sospecha Ca)', diagnosticos:'K25 Úlcera gástrica, D00.2 Ca gástrico, R63.4 Pérdida de peso, K29.7 Gastritis no especificada', criterios:'1. Clasificación diagnóstica
+2. Prioridad Normal o Alta (sospecha Ca)
+3. Fundamentos clínicos + teléfono del paciente
+4. ¿Se resolverá por programa de resolutividad? Sí
+5. Derivar a contralor: Sí', notas:'' },
+    { tipo:'Prueba Diagnóstica', nombre:'Espirometría', modalidad:'Prueba funcional', establecimiento:'Contralor (CESFAM)', prioridad:'Normal', diagnosticos:'J44.1 EPOC descompensado, J45 Asma bronquial, J96.0 Insuficiencia respiratoria aguda', criterios:'1. Clasificación diagnóstica
+2. Prioridad: Normal, Alta (sospecha Ca)
+3. Fundamentos clínicos + teléfono
+4. ¿Resolutividad? Sí
+5. Derivar a contralor: Sí
+6. Paciente debe suspender broncodilatadores 4h antes
+7. No fumar 4h antes del examen', notas:'Contraindicado en infarto reciente (<1 mes) o neumotórax activo' },
+    { tipo:'Prueba Diagnóstica', nombre:'Fondo de Ojo (Presencial)', modalidad:'Oftalmología', establecimiento:'UAPO Cerro Navia', prioridad:'Normal', diagnosticos:'E11 Diabetes Mellitus No insulinodependiente, E11.7 DM2 con múltiples complicaciones', criterios:'1. Clasificación diagnóstica → marcar GES
+2. Procedimiento: FONDO DE OJO (Presencial)
+3. Prioridad: Normal
+4. Extrasistema: NO
+5. Establecimiento: UAPO Cerro Navia
+6. Fundamentos clínicos + teléfono actualizado
+7. ¿Resolutividad? NO
+8. Derivar a contralor: SÍ
+9. Criterio: Solo DM2 confirmada, frecuencia anual, sin diagnóstico de retinopatía ni cataratas no operada', notas:'Solo DM2 confirmada. No derivar si ya tiene retinopatía confirmada o cataratas no operada' },
+
+    // ── B. IMAGENOLOGÍA ─────────────────────────────────────────────────────────
+    { tipo:'Imagenología', nombre:'Ecotomografía Abdominal', modalidad:'Ecografía', establecimiento:'Contralor', prioridad:'Normal', diagnosticos:'K80 Colelitiasis, R10 Dolor abdominal en parte superior (R10.1)', criterios:'1. Clasificación diagnóstica
+2. Fundamentos clínicos + teléfono
+3. Prioridad: Normal
+4. ¿Resolutividad? Sí
+5. Derivar a contralor: Sí
+6. Incluye: hígado, vía biliar, vesícula, páncreas, riñones, bazo, retroperitoneo y grandes vasos', notas:'Código diagnóstico para solicitar: R10.1 Dolor abdominal localizado en parte superior' },
+    { tipo:'Imagenología', nombre:'Radiografía de Tórax', modalidad:'Radiografía simple', establecimiento:'Contralor / Convenio UC', prioridad:'Normal', diagnosticos:'J15 Neumonía bacteriana (1 proyección), J45 Asma bronquial (2 proyecciones), J44.9 EPOC', criterios:'1. Clasificación diagnóstica
+2. Fundamentos clínicos
+3. Prioridad: Normal
+4. ¿Resolutividad? Sí
+5. Derivar a contralor: Sí
+6. J15 Neumonía: Rx tórax 1 proyección (frontal y lateral) – Convenio UC
+7. J45 Asma: Rx tórax 2 proyecciones (frontal o lateral) – Convenio UC', notas:'Indicar proyección según diagnóstico: 1 proyección (J15) vs 2 proyecciones (J45/J44)' },
+    { tipo:'Imagenología', nombre:'Ecotomografía Mamaria', modalidad:'Ecografía', establecimiento:'Contralor', prioridad:'Normal', diagnosticos:'Z12.3 Examen de pesquisa especial para tumor de la mama', criterios:'1. Clasificación diagnóstica
+2. Fundamentos clínicos
+3. Prioridad: Normal
+4. ¿Resolutividad? Sí
+5. Derivar a contralor: Sí', notas:'Complementa mamografía en mujeres jóvenes con nódulo' },
+    { tipo:'Imagenología', nombre:'Mamografía Bilateral (4 exposiciones)', modalidad:'Radiología simple', establecimiento:'Contralor', prioridad:'Normal / Alta (sospecha Ca)', diagnosticos:'Z12.3 Examen de pesquisa especial para tumor de la mama', criterios:'1. Clasificación diagnóstica
+2. Fundamentos clínicos
+3. Prioridad Normal o Alta (sospecha Ca)
+4. ¿Resolutividad? Sí
+5. Derivar a contralor: Sí
+6. No aplicar desodorante el día del examen
+7. Adjuntar historia mamaria', notas:'GES: Mujeres 50–69 años cada 2 años (pesquisa)' },
+    { tipo:'Imagenología', nombre:'Proyecciones Mamográficas Complementarias', modalidad:'Ecografía', establecimiento:'Contralor', prioridad:'Normal / Alta', diagnosticos:'Z12.3 Examen de pesquisa especial para tumor de la mama', criterios:'1. Clasificación diagnóstica
+2. Fundamentos clínicos
+3. Derivar a contralor: Sí', notas:'Complementario a mamografía bilateral' },
+    { tipo:'Imagenología', nombre:'Radiografía de Pelvis (lactante o niño <6 meses)', modalidad:'Radiología simple', establecimiento:'Contralor', prioridad:'Normal', diagnosticos:'Q65.4 Subluxación congénita de la cadera, bilateral', criterios:'1. Clasificación diagnóstica
+2. Fundamentos clínicos
+3. Indicar: Pelvis, cadera o coxofemoral de RN, lactante o niño menor de 6 años', notas:'Usar en pesquisa de displasia del desarrollo de caderas' },
+
+    // ── D. PROCEDIMIENTOS ────────────────────────────────────────────────────────
+    { tipo:'Procedimiento', nombre:'Fondo de Ojo (Presencial) – DM2', modalidad:'Procedimiento diagnóstico', establecimiento:'UAPO Cerro Navia', prioridad:'Normal', diagnosticos:'E11 DM2, E11.7 DM2 con múltiples complicaciones', criterios:'1. Clasificación diagnóstica → marcar GES
+2. Prioridad: Normal
+3. Extrasistema: NO | Establecimiento: UAPO Cerro Navia
+4. Fundamentos clínicos + teléfono
+5. ¿Resolutividad? NO
+6. Derivar a contralor: SÍ
+7. Solo DM2 confirmada, anual, sin retinopatía ni cataratas no operada', notas:'Screening anual DM2 confirmada sin retinopatía' },
+
+    // ── E. CIRUGÍA MENOR ─────────────────────────────────────────────────────────
+    { tipo:'Cirugía Menor', nombre:'Cirugía Menor – Lesiones Cutáneas', modalidad:'Cirugía ambulatoria', establecimiento:'CESFAM Dr. Albertz', prioridad:'Normal', diagnosticos:'Biopsias cutáneas, fibromas blandos (papilomas, acrocordones), nevus típicos (benignos), verrugas, granuloma piógeno, angiomas, onicocriptosis, cuerpo extraño cutáneo, tumor benigno subcutáneo, lipoma subcutáneo, quiste epidérmico, quiste sebáceo, verruga plantar', criterios:'1. Clasificación diagnóstica
+2. Procedimiento: Cirugía menor
+3. Prioridad: Normal
+4. Extrasistema: NO | Establecimiento: CESFAM Dr. Albertz
+5. Fundamentos clínicos + teléfono
+6. ¿Resolutividad? NO | Derivar a contralor: SÍ
+7. Lesiones hasta 3 cm, describir tamaño y localización
+8. Agregar código en fundamento', notas:'NO derivar: lesiones en cara y pliegues (excepto acrocordones), verrugas en lecho ungueal, abscesos en periodos inflamatorios, lesiones malignas de teledermatología para biopsia, lesiones anogenitales, pacientes con TACO' },
+
+    // ── F. REHABILITACIÓN FÍSICA ─────────────────────────────────────────────────
+    { tipo:'Rehabilitación Física', nombre:'Kinesioterapia Respiratoria – Patologías Agudas', modalidad:'Ambulatorio', establecimiento:'Hospital Félix Bulnes Cerda', prioridad:'Normal', diagnosticos:'J44.1 EPOC, J45 Asma, J96.0 Insuficiencia respiratoria aguda', criterios:'1. Clasificación diagnóstica
+2. Procedimiento: Rehabilitación física
+3. Prioridad: Normal
+4. Extrasistema: NO | Establecimiento: Hospital Félix Bulnes Cerda (patologías agudas <3 meses evolución)
+5. Fundamentos clínicos + teléfono
+6. ¿Resolutividad? Sí | Derivar a contralor: SÍ', notas:'Patologías AGUDAS osteomusculares: Hospital Félix Bulnes Cerda (evolución <3 meses)' },
+    { tipo:'Rehabilitación Física', nombre:'Kinesioterapia Traumatológica – Patologías Crónicas', modalidad:'Ambulatorio', establecimiento:'Sala RBC (Rehabilitación Base Comunitaria)', prioridad:'Normal', diagnosticos:'M54.5 Lumbago, M75.1 Síndrome manguito rotador, S82 Fractura tibia, M17.1 Artrosis rodilla primaria', criterios:'1. Clasificación diagnóstica
+2. Procedimiento: Rehabilitación física
+3. Prioridad: Normal
+4. Extrasistema: NO | Establecimiento: Sala de Rehabilitación RBC
+5. Fundamentos clínicos + teléfono
+6. ¿Resolutividad? Sí | Derivar a contralor: SÍ', notas:'Patologías CRÓNICAS osteomusculares: Sala RBC (evolución >3 meses). Sesiones: 10-15 habitualmente' },
+
+    // ── G. DERMATOLOGÍA APS ──────────────────────────────────────────────────────
+    { tipo:'Dermatología APS', nombre:'Teledermatología – Consulta Médica Especialidad', modalidad:'Telemedicina', establecimiento:'CESFAM al cual está inscrito', prioridad:'Normal', diagnosticos:'Diagnósticos de patologías dermatológicas acorde (no derivar: verrugas anogenitales, procedimientos quirúrgicos, patología oral, pie diabético, quemaduras agudas, ASI, shock anafiláctico)', criterios:'1. Clasificación diagnóstica
+2. Procedimiento: Teledermatología
+3. Prioridad: Normal | Extrasistema: NO | Establecimiento: CESFAM inscrito
+4. Fundamentos clínicos
+5. ¿Resolutividad? NO | Derivar a contralor: SÍ
+6. Envío de fotografías previo consentimiento del paciente al correo Referente Teledermatología del CESFAM', notas:'NO derivar: verrugas anogenitales, procedimientos quirúrgicos, patología oral, pie diabético, quemaduras agudas, ASI, shock anafiláctico' },
+
+    // ── H. ÓRTESIS ───────────────────────────────────────────────────────────────
+    { tipo:'Órtesis', nombre:'Entrega de Órtesis', modalidad:'Prestación ortésica', establecimiento:'CESFAM al cual está inscrito', prioridad:'Normal', diagnosticos:'GES Órtesis mayores de 65 años. Programa piloto 45-64 años: artrosis cadera/rodilla, dependientes severos, DM2 con úlcera activa de pie (curación avanzada), ACV', criterios:'1. Clasificación diagnóstica
+2. Procedimiento: Órtesis
+3. Prioridad: Normal | Extrasistema: NO | Establecimiento: CESFAM inscrito
+4. Fundamentos clínicos + teléfono
+5. ¿Resolutividad? NO | Derivar a contralor: SÍ
+6. Realizar previo GES Órtesis en mayores de 65 años', notas:'Mayores de 65 años: GES Órtesis. Pacientes 45-64 años (programa piloto): solo en casos: artrosis cadera/rodilla, dependencia severa, DM2 con úlcera activa de pie (curación avanzada), ACV' },
   ];
 
   var TIPO_META = {
@@ -77,13 +166,14 @@
     data.forEach(function(p){
       var m = getMeta(p.tipo);
       var card = document.createElement('div');
-      card.className = 'specialty-card'; // mismo estilo que especialidades
-      card.style.borderTop = '3px solid ' + m.color;
+      card.className = 'specialty-card';
       card.innerHTML =
+        '<div class="sc-content">' +
+          '<div class="sc-title">' + esc(p.nombre) + '</div>' +
+          '<div class="sc-count" style="color:' + m.color + '">' + esc(p.tipo) + '</div>' +
+          (p.establecimiento ? '<div class="sc-desc">📍 ' + esc(p.establecimiento) + '</div>' : '') +
+        '</div>' +
         '<div class="sc-icon">' + m.icon + '</div>' +
-        '<div class="sc-title">' + esc(p.nombre) + '</div>' +
-        '<div class="sc-count" style="color:' + m.color + '">' + esc(p.tipo) + '</div>' +
-        (p.establecimiento ? '<div class="sc-desc">📍 ' + esc(p.establecimiento) + '</div>' : '') +
         '<span class="sc-arrow" style="color:' + m.color + '">→</span>';
       card.addEventListener('click', function(){ openPanel(p, m); });
       cardsRow.appendChild(card);

@@ -151,6 +151,42 @@ var ESCALAS = [
     nota:'Registrar en Rayen: Ficha familiar → evaluación familiar → Riesgo. Aplicar cada 3 años.',
     scoreLabel:'factores de riesgo'
   },
+  {
+    id:'zarit', icono:'🤝', color:'#d4820a',
+    nombre:'Escala de Zarit – Sobrecarga del Cuidador',
+    descripcion:'Evalúa el grado de sobrecarga subjetiva del cuidador principal de una persona dependiente. 22 ítems, rango 0–88.',
+    preguntas:[
+      { id:'z1',  txt:'¿Siente que su familiar le pide más ayuda de la que realmente necesita?',                opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z2',  txt:'¿Siente que debido al tiempo que dedica a su familiar no tiene suficiente tiempo para usted?', opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z3',  txt:'¿Se siente agotado cuando tiene que estar junto a su familiar y además atender otras obligaciones?', opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z4',  txt:'¿Se siente avergonzado por la conducta de su familiar?',                               opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z5',  txt:'¿Se siente irritado cuando está cerca de su familiar?',                                opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z6',  txt:'¿Cree que la situación actual afecta negativamente su relación con amigos u otros familiares?', opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z7',  txt:'¿Siente temor por el futuro que le espera a su familiar?',                             opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z8',  txt:'¿Siente que su familiar depende de usted?',                                            opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z9',  txt:'¿Se siente tenso cuando está cerca de su familiar?',                                   opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z10', txt:'¿Siente que su salud se ha resentido por cuidar a su familiar?',                       opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z11', txt:'¿Siente que no tiene la vida privada que desearía debido a su familiar?',               opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z12', txt:'¿Cree que su vida social se ha visto afectada por tener que cuidar a su familiar?',    opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z13', txt:'¿Se siente incómodo para invitar amigos a casa a causa de su familiar?',               opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z14', txt:'¿Cree que su familiar espera que usted le cuide, como si fuera la única persona con la que puede contar?', opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z15', txt:'¿Cree que no dispone de dinero suficiente para cuidar a su familiar además de sus otros gastos?', opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z16', txt:'¿Siente que será incapaz de cuidar a su familiar por mucho más tiempo?',               opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z17', txt:'¿Siente que ha perdido el control de su vida desde que la enfermedad de su familiar se manifestó?', opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z18', txt:'¿Desearía poder encargar el cuidado de su familiar a otras personas?',                 opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z19', txt:'¿Se siente inseguro acerca de lo que debe hacer con su familiar?',                     opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z20', txt:'¿Siente que debería hacer más de lo que hace por su familiar?',                        opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z21', txt:'¿Cree que podría cuidar a su familiar mejor de lo que lo hace?',                       opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+      { id:'z22', txt:'En general, ¿se siente muy sobrecargado por tener que cuidar a su familiar?',          opts:[{v:0,l:'Nunca'},{v:1,l:'Casi nunca'},{v:2,l:'A veces'},{v:3,l:'Bastantes veces'},{v:4,l:'Casi siempre'}] },
+    ],
+    interpret: function(p){
+      if(p<=46)  return { label:'Sin sobrecarga o sobrecarga leve',   color:'#43a047', bg:'rgba(67,160,71,.10)' };
+      if(p<=55)  return { label:'Sobrecarga leve – riesgo de burnout', color:'#fb8c00', bg:'rgba(251,140,0,.10)' };
+      return             { label:'Sobrecarga intensa – intervención urgente', color:'#e53935', bg:'rgba(229,57,53,.10)' };
+    },
+    nota:'Puntaje máximo: 88. <47: sin sobrecarga. 47-55: sobrecarga leve. >55: sobrecarga intensa. Indicar apoyo psicológico y/o red de respiro si sobrecarga intensa.',
+    scoreLabel:'puntos'
+  },
 ];
 
 // ── DOM refs ────────────────────────────────────────────────────────────────

@@ -548,27 +548,30 @@ body {
   -webkit-backdrop-filter: blur(16px);
   border: 1.5px solid var(--glass-border);
   border-radius: var(--r-lg);
-  padding: 22px 20px 20px;
+  padding: 18px 20px;
   cursor: pointer;
   transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s;
-  display: flex; flex-direction: column; gap: 6px;
+  display: flex; flex-direction: row; align-items: center; gap: 14px;
   position: relative; overflow: hidden;
-}
-.specialty-card::before {
-  content: ''; position: absolute;
-  top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--blue-300), var(--blue-500));
-  transform: scaleX(0); transform-origin: left;
-  transition: transform 0.25s var(--ease);
 }
 .specialty-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 32px rgba(58,134,200,0.15);
   background: rgba(255,255,255,0.82);
 }
-.specialty-card:hover::before { transform: scaleX(1); }
 
-.sc-icon { font-size: 1.8rem; margin-bottom: 4px; }
+/* Stripe only on especialidades page */
+[data-page="especialidades"] .specialty-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue-300), var(--blue-500));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.25s var(--ease);
+}
+[data-page="especialidades"] .specialty-card:hover::before { transform: scaleX(1); }
+
+.sc-content { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.sc-icon { font-size: 2rem; flex-shrink: 0; order: 2; margin-left: auto; padding-left: 8px; opacity: 0.85; }
 .sc-title {
   font-family: 'Sora', sans-serif;
   font-size: 1rem; font-weight: 600;
@@ -581,9 +584,9 @@ body {
   font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-top: 4px;
 }
 .sc-arrow {
-  position: absolute; bottom: 18px; right: 18px;
   font-size: 1rem; color: var(--blue-300);
   transition: transform 0.2s, color 0.2s;
+  flex-shrink: 0; order: 3;
 }
 .specialty-card:hover .sc-arrow { transform: translateX(3px); color: var(--blue-500); }
 

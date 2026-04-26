@@ -30,6 +30,19 @@
 .login-err{background:var(--p0-bg);border:1px solid var(--p0-bd);color:var(--p0-text);border-radius:10px;padding:11px 14px;font-size:.83rem;text-align:center;display:none}
 /* Admin */
 .admin-wrap{width:100%;max-width:960px}
+/* Emoji picker */
+.emoji-picker{background:rgba(255,255,255,0.70);backdrop-filter:blur(12px);border:1.5px solid var(--glass-border);border-radius:14px;padding:10px;overflow:hidden}
+[data-theme="dark"] .emoji-picker{background:rgba(15,30,55,0.70);border-color:rgba(60,110,160,0.30)}
+.emoji-cat-tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.emoji-cat-btn{background:none;border:1.5px solid transparent;border-radius:8px;padding:4px 10px;font-size:.75rem;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+.emoji-cat-btn:hover{background:rgba(58,134,200,0.08);color:var(--blue-700)}
+.emoji-cat-btn.active{background:rgba(58,134,200,0.14);border-color:var(--blue-200);color:var(--blue-700)}
+.emoji-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:4px;max-height:180px;overflow-y:auto;padding:2px}
+.emoji-grid::-webkit-scrollbar{width:4px}
+.emoji-grid::-webkit-scrollbar-thumb{background:var(--blue-200);border-radius:2px}
+.emoji-opt{background:none;border:2px solid transparent;border-radius:10px;width:38px;height:38px;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
+.emoji-opt:hover{background:rgba(58,134,200,0.10);transform:scale(1.15)}
+.emoji-opt.selected{border-color:var(--blue-400,#5ba3d9);background:rgba(58,134,200,0.15)}
 /* Dark */
 [data-theme="dark"] .login-card{background:rgba(10,22,42,0.94);border-color:rgba(60,110,160,0.35)}
 [data-theme="dark"] .login-input{background:rgba(15,30,55,0.88);border-color:rgba(60,110,160,0.35);color:var(--text)}
@@ -196,9 +209,22 @@
             <label class="form-label">Nombre de la especialidad *</label>
             <input type="text" id="espNombre" class="form-control" placeholder="Ej: Reumatologia"/>
           </div>
-          <div class="form-group">
-            <label class="form-label">Icono (emoji)</label>
-            <input type="text" id="espIcon" class="form-control" placeholder="e.g. hospital" maxlength="4" style="font-size:1.3rem;text-align:center"/>
+          <div class="form-group full">
+            <label class="form-label">Icono de la especialidad</label>
+            <!-- Preview + selected value -->
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+              <div id="espIconPreview" style="width:52px;height:52px;border-radius:14px;background:rgba(58,134,200,0.10);border:2px solid var(--blue-200);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;transition:all .2s">🏥</div>
+              <div>
+                <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:4px">Icono seleccionado</div>
+                <div id="espIconLabel" style="font-size:.85rem;font-weight:600;color:var(--blue-700)">Hospital</div>
+              </div>
+              <input type="hidden" id="espIcon" value="🏥"/>
+            </div>
+            <!-- Emoji grid by category -->
+            <div class="emoji-picker" id="emojiPicker">
+              <div class="emoji-cat-tabs" id="emojiCatTabs"></div>
+              <div class="emoji-grid" id="emojiGrid"></div>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Descripcion breve</label>
@@ -488,11 +514,11 @@ var espEditNombre = "";
 
 function clearEspForm() {
   document.getElementById("espNombre").value = "";
-  document.getElementById("espIcon").value   = "";
   document.getElementById("espDesc").value   = "";
   espEditMode   = false;
   espEditNombre = "";
   document.getElementById("btnEspGuardar").textContent = "Guardar especialidad";
+  if (window._syncEmojiPicker) window._syncEmojiPicker("🏥");
 }
 
 function saveEsp(nombre, icon, desc) {
@@ -572,6 +598,7 @@ function renderEspTable(q) {
       espEditNombre = e.nombre;
       document.getElementById("btnEspGuardar").textContent = "Actualizar especialidad";
       document.querySelector("[data-tab='nueva-esp']").click();
+      if (window._syncEmojiPicker) window._syncEmojiPicker(e.icon || "🏥");
     });
   });
   tbody.querySelectorAll(".del").forEach(function (b) {
@@ -614,6 +641,110 @@ function refreshEspDatalist() {
 document.getElementById("btnReset").addEventListener("click", function () {
   if (window.STORE_reset) window.STORE_reset();
 });
+
+/* ── Emoji picker ────────────────────────────────────────────────────────── */
+(function () {
+  var CATS = [
+    {
+      label: "Medicina",
+      emojis: [
+        ["🏥","Hospital"], ["🩺","Estetoscopio"], ["💊","Píldora"], ["🩻","Rayos X"],
+        ["🧬","ADN/Genética"], ["🔬","Microscopio"], ["🩹","Curita"], ["🩸","Sangre"],
+        ["💉","Jeringa"], ["🧪","Tubo ensayo"], ["🫀","Corazón"], ["🫁","Pulmón"],
+        ["🧠","Cerebro"], ["👁️","Ojo"], ["👂","Oído"], ["🦷","Diente"],
+        ["🦴","Hueso"], ["💪","Músculo"], ["🦽","Silla ruedas"], ["🩴","Ortopedia"]
+      ]
+    },
+    {
+      label: "Cuerpo",
+      emojis: [
+        ["🧑‍⚕️","Médico"], ["👶","Pediatría"], ["🤰","Maternidad"], ["🧓","Geriatría"],
+        ["🫂","Psicología"], ["👁‍🗨","Oftalmología"], ["🦻","Audiología"], ["🫦","Odontología"],
+        ["🖐️","Dermatología"], ["🦵","Traumatología"], ["🦾","Rehabilitación"], ["🫶","Cuidados"]
+      ]
+    },
+    {
+      label: "Sistemas",
+      emojis: [
+        ["❤️","Cardiología"], ["🫀","Cardiovascular"], ["🫁","Neumología"], ["🧠","Neurología"],
+        ["🦠","Infectología"], ["🩺","Medicina interna"], ["⚗️","Bioquímica"], ["🔭","Investigación"],
+        ["📋","Protocolos"], ["📊","Estadística"], ["🏃","Kinesiología"], ["🧘","Salud mental"]
+      ]
+    },
+    {
+      label: "Signos",
+      emojis: [
+        ["➕","Cruz"], ["❤️‍🔥","Urgencia"], ["🟢","Verde/OK"], ["🟡","Amarillo/Precaución"],
+        ["🔴","Rojo/Crítico"], ["🔵","Azul/Información"], ["⭐","Estrella"], ["🏆","Excelencia"],
+        ["✅","Aprobado"], ["⚠️","Advertencia"], ["🔔","Alerta"], ["📌","Referencia"]
+      ]
+    }
+  ];
+
+  var currentCat = 0;
+  var catTabsEl  = document.getElementById("emojiCatTabs");
+  var gridEl     = document.getElementById("emojiGrid");
+  var previewEl  = document.getElementById("espIconPreview");
+  var labelEl    = document.getElementById("espIconLabel");
+  var inputEl    = document.getElementById("espIcon");
+
+  if (!catTabsEl || !gridEl) return;
+
+  /* Build category tabs */
+  CATS.forEach(function (cat, idx) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "emoji-cat-btn" + (idx === 0 ? " active" : "");
+    btn.textContent = cat.label;
+    btn.addEventListener("click", function () {
+      catTabsEl.querySelectorAll(".emoji-cat-btn").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      currentCat = idx;
+      renderGrid(idx);
+    });
+    catTabsEl.appendChild(btn);
+  });
+
+  /* Render emoji grid for a category */
+  function renderGrid(idx) {
+    gridEl.innerHTML = "";
+    CATS[idx].emojis.forEach(function (pair) {
+      var em   = pair[0];
+      var name = pair[1];
+      var btn  = document.createElement("button");
+      btn.type = "button";
+      btn.className = "emoji-opt" + (inputEl.value === em ? " selected" : "");
+      btn.textContent = em;
+      btn.title = name;
+      btn.addEventListener("click", function () {
+        gridEl.querySelectorAll(".emoji-opt").forEach(function (b) { b.classList.remove("selected"); });
+        btn.classList.add("selected");
+        inputEl.value     = em;
+        previewEl.textContent = em;
+        labelEl.textContent   = name;
+      });
+      gridEl.appendChild(btn);
+    });
+  }
+
+  renderGrid(0);
+
+  /* Sync when editing an existing especialidad */
+  window._syncEmojiPicker = function (emoji) {
+    inputEl.value = emoji || "🏥";
+    previewEl.textContent = emoji || "🏥";
+    /* Find label */
+    var found = false;
+    CATS.forEach(function (cat) {
+      cat.emojis.forEach(function (pair) {
+        if (pair[0] === emoji) { labelEl.textContent = pair[1]; found = true; }
+      });
+    });
+    if (!found) labelEl.textContent = emoji || "🏥";
+    /* Re-render current grid to update selected state */
+    renderGrid(currentCat);
+  };
+}());
 
 /* ── Firebase ready ──────────────────────────────────────────────────────── */
 document.addEventListener("sicmed:ready", function () {

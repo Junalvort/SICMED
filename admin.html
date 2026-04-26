@@ -346,6 +346,11 @@ function doLogin() {
 }
 
 /* Restore session */
+// Expose globally so onclick= attribute always works
+window.doLogin   = doLogin;
+window.showAdmin = showAdmin;
+window.showLogin = showLogin;
+
 if (sessionStorage.getItem(SK) === "1") { showAdmin(); }
 
 /* Listeners */

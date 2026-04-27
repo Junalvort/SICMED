@@ -90,7 +90,7 @@
           '<div class="sc-count" style="color:' + color + '">' + esc(p.tipo) + '</div>' +
           (p.establecimiento ? '<div class="sc-desc">📍 ' + esc(p.establecimiento) + '</div>' : '') +
         '</div>' +
-        '<div class="sc-icon">' + (p.icono||'') + '</div>' +
+        '<div class="sc-icon">' + (p.icono||'📋') + '</div>' +
         '<span class="sc-arrow" style="color:' + color + '">→</span>';
       card.addEventListener('click', function(){ openPanel(p); });
       gridEl.appendChild(card);
@@ -101,7 +101,7 @@
   // ── Panel detail ─────────────────────────────────────────────────────────────
   function openPanel(p) {
     var color = getColor(p.tipo);
-    panelTipo.textContent   = (p.icono||'📋') + ' ' + p.tipo;
+    panelTipo.textContent   = (p.icono||'') + ' ' + p.tipo;
     panelTipo.style.color   = color;
     panelNombre.textContent = p.nombre;
     procDetail.innerHTML =

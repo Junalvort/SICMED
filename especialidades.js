@@ -35,10 +35,12 @@ function buildCards() {
     card.style.animationDelay = (idx * 0.04) + 's';
     card.style.animation = 'fadeUp 0.4s cubic-bezier(0.4,0,0.2,1) both';
     card.innerHTML =
+      '<div class="sc-content">' +
+        '<div class="sc-title">' + esc(esp.nombre) + '</div>' +
+        '<div class="sc-count">' + diags.length + ' diagnóstico' + (diags.length !== 1 ? 's' : '') + '</div>' +
+        (esp.desc ? '<div class="sc-desc">' + esc(esp.desc) + '</div>' : '') +
+      '</div>' +
       '<div class="sc-icon">' + (esp.icon || '🏥') + '</div>' +
-      '<div class="sc-title">' + esc(esp.nombre) + '</div>' +
-      '<div class="sc-count">' + diags.length + ' diagnóstico' + (diags.length !== 1 ? 's' : '') + '</div>' +
-      (esp.desc ? '<p class="sc-desc">' + esc(esp.desc) + '</p>' : '') +
       '<span class="sc-arrow">→</span>';
     card.addEventListener('click', function() { openPanel(esp, groups[esp.nombre] || []); });
     grid.appendChild(card);

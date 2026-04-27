@@ -26,18 +26,9 @@
     { nombre:"Neurología",        icon:"🧠", desc:"Sistema nervioso, cefaleas, movimientos" },
     { nombre:"Oftalmología",      icon:"👁️", desc:"Enfermedades oculares y visuales" },
     { nombre:"Cirugía Bariátrica",icon:"⚖️", desc:"Programa obesidad HSJD" },
-    { nombre:"Medicina Interna",  icon:"🏥", desc:"Patología general ambulatoria" },
-  ];
-
-    const ESP_BASE = [
-    { nombre:"Endocrinología",    icon:"🔬", desc:"Tiroides, suprarrenales, metabolismo" },
-    { nombre:"Gastroenterología", icon:"🫁", desc:"Aparato digestivo, hígado, páncreas" },
-    { nombre:"Hematología",       icon:"🩸", desc:"Enfermedades de la sangre y coagulación" },
-    { nombre:"Nefrología",        icon:"🫘", desc:"Riñón, ERC, síndrome nefrótico" },
-    { nombre:"Neurología",        icon:"🧠", desc:"Sistema nervioso, cefaleas, movimientos" },
-    { nombre:"Oftalmología",      icon:"👁️", desc:"Enfermedades oculares y visuales" },
-    { nombre:"Cirugía Bariátrica",icon:"⚖️", desc:"Programa obesidad HSJD" },
-    { nombre:"Medicina Interna",  icon:"🏥", desc:"Patología general ambulatoria" },
+    { nombre:"Medicina Interna",        icon:"🏥", desc:"Patología general ambulatoria" },
+    { nombre:"Otorrinolaringología",     icon:"👂", desc:"Oído, nariz, garganta, vértigo, epistaxis" },
+    { nombre:"Otorrinolaringología Infantil", icon:"👶", desc:"ORL pediátrico, amígdalas, adenoides" },
   ];
 
   const DB_BASE = [
@@ -143,9 +134,81 @@
     { cie10:"E661",  nombre:"Obesidad para bariátrica – IMC ≥35 con comorbilidad", sinonimos:["obesidad bariatrica","comorbilidad","IMC 35","HTA","DM2","SAHOS"], especialidad:"Cirugía Bariátrica", destino:"Nutriología Adulto HSJD", prioridad:"P2", criterios:"IMC ≥35 con al menos 1 comorbilidad (HTA, DM2, SAHOS, dislipidemia, artrosis severa, entre otras). Sin descompensación últimos 6 meses. Manejo 6 meses en APS", examenes:"Mismo set de exámenes que IMC ≥40", notas:"" },
     { cie10:"E66D",  nombre:"Obesidad para bariátrica – IMC ≥30 con DM2", sinonimos:["obesidad diabetes","bariatrica","IMC 30","DM2","diabetes tipo 2"], especialidad:"Cirugía Bariátrica", destino:"Nutriología Adulto HSJD", prioridad:"P2", criterios:"IMC ≥30 con Diabetes mellitus tipo 2. Manejo 6 meses en APS", examenes:"Mismo set de exámenes que IMC ≥40", notas:"" },
     { cie10:"E66E",  nombre:"Obesidad para bariátrica – IMC 30-34.9 sin respuesta APS", sinonimos:["obesidad sin pérdida peso","IMC 30","34","bariatrica","sin respuesta"], especialidad:"Cirugía Bariátrica", destino:"Nutriología Adulto HSJD", prioridad:"P2", criterios:"IMC 30-34.9. Manejo 1 año en APS sin lograr pérdida de peso sustancial (5-15% por mínimo 3 meses) ni control de comorbilidades", examenes:"Mismo set de exámenes que IMC ≥40", notas:"Requiere 1 año de manejo en APS documentado" },
-  ];
 
-  // ── Array global en memoria ─────────────────────────────────────────────────
+    // ── OTORRINOLARINGOLOGÍA (Protocolo PROT_OTORRINO_2025 / Código DGD-PROT-Nº13) ──
+    { cie10:"H651", nombre:"Otitis media aguda complicada", sinonimos:["otitis media aguda complicada","mastoiditis","laberintitis","paralisis facial","otomastoiditis"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Complicada (Otomastoiditis, laberintitis, absceso subperióstico, petrositis, parálisis facial, tromboflebitis del seno lateral): manifestadas por persistencia de otalgia, vértigo, fiebre, eritema y aumento de volumen retroauricular", examenes:"No aplica", notas:"Otitis media recurrente ≥3 episodios al año → derivar a Otorrino P2 con descripción de otoscopía" },
+    { cie10:"H650", nombre:"Otitis media serosa", sinonimos:["otitis serosa","tímpano opaco","hipoacusia","efusion oido medio"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Asociado a hipoacusia y otoscopía compatible (tímpano opaco con movilidad limitada) o sintomatología ≥3 meses después de una otitis media aguda. Evaluar estrategia Otorrino APS", examenes:"Descripción de otoscopía", notas:"Evaluar si se puede resolver por estrategia Otorrino APS (Anexo N°2)" },
+    { cie10:"H663", nombre:"Otitis media crónica complicada", sinonimos:["otitis cronica complicada","absceso","paralisis facial","mastoides","trombosis"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Complicada (absceso, parálisis facial, trombosis seno cavernoso): manifestada por fiebre, cefalea, vértigo, nistagmus, meningismo, parálisis de oculomotores, parálisis facial", examenes:"No aplica", notas:"" },
+    { cie10:"H663b", nombre:"Otitis media crónica no complicada", sinonimos:["otitis media cronica","perforacion timpanica","otorrea","colesteatoma sospecha"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"No complicada: otoscopía compatible con perforación timpánica, alteraciones de huesecillo, otorrea, inflamación de la mucosa y remanente timpánico", examenes:"Otoscopía compatible: perforación timpánica, alteraciones de huesecillo, otorrea, inflamación mucosa, remanente timpánico", notas:"" },
+    { cie10:"H600", nombre:"Otitis externa complicada", sinonimos:["otitis externa necrotizante","celulitis","pericondritis","sordera subita","herpes zoster otico"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Complicada: Celulitis, Pericondritis, Otitis externa necrotizante, Perforación timpánica traumática, Sordera súbita idiopática, post trauma acústico o por barotrauma, Sordera súbita asociada a vértigo, Herpes Zoster ótico", examenes:"No aplica", notas:"" },
+    { cie10:"H71X", nombre:"Colesteatoma del oído medio o externo", sinonimos:["colesteatoma","polipo oido","destruccion osea","otoscopía"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P1", criterios:"Sospecha clínica: pólipos o destrucción ósea en otoscopía", examenes:"Otoscopía compatible", notas:"CIE-10: H71.X colesteatoma oído medio / H60.4 colesteatoma oído externo" },
+    { cie10:"H813", nombre:"Vértigo periférico agudo incapacitante", sinonimos:["vertigo periferico","vppb","laberintitis aguda","incapacitante","caidas"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Sintomatología aguda incapacitante", examenes:"No aplica", notas:"Evaluar si se puede resolver por estrategia Otorrino APS" },
+    { cie10:"H813b", nombre:"Vértigo periférico leve-moderado o recurrente", sinonimos:["vertigo recurrente","mareos","VPPB","maniobra epley"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Sintomatología leve-moderada o episodios recurrentes", examenes:"Otoscopía", notas:"Evaluar si se puede resolver por estrategia Otorrino APS" },
+    { cie10:"H814", nombre:"Vértigo central", sinonimos:["vertigo central","neurinoma acoustico","cerebeloso","esclerosis multiple","AVE"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Clínica compatible con vértigo central (Neurinoma acústico, Alteraciones cerebelosas, Esclerosis múltiple, otros). Ver Anexo N°3 tabla comparativa", examenes:"Otoscopía (normal)", notas:"Ver tabla comparativa: vértigo central vs periférico" },
+    { cie10:"R040", nombre:"Epistaxis aguda no autolimitada", sinonimos:["epistaxis","hemorragia nasal","sangrado nasal agudo"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Epistaxis aguda no autolimitada", examenes:"No aplica", notas:"Epistaxis recurrente → derivar a Otorrino P2" },
+    { cie10:"R040b", nombre:"Epistaxis recurrente", sinonimos:["epistaxis recurrente","sangrado nasal repetido"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Epistaxis recurrente", examenes:"No aplica", notas:"" },
+    { cie10:"C300", nombre:"Poliposis nasal con obstrucción unilateral", sinonimos:["poliposis nasal","tumor nasal","obstruccion unilateral"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P1", criterios:"Con obstrucción nasal unilateral. Descartar tumor maligno de fosa nasal", examenes:"TC cavidades paranasales sin contraste (según disponibilidad)", notas:"" },
+    { cie10:"J339", nombre:"Poliposis nasal bilateral", sinonimos:["poliposis bilateral","hiposmia","anosmia","polipos nasales"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Poliposis bilateral con hiposmia", examenes:"TC cavidades paranasales sin contraste (según disponibilidad)", notas:"" },
+    { cie10:"J342", nombre:"Desviación septal o hipertrofia de cornetes", sinonimos:["desviacion septal","tabique nasal","cornetes","obstruccion nasal"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Clínica compatible: obstrucción nasal y examen físico compatible. CIE: J34.2 Desviación del tabique nasal / J34.3 Hipertrofia de los cornetes nasales", examenes:"TC cavidades paranasales sin contraste (según disponibilidad)", notas:"" },
+    { cie10:"J019", nombre:"Rinosinusitis aguda complicada", sinonimos:["sinusitis aguda complicada","celulitis preseptal","orbitaria","absceso","trombosis seno cavernoso"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Complicada: Celulitis Preseptal, Celulitis Orbitaria, Absceso subperióstico, Trombosis del seno cavernoso, Sinusitis micótica invasiva", examenes:"No aplica", notas:"" },
+    { cie10:"J329", nombre:"Rinosinusitis crónica", sinonimos:["sinusitis cronica","rinosinusitis","poliposis","12 semanas"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Crónica: sintomatología continua mayor a 12 semanas. No tomar radiografía de cavidades perinasales", examenes:"TC cavidades paranasales con contraste (según disponibilidad). No tomar radiografía de cavidades perinasales", notas:"No solicitar radiografía simple de cavidades paranasales" },
+    { cie10:"J350", nombre:"Faringoamigdalitis crónica o amígdalas hipertróficas", sinonimos:["amigdalas hipertroficas","faringoamigdalitis cronica","ronquido amigdalar","apnea amígdalas"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"≥5 episodios/año de faringoamigdalitis en 2 años consecutivos (adulto) o ≥3 en 3 años consecutivos. Amígdalas +3 o +4 con ronquido o apneas", examenes:"Descripción de orofaringe + registro de episodios anuales", notas:"CIE: J35.0 amígdalas hipertróficas / J35.3 hipertrofia amígdalas con adenoides" },
+    { cie10:"G473", nombre:"Ronquido y sospecha SAHOS", sinonimos:["ronquido","apnea del sueno","SAHOS","OSAS","somnolencia diurna"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Ronquido con apneas observadas y somnolencia diurna. IMC y examen de vía aérea", examenes:"Descripción de orofaringe, escala de Epworth, IMC", notas:"Solicitar polisomnografía si disponible" },
+    { cie10:"J380", nombre:"Parálisis de cuerdas vocales o nódulo laríngeo", sinonimos:["nodulo laringeo","paralisis cuerdas vocales","disfonia","ronquera persistente"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Disfonía >2 semanas sin causa evidente, parálisis de cuerdas vocales, nódulo laríngeo. Descartar etiología maligna", examenes:"Laringoscopía indirecta si disponible", notas:"Disfonía >2 semanas sin mejoría: siempre derivar" },
+    { cie10:"H906", nombre:"Hipoacusia neurosensorial bilateral", sinonimos:["hipoacusia","sordera","audiometria","neurosensorial","presbiacusia"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Hipoacusia neurosensorial bilateral confirmada en audiometría. Hipoacusias no incluidas en GES. Evaluar estrategia Otorrino APS", examenes:"Audiometría, impedanciometría", notas:"Estrategia Otorrino APS incluye: hipoacusias no GES, síndrome vertiginoso ≥15 años, cerumen refractario, otitis media con efusión ≥15 años, audífonos y fármacos por 3 meses" },
+
+    // ── TAMIZAJE RETINOPATÍA DIABÉTICA (ORD DGD 16/09/2024) ──
+    { cie10:"H360", nombre:"Tamizaje retinopatía diabética – DM2 sin retinopatía", sinonimos:["retinopatia diabetica tamizaje","fondo ojo diabetes","screening DM","UAPO diabetes"], especialidad:"Oftalmología", destino:"UAPO (fondo de ojo)", prioridad:"GES", criterios:"Paciente con DM2 confirmada, sin diagnóstico de retinopatía ni cataratas no operada. Frecuencia anual. Solo se derivan a FO pacientes DM2 confirmada", examenes:"HbA1c, fondo de ojo con resultado", notas:"GES. Establecimiento: UAPO Cerro Navia. No derivar a FO si ya tiene diagnóstico de retinopatía o cataratas no operada" },
+
+    // ── GES ALZHEIMER Y DEMENCIAS (GES 85) ──
+    { cie10:"F009", nombre:"Alzheimer – sospecha GES (MMSE ≤21 + Pfeffer ≥6)", sinonimos:["alzheimer GES","demencia GES","minimental 21","pfeffer 6","sospecha demencia"], especialidad:"Neurología", destino:"Neurología / APS GES", prioridad:"GES", criterios:"Test de Minimental Extendido ≤21 puntos Y Test de Pfeffer ≥6 puntos. El médico abre caso GES en etapa de sospecha. Garantía de 60 días para confirmar o descartar diagnóstico. Si duda diagnóstica: derivar a especialidad (plazo 180 días). Tratamiento de mediana complejidad se realiza en APS con garantía de 60 días desde confirmación", examenes:"Minimental extendido, Test de Pfeffer, exámenes para descartar causa reversible: glicemia, hemograma, VHS, TSH, T4L, creatinina, función hepática, VDRL, VIH, B12, Vit D", notas:"GES 85. Abrir caso en SIGGES etapa sospecha. Tratamiento en APS con donepezilo u otro según indicación especialista" },
+
+    // ── GES CÁNCER RENAL (GES 83) ──
+    { cie10:"C64X", nombre:"Cáncer renal – sospecha GES", sinonimos:["cancer renal","tumor renal","carcinoma celulas renales","masa renal","GES 83"], especialidad:"Nefrología", destino:"Urología / GES", prioridad:"GES", criterios:"Lesión imagenológica sospechosa de cáncer renal. Médico tratante abre caso GES registrando IPD de confirmación en SIGGES. Etapificación: plazo garantizado 45 días desde confirmación. Tratamiento primario: 30 días desde indicación médica (cirugía, sistémico o radioterapia)", examenes:"Ecografía renal / TAC abdomen con tumor documentado, creatinina", notas:"GES 83. Proceso: IPD → SIGGES → Etapificación (45 días) → Tratamiento primario (30 días) → Tratamiento adyuvante (30 días) → Cierre de caso" },
+// ── ORL nuevos del docx actualizado ───────────────────────────────────
+    { cie10:"H919",  nombre:"Hipoacusia no especificada (otoscopía normal, no súbita)", sinonimos:["hipoacusia","sordera","pérdida auditiva","audiometria alterada"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Otoscopía normal no asociada a hipoacusia súbita ni traumática (barotrauma) ni a vértigo", examenes:"Otoscopía (descartando tapón de cerumen)", notas:"Estrategia Otorrino APS: hipoacusias no GES, síndrome vertiginoso ≥15 años, cerumen refractario, OMS ≥15 años" },
+    { cie10:"H612",  nombre:"Cerumen impactado con contraindicación de lavado", sinonimos:["cerumen impactado","tapón oído","cera oido","cerumen contraindicacion lavado"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P1-P2", criterios:"Lavado de oídos debe realizarse en APS. Derivar si contraindicación de lavado (vértigo, otalgia u otorrea presente)", examenes:"No aplica", notas:"Derivar según sospecha diagnóstica subyacente" },
+    { cie10:"H931a", nombre:"Tinnitus con hipoacusia súbita <2 semanas", sinonimos:["tinnitus hipoacusia subita","acufeno agudo","tinnitus agudo"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P0", criterios:"Asociado a hipoacusia súbita de <2 semanas de evolución", examenes:"Otoscopía (descartando tapón de cerumen)", notas:"" },
+    { cie10:"H931b", nombre:"Tinnitus sin hipoacusia", sinonimos:["tinnitus","acufeno crónico","silbido oído","zumbido oído"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"No asociado a hipoacusia", examenes:"Otoscopía (descartando tapón de cerumen)", notas:"" },
+    { cie10:"H619",  nombre:"Hematoma pabellón auricular", sinonimos:["hematoma pabellon auricular","hematoma oreja","trauma auricular"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Sospecha clínica", examenes:"No aplica", notas:"Derivar directamente a Urgencia (Anexo N°1)" },
+    { cie10:"S022",  nombre:"Fractura huesos de la nariz", sinonimos:["fractura nasal","nariz fracturada","trauma nasal"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Sospecha clínica", examenes:"No aplica", notas:"Derivar directamente a Urgencia (Anexo N°1)" },
+    { cie10:"S003",  nombre:"Hematoma septal", sinonimos:["hematoma septal","tabique hematoma","hematoma nasal"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Clínica compatible", examenes:"No aplica", notas:"Derivar directamente a Urgencia (Anexo N°1)" },
+    { cie10:"J036a", nombre:"Amigdalitis aguda complicada – absceso periamigdalino", sinonimos:["absceso periamigdalino","amigdalitis complicada","absceso cervical profundo","angina de Ludwig"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Complicada: Absceso Periamigdalino (J36), Absceso Cervical Profundo (L02.1), Absceso cutáneo/furúnculo/carbunco del cuello", examenes:"No aplica", notas:"" },
+    { cie10:"J039",  nombre:"Amigdalitis aguda recurrente", sinonimos:["amigdalitis recurrente","amigdalitis frecuente","anginas frecuentes"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Recurrente: 7 episodios en 1 año / 5 episodios por año en 2 años / 3 episodios por año en los últimos 3 años", examenes:"No aplica", notas:"" },
+    { cie10:"J351",  nombre:"Hiperplasia Amigdalina grado 3-4 o asociada a SAHOS", sinonimos:["amígdalas hipertróficas","amigdalas grado 3","amigdalas grado 4","SAHOS amígdalas"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Grado 3 y 4 (ver Anexo N°4) o Asociada a clínica de SAHOS", examenes:"No aplica", notas:"Ver Anexo N°4 para clasificación de grados amigdalinos" },
+    { cie10:"J352",  nombre:"Hipertrofia de Adenoides sintomática", sinonimos:["adenoides","hipertrofia adenoidea","vegetaciones adenoideas","respiración bucal"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Sintomática (ronquidos, respiración bucal, apneas obstructivas) + Grado 3 u obstrucción >70%", examenes:"Rx cavum (según disponibilidad)", notas:"" },
+    { cie10:"R490a", nombre:"Disfonía >= 21 días o progresiva", sinonimos:["disfonia prolongada","ronquera persistente","disfonía progresiva","nodulo laringeo"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P1", criterios:">= 21 días o progresiva", examenes:"No aplica", notas:"Descartar etiología maligna" },
+    { cie10:"R490b", nombre:"Disfonía intermitente", sinonimos:["disfonia intermitente","ronquera intermitente","voz ronca ocasional"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Intermitente", examenes:"No aplica", notas:"" },
+    { cie10:"R061",  nombre:"Estridor", sinonimos:["estridor","estridor laringeo","estridor inspiratorio","croup"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Clínica compatible", examenes:"No aplica", notas:"" },
+    { cie10:"Q179",  nombre:"Malformación auricular o nasal congénita", sinonimos:["malformación auricular","malformación nasal","atresia aural","microtia"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P2", criterios:"Clínica compatible", examenes:"No aplica", notas:"Q17.9: malformación oído / Q30.9: malformación nariz" },
+    { cie10:"T16X",  nombre:"Cuerpo extraño en oído o fosa nasal", sinonimos:["cuerpo extraño oido","cuerpo extraño nariz","CE oido","CE nariz"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P0", criterios:"Clínica compatible", examenes:"No aplica", notas:"Cuerpo extraño nariz y oído → Urgencia directa (Anexo N°1)" },
+    { cie10:"T172",  nombre:"Cuerpo extraño en faringe/laringe/tráquea/bronquio", sinonimos:["cuerpo extraño vía aérea","CE faringe","CE tráquea","CE bronquio","cuerpo extraño aspirado"], especialidad:"Otorrinolaringología", destino:"Servicio de Urgencia", prioridad:"P0", criterios:"Clínica compatible", examenes:"No aplica", notas:"" },
+    { cie10:"C760",  nombre:"Tumor cabeza y cuello", sinonimos:["tumor cabeza cuello","masa cervical","linfonodo cervical maligno","tumor ORL maligno"], especialidad:"Otorrinolaringología", destino:"Otorrinolaringología", prioridad:"P1", criterios:"Examen físico, imagen o biopsia compatible", examenes:"Descripción del examen físico o informe de imagen o resultado de la biopsia", notas:"" },
+    // ── Oftalmología nuevos del docx actualizado ───────────────────────────
+    { cie10:"H353a", nombre:"DMRE Húmeda", sinonimos:["DMRE humeda","degeneracion macular humeda","neovascular","metamorfopsias"], especialidad:"Oftalmología", destino:"POLI DE CHOQUE", prioridad:"P0", criterios:"Disminución brusca AV, metamorfopsias, entopsias, fotopsias, alteración campo visual central", examenes:"AV, rejilla de Amsler, fondo de ojo", notas:"Poli de Choque: urgencia nivel secundario 8:00-12:00 hrs" },
+    { cie10:"S050",  nombre:"Trauma Ocular", sinonimos:["trauma ocular","lesion ojo","cuerpo extraño ojo","herida ojo","contusion ocular"], especialidad:"Oftalmología", destino:"UTO Hospital del Salvador", prioridad:"P0", criterios:"Cualquier trauma ocular", examenes:"AV", notas:"UTO Hospital del Salvador: L-V 8:00-20:00 hrs / S-D-F 9:00-20:00 hrs" },
+    { cie10:"H100",  nombre:"Conjuntivitis bacteriana refractaria", sinonimos:["conjuntivitis bacteriana refractaria","conjuntivitis purulenta","secrecion purulenta ojo"], especialidad:"Oftalmología", destino:"UAPO / Poli choque (neonatos)", prioridad:"P1", criterios:"Sin respuesta al 7° día de tto bien llevado. Neonatos <= 1 mes: Poli de Choque P0", examenes:"Cultivo secreción si disponible, AV", notas:"Neonatos <= 1 mes: derivar a Poli de Choque P0" },
+    { cie10:"H101",  nombre:"Conjuntivitis alérgica <20 años", sinonimos:["conjuntivitis alérgica niños","conjuntivitis alergica joven","picazon ojos joven"], especialidad:"Oftalmología", destino:"UAPO", prioridad:"P1", criterios:"Sin respuesta a los 14 días de tto bien llevado, en menor de 20 años", examenes:"AV, clínica alérgica", notas:"" },
+    { cie10:"M350a", nombre:"Ojo seco con antecedentes reumatológicos", sinonimos:["ojo seco reumatologico","sjogren","ojo seco autoinmune"], especialidad:"Oftalmología", destino:"UAPO", prioridad:"P1", criterios:"Paciente con antecedentes previos reumatológicos. Evaluar patología reumatológica asociada", examenes:"ANA, FR, anti-SSA/SSB (Sjögren), hemograma, VHS", notas:"" },
+    { cie10:"H000a", nombre:"Orzuelo con sospecha celulitis palpebral", sinonimos:["orzuelo complicado","celulitis palpebral","infeccion parpado"], especialidad:"Oftalmología", destino:"Oftalmo. / UAPO", prioridad:"P1", criterios:"Sospecha de celulitis palpebral", examenes:"Clínica, AV", notas:"" },
+    { cie10:"H001a", nombre:"Chalazión complicado", sinonimos:["chalazion complicado","granuloma palpebral","chalazion recurrente"], especialidad:"Oftalmología", destino:"Oftalmología", prioridad:"P1", criterios:"Chalazión con: disminución campo visual, granuloma expuesto, recurrente en mismo lugar (descartar neoplasia)", examenes:"AV, campo visual", notas:"" },
+    { cie10:"H110a", nombre:"Pterigión con invasión corneal", sinonimos:["pterigion invasivo","pterigion corneal","pterigion diplopía"], especialidad:"Oftalmología", destino:"Oftalmología", prioridad:"P1", criterios:"Diplopía, disminución AV, alteración motilidad ocular por invasión corneal", examenes:"AV, biomicroscopía", notas:"" },
+    { cie10:"H010a", nombre:"Blefaritis grave <15 años o con invasión corneal", sinonimos:["blefaritis grave","blefaritis niños","blefaritis corneal"], especialidad:"Oftalmología", destino:"Oftalmología", prioridad:"P1", criterios:"Dolor, fotofobia, disminución AV, anormalidades corneales, o paciente <15 años", examenes:"AV, biomicroscopía", notas:"" },
+    { cie10:"H351",  nombre:"Retinopatía del prematuro GES", sinonimos:["retinopatia prematuro","prematuro fondo ojo","ROP"], especialidad:"Oftalmología", destino:"Según mapa GES", prioridad:"GES", criterios:"Sospecha en prematuro", examenes:"Antecedentes perinatales", notas:"GES" },
+    { cie10:"H527a", nombre:"Vicio de Refracción GES >= 65 años", sinonimos:["miopia anciano","astigmatismo anciano","presbicia","vicios de refraccion adulto mayor"], especialidad:"Oftalmología", destino:"Según mapa GES", prioridad:"GES", criterios:"Paciente >= 65 años con alteración visual", examenes:"AV, refracción", notas:"GES" },
+    { cie10:"H509a", nombre:"Estrabismo GES <9 años", sinonimos:["estrabismo niños","estrabismo GES","ambliopía","bizco","ojo vago"], especialidad:"Oftalmología", destino:"Según mapa GES", prioridad:"GES", criterios:"Sospecha de estrabismo en menores de 9 años", examenes:"AV, test cover-uncover, refracción", notas:"GES" },
+    { cie10:"H509b", nombre:"Estrabismo NO GES >9 años", sinonimos:["estrabismo adulto","estrabismo no GES","desviación ocular"], especialidad:"Oftalmología", destino:"Oftalmología", prioridad:"P2", criterios:"Sospecha de estrabismo en mayores de 9 años", examenes:"AV, test cover-uncover, refracción", notas:"" },
+    { cie10:"H102",  nombre:"Conjuntivitis alérgica >= 20 años", sinonimos:["conjuntivitis alérgica adulto","conjuntivitis alergica"], especialidad:"Oftalmología", destino:"UAPO", prioridad:"P2", criterios:"Sin respuesta a los 30 días de tto bien llevado, en mayor de 20 años", examenes:"AV, clínica alérgica", notas:"" },
+    { cie10:"M350b", nombre:"Ojo seco sin antecedentes reumatológicos", sinonimos:["ojo seco","síndrome ojo seco","sequedad ocular"], especialidad:"Oftalmología", destino:"UAPO", prioridad:"P2", criterios:"Refractario a 30 días de lágrimas artificiales. Evaluar patología reumatológica por exámenes", examenes:"ANA, FR (para descartar Sjögren)", notas:"" },
+    { cie10:"H110b", nombre:"Pterigión sintomático sin invasión corneal", sinonimos:["pterigion sintomatico","ojo rojo pterigion","pterigion inflamado"], especialidad:"Oftalmología", destino:"UAPO / Oftalmo.", prioridad:"P2", criterios:"Paciente sintomático con signos inflamatorios, refractario a tto médico desde UAPO", examenes:"AV, biomicroscopía", notas:"" },
+    { cie10:"H001b", nombre:"Chalazión sin complicaciones", sinonimos:["chalazion simple","quiste palpebral","calacio"], especialidad:"Oftalmología", destino:"Oftalmología", prioridad:"P2", criterios:"Sin respuesta a medidas de nivel primario después de 3 meses", examenes:"AV", notas:"" },
+    { cie10:"H010b", nombre:"Blefaritis refractaria a 30 días", sinonimos:["blefaritis refractaria","inflamacion parpados cronica","seborea palpebral"], especialidad:"Oftalmología", destino:"UAPO", prioridad:"P2", criterios:"Refractaria a tto bien llevado en 30 días", examenes:"AV, biomicroscopía", notas:"" },
+    // ── GES adicionales del docx ────────────────────────────────────────────
+    { cie10:"E66A",  nombre:"Obesidad para bariátrica – IMC >= 40", sinonimos:["obesidad morbida bariatrica","IMC 40","bypass gastrico","manga gastrica"], especialidad:"Cirugía Bariátrica", destino:"Nutriología Adulto HSJD", prioridad:"P2", criterios:"IMC >= 40, con o sin comorbilidades. Sin descompensación en últimos 6 meses. Manejo 6 meses en APS con cambio estilo de vida. Edades 16-70 años", examenes:"Hemograma, creatinina+VFG, glicemia, HbA1c, albúmina, proteínas, calcio, fósforo, magnesio, LDH, ELP, función hepática completa, perfil lipídico, TSH+T4L, coagulación (INR,TP,TTPa), 25-OH VitD, B12, perfil ferrocinético, uroanálisis, EDA+Ureasa+biopsias, eco abdominal, espirometría, test esfuerzo", notas:"IC preop: Cardiología (cardiopatía/IC FEVI≤40%), Broncopulmonar (asma no controlada/SAHOS), Gastro (transaminasas alteradas/fibrosis). IMC ≥50: kinesioterapia cardiorrespiratoria preoperatoria HSJD" },
+    { cie10:"E66B",  nombre:"Obesidad para bariátrica – IMC >= 35 con comorbilidad", sinonimos:["obesidad severa bariatrica","IMC 35 comorbilidad","obesidad HTA bariatrica"], especialidad:"Cirugía Bariátrica", destino:"Nutriología Adulto HSJD", prioridad:"P2", criterios:"IMC >= 35 con al menos 1 comorbilidad (HTA, DM2, SAHOS, dislipidemia, artrosis severa). Sin descompensación últimos 6 meses. Manejo 6 meses en APS", examenes:"Mismo set de exámenes que IMC >=40", notas:"" },
+    { cie10:"E66C",  nombre:"Obesidad para bariátrica – IMC >= 30 con DM2", sinonimos:["obesidad DM2 bariatrica","IMC 30 diabetes","cirugía metabólica DM2"], especialidad:"Cirugía Bariátrica", destino:"Nutriología Adulto HSJD", prioridad:"P2", criterios:"IMC >= 30 con Diabetes mellitus tipo 2. Manejo 6 meses en APS", examenes:"Mismo set de exámenes que IMC >=40", notas:"" },
+  ];
+// ── Array global en memoria ─────────────────────────────────────────────────
   window.DB = [];
 
   // ── Inicializar Firebase ────────────────────────────────────────────────────
@@ -163,14 +226,21 @@
   // ── Cargar diagnósticos desde Firestore ────────────────────────────────────
   try {
     const snap = await getDocs(collection(fdb, COL_DIAG));
-    if (snap.empty) {
-      // Primera vez: poblar con datos base
-      for (const d of DB_BASE) {
+    const existingCies = new Set();
+    if (!snap.empty) {
+      snap.forEach(d => {
+        const data = d.data();
+        window.DB.push(data);
+        existingCies.add(data.cie10);
+      });
+    }
+    // Sincronizar items base que no estén en Firestore
+    for (const d of DB_BASE) {
+      if (!existingCies.has(d.cie10)) {
         await setDoc(doc(fdb, COL_DIAG, d.cie10), d);
         window.DB.push(d);
+        existingCies.add(d.cie10);
       }
-    } else {
-      snap.forEach(d => window.DB.push(d.data()));
     }
   } catch (e) {
     // Si falla Firebase usar datos base locales
@@ -188,92 +258,22 @@
   // Cargar especialidades
   try {
     const snapEsp = await getDocs(collection(fdb, COL_ESP));
-    if (snapEsp.empty) {
-      for (const e of ESP_BASE) {
+    const existingNames = new Set();
+    if (!snapEsp.empty) {
+      snapEsp.forEach(d => {
+        const data = d.data();
+        window.ESPECIALIDADES.push(data);
+        existingNames.add(data.nombre);
+      });
+    }
+    // Sincronizar especialidades base que no estén en Firestore
+    for (const e of ESP_BASE) {
+      if (!existingNames.has(e.nombre)) {
         await setDoc(doc(fdb, COL_ESP, e.nombre), e);
         window.ESPECIALIDADES.push(e);
       }
-    } else {
-      snapEsp.forEach(d => window.ESPECIALIDADES.push(d.data()));
-      // Sort by nombre
-      window.ESPECIALIDADES.sort((a,b) => a.nombre.localeCompare(b.nombre, "es"));
     }
-  } catch(e) {
-    window.ESPECIALIDADES.push(...ESP_BASE);
-  }
-
-  // ── Procedimientos ──────────────────────────────────────────────────────────
-  const COL_PROC = "procedimientos";
-  window.PROCEDIMIENTOS = [];
-
-  const PROC_BASE = [
-    { id:"prueba_dx", tipo:"Prueba Diagnóstica", nombre:"Endoscopia Digestiva Alta con test de Ureasa", modalidad:"Endoscopia", establecimiento:"Contralor", prioridad:"Normal / Alta (sospecha Ca)", diagnosticos:"K25 Úlcera gástrica, D00.2 Ca gástrico, R63.4 Pérdida de peso, K29.7 Gastritis no especificada", criterios:"Clasificación diagnóstica. Prioridad Normal o Alta (sospecha Ca). Fundamentos clínicos + teléfono. ¿Resolutividad? Sí. Derivar a contralor: Sí", notas:"" },
-    { id:"eco_mamaria", tipo:"Imagenología", nombre:"Ecotomografía Mamaria", modalidad:"Ecografía", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"Z12.3 Examen de pesquisa especial para tumor de la mama", criterios:"Clasificación diagnóstica. Fundamentos clínicos. Prioridad Normal. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
-    { id:"mamo_comp", tipo:"Imagenología", nombre:"Proyecciones Mamográficas Complementarias", modalidad:"Ecografía", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"Z12.3 Examen de pesquisa especial para tumor de la mama", criterios:"Clasificación diagnóstica. Fundamentos clínicos. Prioridad Normal. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
-    { id:"mamografia", tipo:"Imagenología", nombre:"Mamografía Bilateral (4 exp.)", modalidad:"Radiología simple", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"Z12.3 Examen de pesquisa especial para tumor de la mama", criterios:"Clasificación diagnóstica. Fundamentos clínicos. Prioridad Normal. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
-    { id:"rx_pelvis", tipo:"Imagenología", nombre:"Radiografía Pelvis (lactante o niño < 6 años)", modalidad:"Radiología simple", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"Q65.4 Subluxación congénita de la cadera, bilateral", criterios:"Clasificación diagnóstica. Fundamentos clínicos. Prioridad Normal. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
-    { id:"eco_abdominal", tipo:"Imagenología", nombre:"Ecotomografía Abdominal", modalidad:"Ecografía", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"K80 Colelitiasis, R10 Dolor abdominal parte superior", criterios:"Incluye hígado, vía biliar, vesícula, páncreas, riñones, bazo, retroperitoneo y grandes vasos. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
-    { id:"rx_torax", tipo:"Imagenología", nombre:"Radiografía de Tórax", modalidad:"Radiografía", establecimiento:"Contralor", prioridad:"Normal", diagnosticos:"J15 Neumonía bacteriana, J45 Asma bronquial, J44.9 EPOC", criterios:"Frontal y lateral (incluye fluoroscopia) 1-2 proy. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
-    { id:"fondo_ojo", tipo:"Procedimiento", nombre:"Fondo de Ojo (Presencial)", modalidad:"Fondo de ojo", establecimiento:"UAPO Cerro Navia", prioridad:"Normal", diagnosticos:"E11 Diabetes Mellitus No insulinodependiente, E11.7 DM con múltiples complicaciones", criterios:"Solo DM2 confirmada. Frecuencia anual. Sin diagnóstico confirmado de retinopatía o cataratas no operada. Marcar GES. Extrasistema: No. Resolutividad: No. Derivar a contralor: Sí", notas:"Extrasistema: NO. GES obligatorio." },
-    { id:"cirugia_menor", tipo:"Cirugía Menor", nombre:"Cirugía Menor", modalidad:"Cirugía menor", establecimiento:"Cesfam Dr. Albertz", prioridad:"Normal", diagnosticos:"Biopsias cutáneas, fibromas blandos, papilomas, acrocordones, nevus típicos, verrugas, granuloma piógeno, angiomas, onicocriptosis, cuerpo extraño cutáneo, tumor benigno subcutáneo, lipoma, quiste epidérmico, quiste sebáceo, verruga plantar", criterios:"Lesiones hasta 3 cm. Describir tamaño y localización. Extrasistema: No. Resolutividad: No. Derivar a contralor: Sí. Agregar código CIE-10 y teléfono en fundamento.", notas:"NO derivar: lesiones en cara/pliegues (excepto acrocordones), abscesos en periodo inflamatorio, lesiones sospechosas de malignidad de teledermatología, lesiones anogenitales, pacientes con TACO." },
-    { id:"rehab_adulto", tipo:"Rehabilitación Física", nombre:"Evaluación y Tratamiento por Rehabilitación Física (Adulto)", modalidad:"Rehabilitación", establecimiento:"Hospital Félix Bulnes Cerda / Sala RBC", prioridad:"Normal", diagnosticos:"Patologías agudas y crónicas osteomusculares", criterios:"Patologías AGUDAS (<3 meses evolución) → Hospital Félix Bulnes Cerda. Patologías CRÓNICAS (>3 meses evolución) → Sala RBC. Fundamentos clínicos + teléfono. Resolutividad: Sí. Derivar a contralor: Sí", notas:"" },
-    { id:"telederma", tipo:"Dermatología APS", nombre:"Teledermatología (Consulta Médica Especialidad Dermatología)", modalidad:"Teledermatología", establecimiento:"Cesfam al cual esté inscrito", prioridad:"Normal", diagnosticos:"Patologías dermatológicas (ver indicaciones)", criterios:"Diagnósticos de dermatología acorde. Envío de fotografías con consentimiento al correo referente según Cesfam. Extrasistema: No. Resolutividad: No. Derivar a contralor: Sí", notas:"NO derivar: verrugas anogenitales, procedimientos quirúrgicos, patología oral, pie diabético, quemaduras agudas, shock anafiláctico." },
-    { id:"ortesis", tipo:"Órtesis", nombre:"Entrega de Órtesis", modalidad:"Órtesis", establecimiento:"Cesfam al cual esté inscrito", prioridad:"Normal", diagnosticos:"Adultos ≥65 años (GES). 45-64 años programa piloto: artrosis cadera/rodilla, dependientes severos, DM2 con úlcera activa, ACV, amputaciones EEII, lesión medular, síndrome Post-UCI", criterios:"Previo GES Órtesis en mayores de 65 años. Programa piloto 45-64 años para casos específicos. Fundamentos clínicos + teléfono. Extrasistema: No. Resolutividad: No. Derivar a contralor: Sí", notas:"Órtesis disponibles: Bastón con codera móvil, Andador con/sin ruedas, Silla de ruedas, Cojín Anti-escaras, Colchón Anti-escaras." },
-  ];
-
-  // ── Array global en memoria ─────────────────────────────────────────────────
-  window.DB = [];
-
-  // ── Inicializar Firebase ────────────────────────────────────────────────────
-  const { initializeApp }    = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-  const { getFirestore, collection, getDocs, doc, setDoc,
-          deleteDoc, addDoc, query, orderBy, Timestamp }
-    = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-
-  const app = initializeApp(FIREBASE_CONFIG);
-  const fdb  = getFirestore(app);
-
-  const COL_DIAG = "diagnosticos";
-  const COL_LOG  = "historial";
-
-  // ── Cargar diagnósticos desde Firestore ────────────────────────────────────
-  try {
-    const snap = await getDocs(collection(fdb, COL_DIAG));
-    if (snap.empty) {
-      // Primera vez: poblar con datos base
-      for (const d of DB_BASE) {
-        await setDoc(doc(fdb, COL_DIAG, d.cie10), d);
-        window.DB.push(d);
-      }
-    } else {
-      snap.forEach(d => window.DB.push(d.data()));
-    }
-  } catch (e) {
-    // Si falla Firebase usar datos base locales
-    console.warn("Firebase no disponible, usando datos locales:", e);
-    window.DB.push(...DB_BASE);
-  }
-
-  // ── Funciones globales ──────────────────────────────────────────────────────
-
-
-  // ── Array global de especialidades ─────────────────────────────────────────
-  window.ESPECIALIDADES = [];
-  const COL_ESP = "especialidades";
-
-  // Cargar especialidades
-  try {
-    const snapEsp = await getDocs(collection(fdb, COL_ESP));
-    if (snapEsp.empty) {
-      for (const e of ESP_BASE) {
-        await setDoc(doc(fdb, COL_ESP, e.nombre), e);
-        window.ESPECIALIDADES.push(e);
-      }
-    } else {
-      snapEsp.forEach(d => window.ESPECIALIDADES.push(d.data()));
-      // Sort by nombre
-      window.ESPECIALIDADES.sort((a,b) => a.nombre.localeCompare(b.nombre, "es"));
-    }
+    window.ESPECIALIDADES.sort((a,b) => a.nombre.localeCompare(b.nombre, "es"));
   } catch(e) {
     window.ESPECIALIDADES.push(...ESP_BASE);
   }
@@ -299,13 +299,20 @@
 
   try {
     const snapProc = await getDocs(collection(fdb, COL_PROC));
-    if (snapProc.empty) {
-      for (const p of PROC_BASE) {
+    const existingIds = new Set();
+    if (!snapProc.empty) {
+      snapProc.forEach(d => {
+        const data = d.data();
+        window.PROCEDIMIENTOS.push(data);
+        existingIds.add(data.id);
+      });
+    }
+    // Sincronizar procedimientos base que no estén en Firestore
+    for (const p of PROC_BASE) {
+      if (!existingIds.has(p.id)) {
         await setDoc(doc(fdb, COL_PROC, p.id), p);
         window.PROCEDIMIENTOS.push(p);
       }
-    } else {
-      snapProc.forEach(d => window.PROCEDIMIENTOS.push(d.data()));
     }
   } catch(e) {
     window.PROCEDIMIENTOS.push(...PROC_BASE);

@@ -527,12 +527,12 @@ body {
   display: inline-flex;
   align-items: center;
   padding: 6px 10px;
-  border-radius: 999px;
+  border-radius: 400px;
   background: transparent;
   border: none;
   color: var(--blue-700);
   text-decoration: none;
-  font-size: 0.82rem;
+  font-size: 0.4rem;
   font-weight: 600;
   letter-spacing: 0.2px;
   transition: color 0.2s var(--ease), transform 0.2s var(--ease);

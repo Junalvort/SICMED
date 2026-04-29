@@ -178,9 +178,9 @@
     // Focus en input
     elements.input.focus();
     
-    // Scroll suave hacia arriba al buscador
+    // Scroll suave hacia arriba al limpiar
     if (window.smoothScrollTo) {
-      window.smoothScrollTo(elements.input);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
@@ -337,7 +337,7 @@
     
     // Scroll suave al panel
     if (window.smoothScrollTo) {
-      window.smoothScrollTo(elements.resultPanel);
+      window.smoothScrollTo(elements.resultPanel, 'nearest');
     }
   }
 

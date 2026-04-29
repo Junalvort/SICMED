@@ -134,9 +134,9 @@ window.debounce = function(func, wait) {
 /**
  * Utilidad: Smooth scroll a elemento
  */
-window.smoothScrollTo = function(element) {
+window.smoothScrollTo = function(element, block = 'nearest') {
   if (!element) return;
-  element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  element.scrollIntoView({ behavior: 'smooth', block: block });
 };
 
 // Exportar indicador de que common.js está cargado

@@ -511,7 +511,7 @@ body {
 
 .page-links {
   width: 100%;
-  margin: 0 auto 24px;
+  margin: auto 0 12px;
   padding-top: 10px;
   display: flex;
   justify-content: center;

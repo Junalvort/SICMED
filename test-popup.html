@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Procedure Popup</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="proc-panel open" id="procPanel">
+    <div class="proc-box">
+      <div class="proc-box-header">
+        <div>
+          <div class="proc-box-tipo" style="color: #3b82f6;">Procedimiento</div>
+          <div class="proc-box-title">Test Procedure</div>
+        </div>
+        <button class="diag-close-btn">×</button>
+      </div>
+      <div class="proc-detail">
+        <div class="proc-detail-left">
+          <div class="proc-detail-section">
+            <div class="proc-detail-label">Modalidad</div>
+            <div class="proc-detail-value">Ambulatoria</div>
+          </div>
+          <div class="proc-detail-section">
+            <div class="proc-detail-label">Prioridad</div>
+            <div class="proc-detail-value">P1</div>
+          </div>
+          <div class="proc-detail-section">
+            <div class="proc-detail-label">📍 Establecimiento</div>
+            <div class="proc-detail-value">Hospital San José</div>
+          </div>
+        </div>
+        <div class="proc-detail-right">
+          <div class="proc-detail-section multiline">
+            <div class="proc-detail-label">Diagnósticos</div>
+            <div class="proc-detail-value">E035 - Coma mixedematoso<br>E055 - Crisis tirotoxica</div>
+          </div>
+        </div>
+        <div class="proc-detail-section full">
+          <div class="proc-detail-label">Criterios de Derivación</div>
+          <div class="proc-detail-value" style="white-space:pre-line;line-height:1.7">
+            Sospecha fundada de hipertiroidismo.
+            Embarazo.
+            Mujer posmenopáusica u hombre >55 años
+          </div>
+        </div>
+        <div class="proc-detail-notas">
+          <div class="proc-detail-label" style="color:#f57c00;font-weight:700">💡 Notas Importantes</div>
+          <div class="proc-detail-value" style="color:var(--text);line-height:1.6">
+            Derivar directamente a urgencia
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

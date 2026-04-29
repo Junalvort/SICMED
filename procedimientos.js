@@ -129,53 +129,40 @@
 
   function openPanel(proc) {
     const color = getColor(proc.tipo);
-    
+
     elements.panelTipo.textContent = proc.tipo;
     elements.panelTipo.style.color = color;
-    
+
     elements.panelNombre.textContent = proc.nombre;
-    
-    // Construir HTML del detalle
-    let detailHTML = '';
-    
-    if (proc.modalidad) {
-      detailHTML += fieldRow('Modalidad', proc.modalidad);
-    }
-    
-    if (proc.establecimiento) {
-      detailHTML += fieldRow('Establecimiento', proc.establecimiento);
-    }
-    
-    if (proc.prioridad) {
-      detailHTML += fieldRow('Prioridad', proc.prioridad);
-    }
-    
-    if (proc.diagnosticos) {
-      detailHTML += fieldRow('Diagnósticos', proc.diagnosticos, true);
-    }
-    
-    if (proc.criterios) {
-      detailHTML += `
-        <div class="proc-detail-row full">
+
+    // Construir HTML del detalle con nueva distribución
+    let detailHTML = `
+      <div class="proc-detail-left">
+        ${proc.modalidad ? fieldSection('Modalidad', proc.modalidad) : ''}
+        ${proc.prioridad ? fieldSection('Prioridad', proc.prioridad) : ''}
+        ${proc.establecimiento ? fieldSection('📍 Establecimiento', proc.establecimiento) : ''}
+      </div>
+      <div class="proc-detail-right">
+        ${proc.diagnosticos ? fieldSection('Diagnósticos', proc.diagnosticos, true) : ''}
+      </div>
+      ${proc.criterios ? `
+        <div class="proc-detail-section full">
           <div class="proc-detail-label">Criterios de Derivación</div>
           <div class="proc-detail-value" style="white-space:pre-line;line-height:1.7">
             ${escapeHTML(proc.criterios)}
           </div>
         </div>
-      `;
-    }
-    
-    if (proc.notas) {
-      detailHTML += `
-        <div class="proc-detail-row full" style="background:rgba(255,193,7,0.08);border-left:3px solid #f57c00;padding:14px 16px;border-radius:8px;margin-top:12px">
+      ` : ''}
+      ${proc.notas ? `
+        <div class="proc-detail-notas">
           <div class="proc-detail-label" style="color:#f57c00;font-weight:700">💡 Notas Importantes</div>
           <div class="proc-detail-value" style="color:var(--text);line-height:1.6">
             ${escapeHTML(proc.notas)}
           </div>
         </div>
-      `;
-    }
-    
+      ` : ''}
+    `;
+
     elements.procDetail.innerHTML = detailHTML;
     elements.panel.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -186,9 +173,9 @@
     document.body.style.overflow = '';
   }
 
-  function fieldRow(label, value, multiline = false) {
+  function fieldSection(label, value, multiline = false) {
     return `
-      <div class="proc-detail-row${multiline ? ' full' : ''}">
+      <div class="proc-detail-section${multiline ? ' multiline' : ''}">
         <div class="proc-detail-label">${label}</div>
         <div class="proc-detail-value">${escapeHTML(value)}</div>
       </div>

@@ -177,6 +177,11 @@
     
     // Focus en input
     elements.input.focus();
+    
+    // Scroll suave hacia arriba al buscador
+    if (window.smoothScrollTo) {
+      window.smoothScrollTo(elements.input);
+    }
   }
 
   function clearSearchOnClick() {

@@ -181,8 +181,12 @@
 
   function clearSearchOnClick() {
     const query = elements.input.value.trim();
-    if (query.length === 0) return;
-    clearSearch();
+    const resultsPanelVisible = elements.resultPanel && !elements.resultPanel.hidden;
+    
+    // Limpiar si hay texto O si hay un panel de resultados abierto
+    if (query.length > 0 || resultsPanelVisible) {
+      clearSearch();
+    }
   }
 
   // ═══════════════════════════════════════════════════════════

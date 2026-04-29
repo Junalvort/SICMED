@@ -55,6 +55,7 @@
     // Input con búsqueda en tiempo real
     elements.input.addEventListener('input', handleInput);
     elements.input.addEventListener('keydown', handleKeyDown);
+    elements.input.addEventListener('click', clearSearchOnClick);
     
     // Botón limpiar
     elements.clearBtn.addEventListener('click', clearSearch);
@@ -178,7 +179,13 @@
     elements.input.focus();
   }
 
-  // ═══════════════════════════════════════════════════════════════════
+  function clearSearchOnClick() {
+    const query = elements.input.value.trim();
+    if (query.length === 0) return;
+    clearSearch();
+  }
+
+  // ═══════════════════════════════════════════════════════════
   // RENDERIZADO DE DROPDOWN
   // ═══════════════════════════════════════════════════════════════════
 

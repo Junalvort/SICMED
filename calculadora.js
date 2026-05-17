@@ -187,6 +187,59 @@ var ESCALAS = [
     nota:'Puntaje máximo: 88. <47: sin sobrecarga. 47-55: sobrecarga leve. >55: sobrecarga intensa. Indicar apoyo psicológico y/o red de respiro si sobrecarga intensa.',
     scoreLabel:'puntos'
   },
+  // ═══ CALCULADORAS ANTROPOMÉTRICAS (tipo:inputs, no Q&A) ═══
+  {
+    id:'chumlea', icono:'📏', color:'#0288d1',
+    nombre:'Estimación de peso y talla (Chumlea)',
+    descripcion:'Paciente postrado o que no puede ser pesado/medido',
+    tipo:'inputs',
+    inputs:[
+      { id:'sexo',  txt:'Sexo',                                   tipo:'select', opciones:[{v:'M',l:'Masculino'},{v:'F',l:'Femenino'}] },
+      { id:'edad',  txt:'Edad (años)',                            tipo:'number', min:6,  max:120, step:1,    unidad:'años' },
+      { id:'ar',    txt:'Altura de rodilla (talón a borde superior de rótula, rodilla 90°)', tipo:'number', min:20, max:80,  step:0.1, unidad:'cm' },
+      { id:'cp',    txt:'Circunferencia de pantorrilla (máxima)', tipo:'number', min:15, max:60,  step:0.1, unidad:'cm' },
+      { id:'cb',    txt:'Circunferencia braquial (punto medio del brazo)', tipo:'number', min:10, max:50, step:0.1, unidad:'cm' },
+    ],
+    compute: function(v){
+      // Fórmulas de Chumlea (validadas internacionalmente para adultos ≥60 años)
+      var edad = parseFloat(v.edad), ar = parseFloat(v.ar), cp = parseFloat(v.cp), cb = parseFloat(v.cb);
+      var talla, peso;
+      if (v.sexo === 'M') {
+        // Talla hombre: 64.19 - (0.04 × edad) + (2.02 × AR)
+        talla = 64.19 - (0.04 * edad) + (2.02 * ar);
+        // Peso hombre (sin pliegue subescapular): (0.98 × CP) + (1.16 × AR) + (1.73 × CB) − 81.69
+        peso  = (0.98 * cp) + (1.16 * ar) + (1.73 * cb) - 81.69;
+      } else {
+        // Talla mujer: 84.88 - (0.24 × edad) + (1.83 × AR)
+        talla = 84.88 - (0.24 * edad) + (1.83 * ar);
+        // Peso mujer (sin pliegue subescapular): (1.27 × CP) + (0.87 × AR) + (0.98 × CB) − 62.35
+        peso  = (1.27 * cp) + (0.87 * ar) + (0.98 * cb) - 62.35;
+      }
+      var imc = peso / Math.pow(talla/100, 2);
+      return { talla:talla, peso:peso, imc:imc };
+    },
+    interpret: function(r){
+      // Color e interpretación basados en el IMC estimado
+      var imc = r.imc;
+      var imcLabel;
+      var color, bg;
+      if (imc < 18.5)      { imcLabel = 'Bajo peso';            color = '#e53935'; bg = 'rgba(229,57,53,.10)'; }
+      else if (imc < 25)   { imcLabel = 'Peso normal';          color = '#43a047'; bg = 'rgba(67,160,71,.10)'; }
+      else if (imc < 30)   { imcLabel = 'Sobrepeso';            color = '#fb8c00'; bg = 'rgba(251,140,0,.10)'; }
+      else if (imc < 35)   { imcLabel = 'Obesidad grado I';     color = '#e65100'; bg = 'rgba(230,81,0,.10)'; }
+      else if (imc < 40)   { imcLabel = 'Obesidad grado II';    color = '#bf360c'; bg = 'rgba(191,54,12,.10)'; }
+      else                 { imcLabel = 'Obesidad grado III';   color = '#b71c1c'; bg = 'rgba(183,28,28,.10)'; }
+      return {
+        label: 'Talla: ' + r.talla.toFixed(1) + ' cm · Peso: ' + r.peso.toFixed(1) + ' kg · IMC: ' + imc.toFixed(1) + ' (' + imcLabel + ')',
+        color: color, bg: bg,
+        // Para guardar como "score" usamos el peso estimado
+        scoreDisplay: r.peso.toFixed(1) + ' kg',
+        details: { talla: r.talla, peso: r.peso, imc: imc, categoria: imcLabel }
+      };
+    },
+    nota:'Fórmulas de Chumlea (1985, 1988) validadas para estimación antropométrica en pacientes postrados o que no pueden ser pesados/medidos. Variabilidad estimada ±5%. Requiere medición con cinta métrica flexible y rodilla a 90°. Útil para cálculo de IMC, dosificación de fármacos y estimación de requerimientos nutricionales.',
+    scoreLabel:'kg'
+  },
 ];
 
 // ── DOM refs ────────────────────────────────────────────────────────────────
@@ -244,6 +297,64 @@ function openModal(escala, savedData){
   btnCalc.textContent = 'Calcular resultado';
 
   modalQs.innerHTML = '';
+
+  // ── Rama: calculadora con INPUTS numéricos (Chumlea u otras) ──
+  if (escala.tipo === 'inputs' && escala.inputs) {
+    escala.inputs.forEach(function(inp, ii){
+      var blk = document.createElement('div');
+      blk.className = 'q-block';
+      var savedVal = savedData && savedData.respuestas ? savedData.respuestas[inp.id] : '';
+      var fieldHTML = '';
+
+      if (inp.tipo === 'select') {
+        var opts = inp.opciones.map(function(o){
+          var sel = (String(savedVal) === String(o.v)) ? ' selected' : '';
+          return '<option value="'+esc(o.v)+'"'+sel+'>'+esc(o.l)+'</option>';
+        }).join('');
+        fieldHTML =
+          '<select class="q-input" id="inp_'+esc(inp.id)+'" style="background:rgba(255,255,255,0.95);border:1.5px solid var(--gray-200);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:.92rem;color:var(--text);width:100%;outline:none">' +
+            '<option value="">— Selecciona —</option>' + opts +
+          '</select>';
+      } else {
+        var valAttr = (savedVal !== undefined && savedVal !== '') ? ' value="'+esc(savedVal)+'"' : '';
+        fieldHTML =
+          '<div style="display:flex;gap:8px;align-items:center">' +
+            '<input type="number" class="q-input" id="inp_'+esc(inp.id)+'"' + valAttr +
+              ' min="'+inp.min+'" max="'+inp.max+'" step="'+(inp.step||1)+'"' +
+              ' placeholder="'+inp.min+' – '+inp.max+'"' +
+              ' style="background:rgba(255,255,255,0.95);border:1.5px solid var(--gray-200);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:.92rem;color:var(--text);flex:1;outline:none"/>' +
+            (inp.unidad ? '<span style="font-size:.85rem;color:var(--text-muted);font-weight:600;min-width:42px">'+esc(inp.unidad)+'</span>' : '') +
+          '</div>';
+      }
+
+      blk.innerHTML =
+        '<div class="q-label">' + (ii+1) + '. ' + esc(inp.txt) + '</div>' +
+        '<div style="margin-top:6px">' + fieldHTML + '</div>';
+
+      modalQs.appendChild(blk);
+
+      // Guardar valores en activeAnswers al cambiar
+      var el = blk.querySelector('#inp_'+inp.id);
+      if (savedVal !== undefined && savedVal !== '') activeAnswers[inp.id] = savedVal;
+      el.addEventListener('input',  function(){
+        activeAnswers[inp.id] = el.value;
+        resultBox.classList.remove('show');
+        saveWrap.style.display = 'none';
+      });
+      el.addEventListener('change', function(){
+        activeAnswers[inp.id] = el.value;
+        resultBox.classList.remove('show');
+        saveWrap.style.display = 'none';
+      });
+    });
+
+    if (savedData && savedData.detalles) { _showResultInputs(savedData.detalles); }
+    modalBg.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+
+  // ── Rama original: escala Q&A ──
   escala.preguntas.forEach(function(q, qi){
     var blk = document.createElement('div');
     blk.className = 'q-block';
@@ -284,6 +395,33 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModa
 // ── Calculate ────────────────────────────────────────────────────────────────
 btnCalc.addEventListener('click', function(){
   if (!activeEscala) return;
+
+  // ── Rama: calculadora con inputs (Chumlea) ──
+  if (activeEscala.tipo === 'inputs' && activeEscala.inputs) {
+    var faltan = [];
+    activeEscala.inputs.forEach(function(inp){
+      var val = activeAnswers[inp.id];
+      if (val === undefined || val === '' || val === null) {
+        faltan.push(inp.txt.substring(0,40));
+        return;
+      }
+      if (inp.tipo === 'number') {
+        var num = parseFloat(val);
+        if (isNaN(num) || num < inp.min || num > inp.max) {
+          faltan.push(inp.txt.substring(0,40) + ' (rango: '+inp.min+'-'+inp.max+')');
+        }
+      }
+    });
+    if (faltan.length > 0) {
+      showSaveMsg('⚠️ Completa correctamente:\n' + faltan.slice(0,4).join('\n'), '#c0392b');
+      return;
+    }
+    var result = activeEscala.compute(activeAnswers);
+    _showResultInputs(result);
+    return;
+  }
+
+  // ── Rama original: escalas Q&A ──
   var unanswered = activeEscala.preguntas.filter(function(q){ return activeAnswers[q.id]===undefined; });
   if (unanswered.length > 0) {
     var names = unanswered.slice(0,3).map(function(q,i){ return (i+1)+'. '+q.txt.substring(0,40)+'…'; }).join('\n');
@@ -313,6 +451,27 @@ function _showResult(score){
   saveWrap.style.display = 'flex';
 }
 
+// Render de resultado para calculadoras tipo:inputs (Chumlea)
+function _showResultInputs(result){
+  var i = activeEscala.interpret(result);
+  activeInterp = i;
+  // Guardamos el peso como "score" numérico para registro histórico
+  activeScore  = parseFloat(result.peso.toFixed(1));
+  // Guardamos los detalles completos para reabrir el caso
+  activeInterp.details = i.details;
+  resultScore.textContent  = i.scoreDisplay || (activeScore + ' kg');
+  resultScore.style.color  = i.color;
+  resultInterp.textContent = i.label;
+  resultInterp.style.color = i.color;
+  resultNote.textContent   = activeEscala.nota || '';
+  resultBox.style.background = i.bg;
+  resultBox.style.border = '1.5px solid ' + i.color + '44';
+  resultBox.style.borderRadius = '12px';
+  resultBox.style.padding = '14px 18px';
+  resultBox.classList.add('show');
+  saveWrap.style.display = 'flex';
+}
+
 // ── Save ─────────────────────────────────────────────────────────────────────
 btnSave.addEventListener('click', function(){
   var nombre = patientName.value.trim();
@@ -327,6 +486,10 @@ btnSave.addEventListener('click', function(){
     respuestas:     Object.assign({}, activeAnswers),
     fecha:          new Date().toISOString()
   };
+  // Si es escala tipo:inputs, guardar también los detalles calculados
+  if (activeEscala.tipo === 'inputs' && activeInterp && activeInterp.details) {
+    record.detalles = activeInterp.details;
+  }
   // Save to Firestore if available
   if (window.ESCALAS_save) {
     window.ESCALAS_save(record).then(function(id){
@@ -373,13 +536,22 @@ function renderPatients(fromFirestore){
     var fecha = d.toLocaleDateString('es-CL', {day:'2-digit',month:'2-digit',year:'2-digit'});
     var hora  = d.toLocaleTimeString('es-CL', {hour:'2-digit',minute:'2-digit'});
     var escalaObj = ESCALAS.find(function(e){ return e.id===r.escala_id || e.nombre===r.escala; });
-    var interp = escalaObj ? escalaObj.interpret(r.puntaje) : null;
+    // Para escalas tipo:inputs, pasar los detalles a interpret; para Q&A pasar el puntaje
+    var interp = null;
+    if (escalaObj) {
+      if (escalaObj.tipo === 'inputs' && r.detalles) {
+        interp = escalaObj.interpret(r.detalles);
+      } else if (escalaObj.tipo !== 'inputs') {
+        interp = escalaObj.interpret(r.puntaje);
+      }
+    }
+    var scoreText = r.puntaje + ' ' + (escalaObj && escalaObj.scoreLabel ? escalaObj.scoreLabel : 'pts');
     card.innerHTML =
       '<div class="pc-name">👤 ' + esc(r.paciente) + '</div>' +
       '<div class="pc-escala">' + esc(r.escala) + '</div>' +
       '<div class="pc-meta">' +
         '<span>' + fecha + ' ' + hora + '</span>' +
-        '<span class="pc-score" style="color:' + (interp?interp.color:'var(--blue-700)') + '">' + r.puntaje + ' ' + (escalaObj&&escalaObj.scoreLabel ? escalaObj.scoreLabel : 'pts') + '</span>' +
+        '<span class="pc-score" style="color:' + (interp?interp.color:'var(--blue-700)') + '">' + esc(scoreText) + '</span>' +
       '</div>';
     card.addEventListener('click', function(){
       if (escalaObj) openModal(escalaObj, r);

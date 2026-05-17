@@ -240,6 +240,14 @@ var ESCALAS = [
     nota:'Fórmulas de Chumlea (1985, 1988) validadas para estimación antropométrica en pacientes postrados o que no pueden ser pesados/medidos. Variabilidad estimada ±5%. Requiere medición con cinta métrica flexible y rodilla a 90°. Útil para cálculo de IMC, dosificación de fármacos y estimación de requerimientos nutricionales.',
     scoreLabel:'kg'
   },
+  // ═══ HERRAMIENTAS EXTERNAS (tipo:link) ═══
+  {
+    id:'insulina_nph', icono:'💉', color:'#e91e63',
+    nombre:'Ajuste de insulina NPH',
+    descripcion:'Calculadora externa de titulación de insulina NPH',
+    tipo:'link',
+    url:'https://insulinanphapscarlosherrera.netlify.app'
+  },
 ];
 
 // ── DOM refs ────────────────────────────────────────────────────────────────
@@ -270,14 +278,24 @@ ESCALAS.forEach(function(e){
   var card = document.createElement('div');
   card.className = 'scale-card';
   card.style.borderLeftColor = e.color;
+  // Indicador visual para enlaces externos
+  var arrow = (e.tipo === 'link') ? '↗' : '→';
+  var extAttr = (e.tipo === 'link') ? ' title="Abre en una pestaña nueva"' : '';
   card.innerHTML =
     '<span class="scale-icon">' + e.icono + '</span>' +
     '<div class="scale-info">' +
       '<div class="scale-name">' + esc(e.nombre) + '</div>' +
       '<div class="scale-desc">' + esc(e.descripcion) + '</div>' +
     '</div>' +
-    '<span class="scale-arrow">→</span>';
-  card.addEventListener('click', function(){ openModal(e, null); });
+    '<span class="scale-arrow"' + extAttr + '>' + arrow + '</span>';
+  card.addEventListener('click', function(){
+    if (e.tipo === 'link' && e.url) {
+      // Abrir en pestaña nueva con seguridad noopener
+      window.open(e.url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    openModal(e, null);
+  });
   scalesList.appendChild(card);
 });
 

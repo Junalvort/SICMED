@@ -123,6 +123,39 @@
       guiaPanelBody.appendChild(blk);
     });
 
+    // ═══ Botones de enlace externo (Google Drive, PDFs, etc.) ═══
+    if (Array.isArray(g.botones) && g.botones.length) {
+      var btnWrap = document.createElement('div');
+      btnWrap.className = 'guia-botones';
+      btnWrap.style.cssText =
+        'display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;padding-top:20px;' +
+        'border-top:1.5px solid rgba(58,134,200,0.18)';
+      g.botones.forEach(function (b) {
+        if (!b || !b.url) return;
+        var a = document.createElement('a');
+        a.href   = b.url;
+        a.target = '_blank';
+        a.rel    = 'noopener noreferrer';
+        var accent = g.color || 'var(--blue-500)';
+        a.style.cssText =
+          'display:inline-flex;align-items:center;gap:8px;' +
+          'background:' + accent + ';color:#fff;' +
+          'padding:10px 18px;border-radius:30px;' +
+          'font-family:\'DM Sans\',sans-serif;font-size:.88rem;font-weight:600;' +
+          'text-decoration:none;cursor:pointer;' +
+          'box-shadow:0 2px 12px rgba(30,90,153,0.22);' +
+          'transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease';
+        a.onmouseover = function(){ a.style.transform='translateY(-1px)'; a.style.boxShadow='0 4px 18px rgba(30,90,153,0.32)'; };
+        a.onmouseout  = function(){ a.style.transform='';                   a.style.boxShadow='0 2px 12px rgba(30,90,153,0.22)'; };
+        a.innerHTML =
+          '<span style="font-size:1.05rem;line-height:1">' + esc(b.icono || '🔗') + '</span>' +
+          '<span>' + esc(b.label || 'Abrir enlace') + '</span>' +
+          '<span style="font-size:.85rem;opacity:.85;margin-left:2px">↗</span>';
+        btnWrap.appendChild(a);
+      });
+      guiaPanelBody.appendChild(btnWrap);
+    }
+
     guiaPanel.classList.add('open');
     document.body.style.overflow = 'hidden';
   }

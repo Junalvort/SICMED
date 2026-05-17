@@ -159,20 +159,18 @@ textarea.form-control{resize:vertical;min-height:90px;line-height:1.5}
     <div class="login-brand">
       <div class="login-brand-logo"><div class="login-brand-dot"></div>SIC<span>MED</span></div>
       <div class="login-heading">Acceso Administrador</div>
-      <div class="login-sub">Inicia sesión con tu cuenta de Google autorizada</div>
+      <div class="login-sub">Ingresa tus credenciales para continuar</div>
     </div>
-    <div class="login-err" id="loginErr">Cuenta no autorizada</div>
-    <button type="button" class="login-btn" id="loginBtn">
-      <span style="display:inline-flex;align-items:center;gap:10px;justify-content:center">
-        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-          <path fill="#fff" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
-          <path fill="#fff" opacity=".9" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-          <path fill="#fff" opacity=".75" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
-          <path fill="#fff" opacity=".6" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-        </svg>
-        Ingresar con Google
-      </span>
-    </button>
+    <div class="login-field">
+      <label class="login-label" for="loginUser">Usuario</label>
+      <input type="text" id="loginUser" class="login-input" placeholder="Usuario" autocomplete="username"/>
+    </div>
+    <div class="login-field">
+      <label class="login-label" for="loginPass">Contraseña</label>
+      <input type="password" id="loginPass" class="login-input" placeholder="•••••••" autocomplete="current-password"/>
+    </div>
+    <div class="login-err" id="loginErr">Usuario o contraseña incorrectos</div>
+    <button type="button" class="login-btn" id="loginBtn">Ingresar</button>
   </div>
 </div>
 
@@ -369,6 +367,18 @@ textarea.form-control{resize:vertical;min-height:90px;line-height:1.5}
           <button type="button" class="btn-add-sec" id="btnAddSec">+ Agregar sección</button>
         </div>
 
+        <!-- Botones de enlace externos (Google Drive, PDFs, etc.) -->
+        <div style="margin-top:24px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gray-400);margin-bottom:6px">
+            Botones de enlace
+          </div>
+          <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:12px;line-height:1.4">
+            Aparecerán al final del popup de esta guía. Útiles para enlazar a PDFs en Google Drive, sitios externos, etc.
+          </div>
+          <div id="gBotones"></div>
+          <button type="button" class="btn-add-sec" id="btnAddBtn">+ Agregar botón</button>
+        </div>
+
         <div class="form-actions" style="margin-top:20px">
           <button type="button" class="btn btn-primary" id="btnGuardarGuia">💾 Guardar guía</button>
           <button type="button" class="btn btn-ghost"   id="btnLimpiarGuia">Limpiar</button>
@@ -541,71 +551,42 @@ document.getElementById('themeToggle').addEventListener('click', function () {
   document.addEventListener('touchend', closeMenu, { passive: true });
 }());
 
-/* ── Login con Google (Firebase Auth) ───────────────────────────────────── */
-var ADMIN_UID = 'aAntB5dTtkUZSbGsN8ibrAkF0JG2';
+/* ── Login ───────────────────────────────────────────────────────────────── */
+var SESSION_KEY = 'sicmed_admin_v2';
 
 function showAdmin() {
+  sessionStorage.setItem(SESSION_KEY, '1');
   document.getElementById('loginWrap').style.display  = 'none';
   document.getElementById('adminPanel').style.display = 'block';
 }
 function showLogin() {
+  sessionStorage.removeItem(SESSION_KEY);
   document.getElementById('loginWrap').style.display  = '';
   document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
   document.getElementById('loginErr').style.display = 'none';
 }
+function doLogin() {
+  var u = document.getElementById('loginUser').value.trim();
+  var p = document.getElementById('loginPass').value;
+  if (u === 'admin' && p === 'admin123') {
+    document.getElementById('loginErr').style.display = 'none';
+    showAdmin();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+  }
+}
 
-window.showAdmin = showAdmin; window.showLogin = showLogin;
+window.doLogin = doLogin; window.showAdmin = showAdmin; window.showLogin = showLogin;
+if (sessionStorage.getItem(SESSION_KEY) === '1') showAdmin();
 
-(async function () {
-  const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-  const { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
-    = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-
-  // Reusar la app de db.js si ya existe; si no, crearla
-  var app = getApps().length
-    ? getApps()[0]
-    : initializeApp({
-        apiKey:            'AIzaSyAbT9L872CeyMcIuwHtK5UjyA3jJKAF8i0',
-        authDomain:        'derivmed.firebaseapp.com',
-        projectId:         'derivmed',
-        storageBucket:     'derivmed.firebasestorage.app',
-        messagingSenderId: '742083987090',
-        appId:             '1:742083987090:web:9c9c32ca82a82cd882484b'
-      });
-
-  var auth     = getAuth(app);
-  var provider = new GoogleAuthProvider();
-
-  // Vigila el estado de sesión (persiste entre recargas)
-  onAuthStateChanged(auth, function (user) {
-    if (user && user.uid === ADMIN_UID) {
-      showAdmin();
-    } else {
-      if (user && user.uid !== ADMIN_UID) {
-        document.getElementById('loginErr').textContent = 'Cuenta no autorizada';
-        document.getElementById('loginErr').style.display = 'block';
-        signOut(auth);
-      }
-      showLogin();
-    }
-  });
-
-  // Botón Ingresar con Google
-  document.getElementById('loginBtn').addEventListener('click', async function () {
-    try {
-      document.getElementById('loginErr').style.display = 'none';
-      await signInWithPopup(auth, provider);
-    } catch (e) {
-      document.getElementById('loginErr').textContent = 'Error: ' + (e.message || e.code || 'no se pudo iniciar sesión');
-      document.getElementById('loginErr').style.display = 'block';
-    }
-  });
-
-  // Botón Cerrar sesión
-  document.getElementById('btnLogout').addEventListener('click', function () {
-    signOut(auth);
-  });
-}());
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('loginUser').addEventListener('keydown', function (e) { if (e.key === 'Enter') document.getElementById('loginPass').focus(); });
+document.getElementById('loginPass').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
+document.getElementById('btnLogout').addEventListener('click', showLogin);
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
 function esc(s) {
@@ -867,6 +848,7 @@ function refreshEspDatalist() {
 ════════════════════════════════════════════════════════════════════════════ */
 var guiaEditId = null;
 var guiaSecCount = 0;
+var guiaBtnCount = 0;
 
 function addSeccion(subtitulo, contenido) {
   guiaSecCount++;
@@ -895,6 +877,40 @@ function addSeccion(subtitulo, contenido) {
 
 document.getElementById('btnAddSec').addEventListener('click', function () { addSeccion('', ''); });
 
+/* ─── Botones de enlace (Google Drive, PDFs, etc.) ─── */
+function addBoton(label, url, icono) {
+  guiaBtnCount++;
+  var container = document.getElementById('gBotones');
+  var div = document.createElement('div');
+  div.className = 'seccion-item';
+  div.dataset.btn = guiaBtnCount;
+  div.innerHTML =
+    '<div class="seccion-item-header">' +
+      '<span class="seccion-num">Botón ' + guiaBtnCount + '</span>' +
+      '<button type="button" class="btn-remove-sec btn-remove-btn" data-btn="' + guiaBtnCount + '">✕ Eliminar</button>' +
+    '</div>' +
+    '<div class="form-grid" style="margin-bottom:0">' +
+      '<div class="form-group">' +
+        '<label class="form-label">Emoji / Ícono</label>' +
+        '<input type="text" class="form-control btn-icono" placeholder="📄" maxlength="4" style="font-size:1.2rem;text-align:center" value="' + esc(icono || '📄') + '"/>' +
+      '</div>' +
+      '<div class="form-group">' +
+        '<label class="form-label">Etiqueta visible *</label>' +
+        '<input type="text" class="form-control btn-label" placeholder="Ej: Descargar PDF" value="' + esc(label || '') + '"/>' +
+      '</div>' +
+      '<div class="form-group full">' +
+        '<label class="form-label">URL del enlace *</label>' +
+        '<input type="url" class="form-control btn-url" placeholder="https://drive.google.com/..." value="' + esc(url || '') + '"/>' +
+      '</div>' +
+    '</div>';
+  container.appendChild(div);
+  div.querySelector('.btn-remove-btn').addEventListener('click', function () {
+    container.removeChild(div);
+  });
+}
+
+document.getElementById('btnAddBtn').addEventListener('click', function () { addBoton('', '', '📄'); });
+
 function clearGuiaForm() {
   document.getElementById('gId').value    = '';
   document.getElementById('gIcono').value = '';
@@ -902,7 +918,9 @@ function clearGuiaForm() {
   document.getElementById('gColor').value  = '#3a86c8';
   document.getElementById('gDesc').value   = '';
   document.getElementById('gSecciones').innerHTML = '';
+  document.getElementById('gBotones').innerHTML   = '';
   guiaSecCount = 0;
+  guiaBtnCount = 0;
   guiaEditId   = null;
   document.getElementById('btnGuardarGuia').textContent = '💾 Guardar guía';
 }
@@ -922,13 +940,32 @@ document.getElementById('btnGuardarGuia').addEventListener('click', function () 
     if (sub || cont) secciones.push({ subtitulo: sub, contenido: cont });
   });
 
+  // Recoger botones de enlace (solo los que tengan url y etiqueta válidas)
+  var botones = [];
+  var botonesInvalidos = 0;
+  document.querySelectorAll('#gBotones .seccion-item').forEach(function (item) {
+    var label = item.querySelector('.btn-label').value.trim();
+    var url   = item.querySelector('.btn-url').value.trim();
+    var icono = item.querySelector('.btn-icono').value.trim() || '📄';
+    if (!label && !url) return; // botón vacío: lo ignoramos sin alertar
+    if (!label || !url)  { botonesInvalidos++; return; }
+    // Validación básica de URL
+    if (!/^https?:\/\//i.test(url)) { botonesInvalidos++; return; }
+    botones.push({ label: label, url: url, icono: icono });
+  });
+  if (botonesInvalidos > 0) {
+    showMsg('guiaMsg', '⚠️ Hay ' + botonesInvalidos + ' botón(es) con etiqueta o URL inválida (debe iniciar con http:// o https://)', false);
+    return;
+  }
+
   var entry = {
     id:          id,
     icono:       document.getElementById('gIcono').value.trim() || '📋',
     titulo:      titulo,
     color:       document.getElementById('gColor').value,
     descripcion: document.getElementById('gDesc').value.trim(),
-    secciones:   secciones
+    secciones:   secciones,
+    botones:     botones
   };
 
   if (window.GUIA_save) {
@@ -981,8 +1018,11 @@ function renderGuiaTable(q) {
       document.getElementById('gColor').value  = g.color || '#3a86c8';
       document.getElementById('gDesc').value   = g.descripcion || '';
       document.getElementById('gSecciones').innerHTML = '';
+      document.getElementById('gBotones').innerHTML   = '';
       guiaSecCount = 0;
+      guiaBtnCount = 0;
       (g.secciones || []).forEach(function (s) { addSeccion(s.subtitulo, s.contenido); });
+      (g.botones   || []).forEach(function (b) { addBoton(b.label, b.url, b.icono); });
       guiaEditId = g.id;
       document.getElementById('btnGuardarGuia').textContent = '💾 Actualizar guía';
       document.querySelector('[data-tab="nueva-guia"]').click();

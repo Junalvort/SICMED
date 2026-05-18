@@ -127,9 +127,8 @@
     if (Array.isArray(g.botones) && g.botones.length) {
       var btnWrap = document.createElement('div');
       btnWrap.className = 'guia-botones';
-      btnWrap.style.cssText =
-        'display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;padding-top:20px;' +
-        'border-top:1.5px solid rgba(58,134,200,0.18)';
+      // El espaciado (margin-top, padding-top/bottom, border-top, gap, flex)
+      // viene de la clase .guia-botones en styles.css para ser editable allí.
       g.botones.forEach(function (b) {
         if (!b || !b.url) return;
         var a = document.createElement('a');

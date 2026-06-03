@@ -198,6 +198,7 @@ textarea.form-control{resize:vertical;min-height:90px;line-height:1.5}
           <button type="button" class="admin-tab" data-tab="guias">📚 Guías</button>
           <button type="button" class="admin-tab" data-tab="nuevo-proc">🔬 Nuevo proc.</button>
           <button type="button" class="admin-tab" data-tab="procs">📂 Procedimientos</button>
+          <button type="button" class="admin-tab" data-tab="flujo">🌿 Flujograma</button>
           <button type="button" class="admin-tab" data-tab="acciones">⚙️ Acciones</button>
         </div>
       </div>
@@ -485,6 +486,47 @@ textarea.form-control{resize:vertical;min-height:90px;line-height:1.5}
       </div>
     </div>
 
+
+    <!-- ═══════════════════════════════════════════
+         TAB: FLUJOGRAMA CLÍNICO
+    ════════════════════════════════════════════ -->
+    <div id="tabFlujo" style="display:none">
+      <div class="admin-form">
+
+        <!-- Selector de diagnóstico al que se asocia el flujograma -->
+        <div class="form-grid" style="margin-bottom:20px">
+          <div class="form-group">
+            <label class="form-label">Diagnóstico CIE-10 *</label>
+            <input type="text" id="flujoTargetCie" class="form-control"
+              placeholder="Ej: E110 – vincula el flujograma a este diagnóstico" list="flujoEspList"/>
+            <datalist id="flujoEspList"></datalist>
+            <small style="color:var(--text-muted);font-size:.72rem;margin-top:4px;display:block">
+              El campo <code>flujo_id</code> se guardará en el documento del diagnóstico seleccionado.
+            </small>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ID del flujograma *</label>
+            <input type="text" id="flujoId" class="form-control"
+              placeholder="Ej: E110_flujo (sin espacios)"/>
+            <small style="color:var(--text-muted);font-size:.72rem;margin-top:4px;display:block">
+              Identificador único en Firestore. Usa el formato <code>CIE10_flujo</code>.
+            </small>
+          </div>
+        </div>
+
+        <!-- Contenedor donde se monta el editor visual -->
+        <div id="flujoEditorMount" style="margin-bottom:20px"></div>
+
+        <!-- Acciones del flujograma -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" id="btnGuardarFlujo">💾 Guardar flujograma</button>
+          <button type="button" class="btn btn-ghost"   id="btnCargarFlujo">📂 Cargar existente</button>
+          <button type="button" class="btn btn-danger"  id="btnEliminarFlujo">🗑 Eliminar flujograma</button>
+        </div>
+        <div id="flujoMsg" style="margin-top:12px;font-size:.85rem;display:none;padding:10px 14px;border-radius:10px"></div>
+      </div>
+    </div>
+
     <!-- ═══════════════════════════════════════════
          TAB: ACCIONES GLOBALES
     ════════════════════════════════════════════ -->
@@ -636,7 +678,7 @@ function showMsg(elId, text, ok) {
 }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
-var ALL_TABS = ['nuevo','lista','nueva-esp','esp','nueva-guia','guias','nuevo-proc','procs','acciones'];
+var ALL_TABS = ['nuevo','lista','nueva-esp','esp','nueva-guia','guias','nuevo-proc','procs','flujo','acciones'];
 
 function toCamel(id) {
   return id.split('-').map(function (w) { return w[0].toUpperCase() + w.slice(1); }).join('');
@@ -655,6 +697,7 @@ document.querySelectorAll('.admin-tab').forEach(function (tab) {
     if (which === 'esp')    renderEspTable('');
     if (which === 'guias')  renderGuiaTable('');
     if (which === 'procs')  renderProcTable('');
+    if (which === 'flujo')  initFlujoTab();
   });
 });
 
@@ -1191,6 +1234,161 @@ document.getElementById('procSearch').addEventListener('input', function () { re
 document.getElementById('btnReset').addEventListener('click', function () {
   if (window.STORE_reset) window.STORE_reset();
 });
+
+/* ════════════════════════════════════════════════════════════════════════════
+   SECCIÓN: FLUJOGRAMA CLÍNICO
+════════════════════════════════════════════════════════════════════════════ */
+var _flujoEditorInstance = null;
+var _flujoTabInited = false;
+
+function initFlujoTab() {
+  /* Poblar datalist con CIE-10 disponibles */
+  var dl = document.getElementById('flujoEspList');
+  if (dl && window.DB) {
+    dl.innerHTML = '';
+    window.DB.forEach(function (d) {
+      var o = document.createElement('option');
+      o.value = d.cie10;
+      o.textContent = d.cie10 + ' – ' + d.nombre;
+      dl.appendChild(o);
+    });
+  }
+
+  /* Inicializar el editor visual solo si flujograma.js está cargado */
+  function mountEditor(initialData) {
+    var mount = document.getElementById('flujoEditorMount');
+    if (!mount) return;
+    if (window.FLUJO_editor) {
+      _flujoEditorInstance = window.FLUJO_editor(mount, initialData || null);
+    } else {
+      /* Cargar flujograma.js si aún no está */
+      var s = document.createElement('script');
+      s.src = 'flujograma.js';
+      s.onload = function () {
+        _flujoEditorInstance = window.FLUJO_editor(mount, initialData || null);
+      };
+      document.body.appendChild(s);
+    }
+  }
+
+  if (!_flujoTabInited) {
+    mountEditor(null);
+    _flujoTabInited = true;
+  }
+
+  /* Auto-rellenar flujoId cuando se escribe el CIE-10 */
+  var cieInput = document.getElementById('flujoTargetCie');
+  var idInput  = document.getElementById('flujoId');
+  if (cieInput && idInput) {
+    cieInput.addEventListener('input', function () {
+      var cie = cieInput.value.trim().split(' ')[0].replace(/[^a-zA-Z0-9]/g, '');
+      if (cie && !idInput.value) {
+        idInput.value = cie + '_flujo';
+      }
+    });
+  }
+}
+
+/* Guardar flujograma */
+document.getElementById('btnGuardarFlujo').addEventListener('click', async function () {
+  var cie    = (document.getElementById('flujoTargetCie').value.trim().split(' ')[0] || '').toUpperCase();
+  var flujoId= document.getElementById('flujoId').value.trim().replace(/\s+/g, '_');
+
+  if (!cie || !flujoId) {
+    showMsg('flujoMsg', '⚠️ Completa el CIE-10 y el ID del flujograma', false);
+    return;
+  }
+  if (!_flujoEditorInstance) {
+    showMsg('flujoMsg', '⚠️ El editor aún no está listo', false);
+    return;
+  }
+
+  var data = _flujoEditorInstance.getData();
+  data.id = flujoId;
+
+  if (!data.nodo_inicio || !data.nodos || !Object.keys(data.nodos).length) {
+    showMsg('flujoMsg', '⚠️ El flujograma debe tener al menos un nodo', false);
+    return;
+  }
+
+  try {
+    /* 1. Guardar el flujograma en su colección */
+    if (window.FLUJO_save) {
+      await window.FLUJO_save(data);
+    } else {
+      showMsg('flujoMsg', '⚠️ Firebase aún no disponible', false);
+      return;
+    }
+
+    /* 2. Vincular el flujo_id en el diagnóstico seleccionado */
+    var diagEntry = (window.DB || []).find(function (d) { return d.cie10.toUpperCase() === cie; });
+    if (diagEntry) {
+      diagEntry.flujo_id = flujoId;
+      if (window.STORE_save) {
+        await window.STORE_save('EDITADO', diagEntry);
+      }
+    }
+
+    showMsg('flujoMsg', '✅ Flujograma guardado y vinculado a ' + cie, true);
+  } catch(e) {
+    showMsg('flujoMsg', 'Error: ' + e.message, false);
+  }
+});
+
+/* Cargar flujograma existente */
+document.getElementById('btnCargarFlujo').addEventListener('click', async function () {
+  var flujoId = document.getElementById('flujoId').value.trim();
+  if (!flujoId) {
+    showMsg('flujoMsg', '⚠️ Ingresa el ID del flujograma a cargar', false);
+    return;
+  }
+  if (!window.FLUJO_get) {
+    showMsg('flujoMsg', '⚠️ Firebase aún no disponible', false);
+    return;
+  }
+  var data = await window.FLUJO_get(flujoId);
+  if (!data) {
+    showMsg('flujoMsg', 'No se encontró un flujograma con ese ID', false);
+    return;
+  }
+  /* Autocompletar el CIE-10 si el diagnóstico tiene flujo_id */
+  var linked = (window.DB || []).find(function (d) { return d.flujo_id === flujoId; });
+  if (linked) document.getElementById('flujoTargetCie').value = linked.cie10 + ' – ' + linked.nombre;
+
+  /* Re-montar el editor con los datos cargados */
+  var mount = document.getElementById('flujoEditorMount');
+  if (mount && window.FLUJO_editor) {
+    _flujoEditorInstance = window.FLUJO_editor(mount, data);
+  }
+  showMsg('flujoMsg', '✓ Flujograma "' + flujoId + '" cargado', true);
+});
+
+/* Eliminar flujograma */
+document.getElementById('btnEliminarFlujo').addEventListener('click', async function () {
+  var flujoId = document.getElementById('flujoId').value.trim();
+  if (!flujoId) { showMsg('flujoMsg', '⚠️ Ingresa el ID del flujograma a eliminar', false); return; }
+  if (!confirm('¿Eliminar el flujograma "' + flujoId + '"?\nSe desvinculará del diagnóstico asociado.')) return;
+  try {
+    if (window.FLUJO_delete) await window.FLUJO_delete(flujoId);
+    /* Desvincular flujo_id del diagnóstico */
+    var linked = (window.DB || []).find(function (d) { return d.flujo_id === flujoId; });
+    if (linked) {
+      delete linked.flujo_id;
+      if (window.STORE_save) await window.STORE_save('EDITADO', linked);
+    }
+    /* Limpiar el editor */
+    var mount = document.getElementById('flujoEditorMount');
+    if (mount) mount.innerHTML = '';
+    document.getElementById('flujoId').value = '';
+    document.getElementById('flujoTargetCie').value = '';
+    _flujoEditorInstance = null;
+    _flujoTabInited = false;
+    showMsg('flujoMsg', '✓ Flujograma eliminado correctamente', true);
+  } catch(e) {
+    showMsg('flujoMsg', 'Error: ' + e.message, false);
+  }
+});
+
 
 /* ── Populate datalist especialidades ────────────────────────────────────── */
 document.addEventListener('sicmed:ready', function () {

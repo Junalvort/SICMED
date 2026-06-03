@@ -40,7 +40,7 @@
 
   // ── Inicializar Firebase ────────────────────────────────────────────────────
   const { initializeApp }    = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-  const { getFirestore, collection, getDocs, doc, setDoc,
+  const { getFirestore, collection, getDocs, getDoc, doc, setDoc,
           deleteDoc, addDoc, query, orderBy, Timestamp }
     = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
 
@@ -412,6 +412,47 @@
       alert("Base de datos reseteada correctamente.");
       location.reload();
     } catch(e) { alert("Error al resetear: " + e.message); }
+  };
+
+
+  // ── Flujogramas Clínicos ───────────────────────────────────────────────
+  // Colección independiente; NO modifica la colección "diagnosticos".
+  // El campo flujo_id en un diagnóstico es completamente opcional.
+  const COL_FLUJO = "flujogramas";
+
+  /**
+   * Guarda (crea o sobreescribe) un flujograma.
+   * @param {object} flujo  - Objeto completo del flujograma (debe tener .id)
+   */
+  window.FLUJO_save = async function(flujo) {
+    if (!flujo || !flujo.id) throw new Error("El flujograma debe tener un campo 'id'.");
+    try {
+      await setDoc(doc(fdb, COL_FLUJO, flujo.id), flujo);
+    } catch(e) { console.error("Error guardando flujograma:", e); throw e; }
+  };
+
+  /**
+   * Carga un flujograma por su ID.
+   * @param {string} flujoId
+   * @returns {object|null}
+   */
+  window.FLUJO_get = async function(flujoId) {
+    if (!flujoId) return null;
+    try {
+      const snap = await getDoc(doc(fdb, COL_FLUJO, flujoId));
+      return snap.exists() ? snap.data() : null;
+    } catch(e) { console.error("Error cargando flujograma:", e); return null; }
+  };
+
+  /**
+   * Elimina un flujograma por su ID.
+   * @param {string} flujoId
+   */
+  window.FLUJO_delete = async function(flujoId) {
+    if (!flujoId) return;
+    try {
+      await deleteDoc(doc(fdb, COL_FLUJO, flujoId));
+    } catch(e) { console.error("Error eliminando flujograma:", e); throw e; }
   };
 
   // Avisar a las otras páginas que DB está lista

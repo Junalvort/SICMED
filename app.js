@@ -237,6 +237,22 @@
         </div>`;
     }
 
+    // ── Botón de flujograma (si el diagnóstico tiene uno asociado) ──────
+    const flujoId = result.flujo_id;
+    const flujoBtn = flujoId
+      ? `<div style="padding:14px 20px;border-top:1px solid var(--gray-200);background:rgba(58,134,200,.04)">
+           <button id="flujoLaunchBtn"
+             style="display:inline-flex;align-items:center;gap:10px;background:rgba(58,134,200,.12);
+                    border:1.5px solid var(--blue-200);border-radius:30px;padding:10px 22px;
+                    font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:600;
+                    color:var(--blue-700);cursor:pointer;transition:all .18s"
+             onmouseover="this.style.background='rgba(58,134,200,.22)'"
+             onmouseout="this.style.background='rgba(58,134,200,.12)'">
+             🌿 Iniciar algoritmo clínico
+           </button>
+         </div>`
+      : '';
+
     el.resultBody.innerHTML = `
       <div class="result-card">
         ${field('Código CIE-10',
@@ -255,14 +271,111 @@
           `<span style="color:var(--blue-700)">${formatMultiline(result.examenes || '–')}</span>`, true)}
         ${notasHTML}
       </div>
+      ${flujoBtn}
       ${othersHTML}
     `;
+
+    // Conectar el botón de flujograma si existe
+    if (flujoId) {
+      const btn = document.getElementById('flujoLaunchBtn');
+      if (btn) {
+        btn.addEventListener('click', () => launchFlujo(result, flujoId));
+      }
+    }
 
     el.resultPanel.hidden = false;
 
     if (window.smoothScrollTo) {
       window.smoothScrollTo(el.resultPanel, 'nearest');
     }
+  }
+
+  // ── Lanzar el modal interactivo del flujograma ─────────────────────────
+  async function launchFlujo(result, flujoId) {
+    // Mostrar overlay de carga
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:900;background:rgba(15,46,90,.35);'
+      + 'backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px';
+
+    const box = document.createElement('div');
+    box.style.cssText = 'background:rgba(255,255,255,.94);backdrop-filter:blur(24px) saturate(200%);'
+      + 'border:1.5px solid var(--glass-border);border-radius:var(--r-xl);width:100%;max-width:560px;'
+      + 'max-height:88vh;overflow-y:auto;padding:28px;'
+      + 'box-shadow:0 24px 60px rgba(15,46,90,.22);'
+      + 'transform:scale(.97);transition:transform .25s var(--ease,ease)';
+
+    // Header del modal
+    const headerEl = document.createElement('div');
+    headerEl.style.cssText = 'display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px';
+    headerEl.innerHTML = `
+      <div>
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--blue-500);margin-bottom:4px">
+          🌿 Algoritmo clínico
+        </div>
+        <div style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;color:var(--blue-900);line-height:1.3">
+          ${escapeHTML(result.cie10)} – ${escapeHTML(result.nombre)}
+        </div>
+      </div>
+      <button id="flujoModalClose" style="background:var(--gray-100);border:none;width:34px;height:34px;
+        border-radius:50%;display:flex;align-items:center;justify-content:center;
+        cursor:pointer;flex-shrink:0;color:var(--gray-600);transition:background .15s;margin-left:12px"
+        onmouseover="this.style.background='rgba(58,134,200,.12)'"
+        onmouseout="this.style.background='var(--gray-100)'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>`;
+    box.appendChild(headerEl);
+
+    // Spinner mientras carga
+    const spinner = document.createElement('div');
+    spinner.style.cssText = 'text-align:center;padding:36px;color:var(--text-muted);font-size:.9rem';
+    spinner.innerHTML = '<div style="font-size:1.8rem;margin-bottom:10px">⏳</div>Cargando algoritmo…';
+    box.appendChild(spinner);
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    // Animación de entrada
+    requestAnimationFrame(() => { box.style.transform = 'scale(1)'; });
+
+    // Cerrar overlay
+    const closeOverlay = () => { document.body.removeChild(overlay); };
+    document.getElementById('flujoModalClose').addEventListener('click', closeOverlay);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
+    document.addEventListener('keydown', function onEsc(e) {
+      if (e.key === 'Escape') { closeOverlay(); document.removeEventListener('keydown', onEsc); }
+    });
+
+    // Cargar flujograma de Firestore
+    let flujoData = null;
+    if (window.FLUJO_get) {
+      flujoData = await window.FLUJO_get(flujoId).catch(() => null);
+    }
+
+    box.removeChild(spinner);
+
+    if (!flujoData) {
+      const errEl = document.createElement('div');
+      errEl.style.cssText = 'text-align:center;padding:28px;color:var(--text-muted);font-size:.88rem;line-height:1.6';
+      errEl.innerHTML = '⚠️ No se pudo cargar el algoritmo clínico.<br>Verifica la conexión e intenta nuevamente.';
+      box.appendChild(errEl);
+      return;
+    }
+
+    // Asegurar que flujograma.js esté cargado
+    if (!window.FLUJO_run) {
+      await new Promise((resolve) => {
+        const s = document.createElement('script');
+        s.src = 'flujograma.js';
+        s.onload = resolve;
+        document.body.appendChild(s);
+      });
+    }
+
+    const motorDiv = document.createElement('div');
+    box.appendChild(motorDiv);
+    window.FLUJO_run(flujoData, motorDiv);
   }
 
   function showNoResult(query) {

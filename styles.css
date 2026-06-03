@@ -457,11 +457,11 @@ body {
 }
 .result-notas {
   grid-column: 1 / -1;
-  background: rgba(58,134,200,0.05);
-  border: 1px solid rgba(58,134,200,0.15);
-  border-radius: 0 0 var(--r-xl) var(--r-xl);
-  padding: 14px 20px;
-  font-size: 0.85rem; color: var(--blue-700); line-height: 1.55;
+  background: rgba(58,134,200,0.10);
+  border: 1px solid rgba(58,134,200,0.20);
+  padding: 18px 22px;
+  font-size: 0.88rem; color: var(--blue-800); line-height: 1.65;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16), 0 8px 24px rgba(58,134,200,0.05);
 }
 .no-result {
   padding: 28px 24px; text-align: center;
@@ -1284,7 +1284,7 @@ body {
 [data-theme="dark"] .result-header { border-bottom-color: var(--gray-200); }
 [data-theme="dark"] .result-field { background: rgba(15,30,55,0.70); }
 [data-theme="dark"] .result-value { color: var(--text); }
-[data-theme="dark"] .result-notas { background: rgba(30,60,100,0.30); border-color: rgba(60,110,160,0.25); }
+[data-theme="dark"] .result-notas { background: rgba(25,50,90,0.45); border-color: rgba(65,120,175,0.35); color: var(--blue-200); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 6px 20px rgba(10,20,40,0.18); }
 
 /* Dark stat cards */
 [data-theme="dark"] .stat-card {

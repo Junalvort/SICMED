@@ -304,13 +304,28 @@
     }
   }
 
-  // ── Expande el flujograma directamente dentro del resultado ───────────
-  async function expandFlujoInline(result, flujoId, triggerBtn, zone) {
-    // Evitar doble clic mientras carga
-    triggerBtn.disabled = true;
-    triggerBtn.textContent = 'Cargando…';
+  // ── Toggle inline del flujograma: abre/cierra sin texto de carga ────────
+  // Los datos se cargan una sola vez y se cachean en flujoCache.
+  const flujoCache = {};
 
-    // Asegurar que flujograma.js esté cargado
+  async function expandFlujoInline(result, flujoId, triggerBtn, zone) {
+    // ── Toggle: si ya está abierto, cerrar ──────────────────────────────
+    if (!zone.hidden) {
+      zone.hidden = true;
+      triggerBtn.classList.remove('result-flujo-btn--open');
+      return;
+    }
+
+    // ── Abrir ────────────────────────────────────────────────────────────
+    triggerBtn.classList.add('result-flujo-btn--open');
+
+    // Si ya montamos el contenido antes, solo mostrar
+    if (zone.dataset.loaded === '1') {
+      zone.hidden = false;
+      return;
+    }
+
+    // Primera apertura: cargar flujograma.js si aún no está disponible
     if (!window.FLUJO_run) {
       await new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -321,35 +336,24 @@
       }).catch(() => null);
     }
 
-    // Cargar datos del flujograma
-    let flujoData = null;
-    if (window.FLUJO_get) {
-      flujoData = await window.FLUJO_get(flujoId).catch(() => null);
+    // Obtener datos (cache en memoria para evitar lecturas repetidas)
+    if (!flujoCache[flujoId] && window.FLUJO_get) {
+      flujoCache[flujoId] = await window.FLUJO_get(flujoId).catch(() => null);
     }
+    const flujoData = flujoCache[flujoId];
+
+    zone.hidden = false;
+    zone.innerHTML = '';
 
     if (!flujoData) {
-      triggerBtn.disabled = false;
-      triggerBtn.textContent = 'Flujograma';
-      zone.hidden = false;
       zone.innerHTML = `<div class="result-flujo-error">
-        ⚠️ No se pudo cargar el flujograma. Verifica la conexión e intenta de nuevo.
+        No se pudo cargar el flujograma. Verifica la conexión e intenta de nuevo.
       </div>`;
       return;
     }
 
-    // Ocultar el botón de disparo una vez que el flujograma se despliega
-    triggerBtn.closest('.result-flujo-trigger').hidden = true;
-    zone.hidden = false;
-    zone.innerHTML = '';
-
-    // Montar el motor inline — el resultado del algoritmo aparece
-    // dentro de la zona; las notas importantes siguen debajo en el DOM.
+    zone.dataset.loaded = '1';
     window.FLUJO_run(flujoData, zone);
-
-    // Scroll suave a la zona del flujograma
-    if (window.smoothScrollTo) {
-      window.smoothScrollTo(zone, 'nearest');
-    }
   }
 
   function showNoResult(query) {

@@ -515,6 +515,15 @@ body {
   cursor: not-allowed;
   transform: none;
 }
+/* Estado abierto: fondo más sólido para indicar que está activo */
+.result-flujo-btn--open {
+  background: rgba(58,134,200,0.22);
+  border-color: var(--blue-300);
+}
+[data-theme="dark"] .result-flujo-btn--open {
+  background: rgba(60,110,160,0.35);
+  border-color: var(--blue-300);
+}
 
 /* Zona de expansión inline — separada visualmente del botón */
 .result-flujo-inline {

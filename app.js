@@ -214,14 +214,47 @@
       </div>`;
   }
 
+  // ─── Construye el HTML estático del resultado (sin notas, sin bordes bajos
+  //     cuando hay flujograma) y lo inserta en el DOM.
+  function buildStaticCard(result, hasFlujo) {
+    // Cuando hay flujograma, el result-card NO debe terminar visualmente
+    // (sin border-radius inferior) porque continúa con el bloque del flujograma.
+    const cardClass = hasFlujo ? 'result-card result-card--no-bottom-radius' : 'result-card';
+
+    return `
+      <div class="${cardClass}">
+        ${field('Código CIE-10',
+          `<span style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.2rem;color:var(--blue-700)">
+            ${escapeHTML(result.cie10)}
+          </span>`)}
+        ${field('Especialidad', escapeHTML(result.especialidad))}
+        ${field('Diagnóstico',  escapeHTML(result.nombre), true)}
+        ${field('Destino derivación', formatMultiline(result.destino || '–'))}
+        ${field('Prioridad',
+          `<span class="badge-urgencia ${result.prioridad}">
+            ${PRIORITY_LABELS[result.prioridad] || escapeHTML(result.prioridad)}
+          </span>`)}
+        ${field('Criterios de derivación', formatMultiline(result.criterios || '–'), true)}
+        ${field('Exámenes mínimos (EMBD)',
+          `<span style="color:var(--blue-700)">${formatMultiline(result.examenes || '–')}</span>`, true)}
+      </div>`;
+  }
+
   function showResult(result, others = []) {
     clearPreviousResults();
 
     el.resultTitle.textContent = `${result.cie10} – ${result.nombre}`;
 
-    // Notas (si existen) - con soporte multilínea
+    const flujoId  = result.flujo_id || null;
+    const hasFlujo = Boolean(flujoId);
+
+    // Notas: cuando hay flujograma pierden el border-radius superior
+    // para ser continuación visual del bloque desplegado del flujograma.
+    const notasClass = hasFlujo
+      ? 'result-notas full result-notas--after-flujo'
+      : 'result-notas full';
     const notasHTML = result.notas
-      ? `<div class="result-notas full">💡 ${formatMultiline(result.notas)}</div>`
+      ? `<div class="${notasClass}">💡 ${formatMultiline(result.notas)}</div>`
       : '';
 
     // Otros resultados relacionados
@@ -237,49 +270,30 @@
         </div>`;
     }
 
-    // ── Botón de flujograma (si el diagnóstico tiene uno asociado) ──────
-    const flujoId = result.flujo_id;
-    const flujoBtn = flujoId
-      ? `<div style="padding:14px 20px;border-top:1px solid var(--gray-200);background:rgba(58,134,200,.04);display:flex;justify-content:center;">
-           <button id="flujoLaunchBtn"
-             style="display:inline-flex;align-items:center;gap:10px;background:rgba(58,134,200,.12);
-                    border:1.5px solid var(--blue-200);border-radius:30px;padding:10px 22px;
-                    font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:600;
-                    color:var(--blue-700);cursor:pointer;transition:all .18s"
-             onmouseover="this.style.background='rgba(58,134,200,.22)'"
-             onmouseout="this.style.background='rgba(58,134,200,.12)'">
-             🌿 Iniciar algoritmo clínico
-           </button>
-         </div>`
-      : '';
-
+    // Orden visual:
+    //   1. Tarjeta estática (campos CIE-10, especialidad, criterios…)
+    //   2. Botón "Flujograma" centrado  [solo si hay flujo_id]
+    //   3. Zona de expansión inline del flujograma  [inicialmente vacía]
+    //   4. Notas importantes
+    //   5. Otros resultados relacionados
     el.resultBody.innerHTML = `
-      <div class="result-card">
-        ${field('Código CIE-10',
-          `<span style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.2rem;color:var(--blue-700)">
-            ${escapeHTML(result.cie10)}
-          </span>`)}
-        ${field('Especialidad', escapeHTML(result.especialidad))}
-        ${field('Diagnóstico',  escapeHTML(result.nombre), true)}
-        ${field('Destino derivación', formatMultiline(result.destino || '–'))}
-        ${field('Prioridad',
-          `<span class="badge-urgencia ${result.prioridad}">
-            ${PRIORITY_LABELS[result.prioridad] || escapeHTML(result.prioridad)}
-          </span>`)}
-        ${field('Criterios de derivación', formatMultiline(result.criterios || '–'), true)}
-        ${field('Exámenes mínimos (EMBD)',
-          `<span style="color:var(--blue-700)">${formatMultiline(result.examenes || '–')}</span>`, true)}
-        ${notasHTML}
-      </div>
-      ${flujoBtn}
+      ${buildStaticCard(result, hasFlujo)}
+      ${hasFlujo ? `
+        <div class="result-flujo-trigger">
+          <button class="result-flujo-btn" id="flujoLaunchBtn">Flujograma</button>
+        </div>
+        <div class="result-flujo-inline" id="flujoInlineZone" hidden></div>
+      ` : ''}
+      ${notasHTML}
       ${othersHTML}
     `;
 
-    // Conectar el botón de flujograma si existe
-    if (flujoId) {
-      const btn = document.getElementById('flujoLaunchBtn');
-      if (btn) {
-        btn.addEventListener('click', () => launchFlujo(result, flujoId));
+    // Conectar el botón de flujograma (despliegue inline)
+    if (hasFlujo) {
+      const btn  = document.getElementById('flujoLaunchBtn');
+      const zone = document.getElementById('flujoInlineZone');
+      if (btn && zone) {
+        btn.addEventListener('click', () => expandFlujoInline(result, flujoId, btn, zone));
       }
     }
 
@@ -290,92 +304,52 @@
     }
   }
 
-  // ── Lanzar el modal interactivo del flujograma ─────────────────────────
-  async function launchFlujo(result, flujoId) {
-    // Mostrar overlay de carga
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:900;background:rgba(15,46,90,.35);'
-      + 'backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px';
+  // ── Expande el flujograma directamente dentro del resultado ───────────
+  async function expandFlujoInline(result, flujoId, triggerBtn, zone) {
+    // Evitar doble clic mientras carga
+    triggerBtn.disabled = true;
+    triggerBtn.textContent = 'Cargando…';
 
-    const box = document.createElement('div');
-    box.style.cssText = 'background:rgba(255,255,255,.94);backdrop-filter:blur(24px) saturate(200%);'
-      + 'border:1.5px solid var(--glass-border);border-radius:var(--r-xl);width:100%;max-width:560px;'
-      + 'max-height:88vh;overflow-y:auto;padding:28px;'
-      + 'box-shadow:0 24px 60px rgba(15,46,90,.22);'
-      + 'transform:scale(.97);transition:transform .25s var(--ease,ease)';
+    // Asegurar que flujograma.js esté cargado
+    if (!window.FLUJO_run) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'flujograma.js';
+        s.onload  = resolve;
+        s.onerror = reject;
+        document.body.appendChild(s);
+      }).catch(() => null);
+    }
 
-    // Header del modal
-    const headerEl = document.createElement('div');
-    headerEl.style.cssText = 'display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px';
-    headerEl.innerHTML = `
-      <div>
-        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--blue-500);margin-bottom:4px">
-          🌿 Algoritmo clínico
-        </div>
-        <div style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;color:var(--blue-900);line-height:1.3">
-          ${escapeHTML(result.cie10)} – ${escapeHTML(result.nombre)}
-        </div>
-      </div>
-      <button id="flujoModalClose" style="background:var(--gray-100);border:none;width:34px;height:34px;
-        border-radius:50%;display:flex;align-items:center;justify-content:center;
-        cursor:pointer;flex-shrink:0;color:var(--gray-600);transition:background .15s;margin-left:12px"
-        onmouseover="this.style.background='rgba(58,134,200,.12)'"
-        onmouseout="this.style.background='var(--gray-100)'">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>`;
-    box.appendChild(headerEl);
-
-    // Spinner mientras carga
-    const spinner = document.createElement('div');
-    spinner.style.cssText = 'text-align:center;padding:36px;color:var(--text-muted);font-size:.9rem';
-    spinner.innerHTML = '<div style="font-size:1.8rem;margin-bottom:10px">⏳</div>Cargando algoritmo…';
-    box.appendChild(spinner);
-
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
-
-    // Animación de entrada
-    requestAnimationFrame(() => { box.style.transform = 'scale(1)'; });
-
-    // Cerrar overlay
-    const closeOverlay = () => { document.body.removeChild(overlay); };
-    document.getElementById('flujoModalClose').addEventListener('click', closeOverlay);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
-    document.addEventListener('keydown', function onEsc(e) {
-      if (e.key === 'Escape') { closeOverlay(); document.removeEventListener('keydown', onEsc); }
-    });
-
-    // Cargar flujograma de Firestore
+    // Cargar datos del flujograma
     let flujoData = null;
     if (window.FLUJO_get) {
       flujoData = await window.FLUJO_get(flujoId).catch(() => null);
     }
 
-    box.removeChild(spinner);
-
     if (!flujoData) {
-      const errEl = document.createElement('div');
-      errEl.style.cssText = 'text-align:center;padding:28px;color:var(--text-muted);font-size:.88rem;line-height:1.6';
-      errEl.innerHTML = '⚠️ No se pudo cargar el algoritmo clínico.<br>Verifica la conexión e intenta nuevamente.';
-      box.appendChild(errEl);
+      triggerBtn.disabled = false;
+      triggerBtn.textContent = 'Flujograma';
+      zone.hidden = false;
+      zone.innerHTML = `<div class="result-flujo-error">
+        ⚠️ No se pudo cargar el flujograma. Verifica la conexión e intenta de nuevo.
+      </div>`;
       return;
     }
 
-    // Asegurar que flujograma.js esté cargado
-    if (!window.FLUJO_run) {
-      await new Promise((resolve) => {
-        const s = document.createElement('script');
-        s.src = 'flujograma.js';
-        s.onload = resolve;
-        document.body.appendChild(s);
-      });
-    }
+    // Ocultar el botón de disparo una vez que el flujograma se despliega
+    triggerBtn.closest('.result-flujo-trigger').hidden = true;
+    zone.hidden = false;
+    zone.innerHTML = '';
 
-    const motorDiv = document.createElement('div');
-    box.appendChild(motorDiv);
-    window.FLUJO_run(flujoData, motorDiv);
+    // Montar el motor inline — el resultado del algoritmo aparece
+    // dentro de la zona; las notas importantes siguen debajo en el DOM.
+    window.FLUJO_run(flujoData, zone);
+
+    // Scroll suave a la zona del flujograma
+    if (window.smoothScrollTo) {
+      window.smoothScrollTo(zone, 'nearest');
+    }
   }
 
   function showNoResult(query) {

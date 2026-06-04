@@ -31,6 +31,17 @@
   width: 100%;
   font-family: 'DM Sans', system-ui, sans-serif;
 }
+/* Cuando el motor corre dentro del resultado inline, el contenedor
+   ya tiene el fondo correcto — solo ajustamos el nodo para que se vea
+   integrado sin doble borde/fondo */
+.result-flujo-inline .flujo-nodo {
+  background: rgba(255,255,255,0.70);
+  border-color: rgba(58,134,200,0.18);
+}
+[data-theme="dark"] .result-flujo-inline .flujo-nodo {
+  background: rgba(15,30,55,0.55);
+  border-color: rgba(60,110,160,0.25);
+}
 .flujo-breadcrumb {
   display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
   margin-bottom: 18px;
@@ -282,8 +293,6 @@
   /* ═══════════════════════════════════════════════════════════════════════
      MOTOR: Ejecución interactiva del algoritmo
   ════════════════════════════════════════════════════════════════════════ */
-  var COLOR_ICONS = { error: '🚨', warning: '⚠️', ok: '✅', info: 'ℹ️' };
-  var RESULT_LABELS = { error: 'Resultado', warning: 'Resultado', ok: 'Resultado', info: 'Resultado' };
 
   window.FLUJO_run = function (flujoData, containerEl) {
     if (!flujoData || !containerEl) return;
@@ -327,7 +336,7 @@
       var card = document.createElement('div');
       card.className = 'flujo-nodo';
       var esInicio = (nodoId === (flujoData.nodo_inicio || 'inicio'));
-      card.innerHTML = '<div class="flujo-nodo-label">' + (esInicio ? '🌱 Punto de inicio' : '❓ Pregunta') + '</div>'
+      card.innerHTML = '<div class="flujo-nodo-label">' + (esInicio ? 'Punto de inicio' : 'Pregunta') + '</div>'
         + '<div class="flujo-pregunta">' + esc(nodo.texto) + '</div>'
         + '<div class="flujo-opciones" id="flujo-opciones"></div>';
       wrap.appendChild(card);
@@ -348,12 +357,11 @@
       var color = nodo.color || 'info';
       var div = document.createElement('div');
       div.className = 'flujo-resultado color-' + esc(color);
-      div.innerHTML = '<div class="flujo-resultado-icon">' + (COLOR_ICONS[color] || '📋') + '</div>'
-        + '<div class="flujo-resultado-titulo">' + esc(nodo.texto) + '</div>'
+      div.innerHTML = '<div class="flujo-resultado-titulo">' + esc(nodo.texto) + '</div>'
         + (nodo.conducta ? '<div class="flujo-resultado-conducta">' + esc(nodo.conducta) + '</div>' : '');
       var reiniciarBtn = document.createElement('button');
       reiniciarBtn.className = 'flujo-reiniciar-btn';
-      reiniciarBtn.innerHTML = '↺ Reiniciar algoritmo';
+      reiniciarBtn.innerHTML = 'Reiniciar';
       reiniciarBtn.addEventListener('click', function () {
         history = [];
         render(flujoData.nodo_inicio || 'inicio');

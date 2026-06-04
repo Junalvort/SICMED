@@ -240,7 +240,7 @@
     // ── Botón de flujograma (si el diagnóstico tiene uno asociado) ──────
     const flujoId = result.flujo_id;
     const flujoBtn = flujoId
-      ? `<div style="padding:14px 20px;border-top:1px solid var(--gray-200);background:rgba(58,134,200,.04)">
+      ? `<div style="padding:14px 20px;border-top:1px solid var(--gray-200);background:rgba(58,134,200,.04);display:flex;justify-content:center;">
            <button id="flujoLaunchBtn"
              style="display:inline-flex;align-items:center;gap:10px;background:rgba(58,134,200,.12);
                     border:1.5px solid var(--blue-200);border-radius:30px;padding:10px 22px;

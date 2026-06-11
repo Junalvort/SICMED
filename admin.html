@@ -109,6 +109,14 @@ textarea.form-control{resize:vertical;min-height:90px;line-height:1.5}
   .form-actions .btn{width:100%;text-align:center}
   .admin-tab{padding:9px 12px;font-size:.82rem}
 }
+
+/* ─── Toggle switch de algoritmo ─────────────────────────────────────────── */
+#flujoToggle:focus-visible + #flujoToggleTrack {
+  outline: 2px solid var(--blue-300);
+  outline-offset: 2px;
+}
+[data-theme="dark"] #flujoToggleTrack { background: var(--gray-200); }
+[data-theme="dark"] #flujoEstadoBadge { border-color: rgba(60,110,160,.35) !important; }
 </style>
 </head>
 <body data-page="admin">
@@ -198,7 +206,7 @@ textarea.form-control{resize:vertical;min-height:90px;line-height:1.5}
           <button type="button" class="admin-tab" data-tab="guias">📚 Guías</button>
           <button type="button" class="admin-tab" data-tab="nuevo-proc">🔬 Nuevo proc.</button>
           <button type="button" class="admin-tab" data-tab="procs">📂 Procedimientos</button>
-          <button type="button" class="admin-tab" data-tab="flujo">🌿 Flujograma</button>
+          <button type="button" class="admin-tab" data-tab="flujo">🧭 Algoritmo</button>
           <button type="button" class="admin-tab" data-tab="acciones">⚙️ Acciones</button>
         </div>
       </div>
@@ -488,43 +496,96 @@ textarea.form-control{resize:vertical;min-height:90px;line-height:1.5}
 
 
     <!-- ═══════════════════════════════════════════
-         TAB: FLUJOGRAMA CLÍNICO
+         TAB: ALGORITMO CLÍNICO
     ════════════════════════════════════════════ -->
     <div id="tabFlujo" style="display:none">
-      <div class="admin-form">
 
-        <!-- Selector de diagnóstico al que se asocia el flujograma -->
-        <div class="form-grid" style="margin-bottom:20px">
+      <!-- ── Selector de diagnóstico ────────────────────────────── -->
+      <div class="admin-form" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+          <div>
+            <div style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;color:var(--blue-900)">
+              Configurar Algoritmo
+            </div>
+            <div style="font-size:.78rem;color:var(--text-muted);margin-top:3px;line-height:1.5">
+              Selecciona un diagnóstico para configurar si guía al usuario mediante un algoritmo de preguntas
+              antes de mostrar la información clínica, o si la muestra directamente.
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Diagnóstico CIE-10 *</label>
             <input type="text" id="flujoTargetCie" class="form-control"
-              placeholder="Ej: E110 – vincula el flujograma a este diagnóstico" list="flujoEspList"/>
+              placeholder="Ej: E110" list="flujoEspList"
+              autocomplete="off"/>
             <datalist id="flujoEspList"></datalist>
-            <small style="color:var(--text-muted);font-size:.72rem;margin-top:4px;display:block">
-              El campo <code>flujo_id</code> se guardará en el documento del diagnóstico seleccionado.
-            </small>
           </div>
           <div class="form-group">
-            <label class="form-label">ID del flujograma *</label>
+            <label class="form-label">ID del algoritmo *</label>
             <input type="text" id="flujoId" class="form-control"
-              placeholder="Ej: E110_flujo (sin espacios)"/>
+              placeholder="Ej: E110_algo (auto-generado)"/>
             <small style="color:var(--text-muted);font-size:.72rem;margin-top:4px;display:block">
-              Identificador único en Firestore. Usa el formato <code>CIE10_flujo</code>.
+              Se auto-completa al ingresar el CIE-10.
             </small>
           </div>
         </div>
 
-        <!-- Contenedor donde se monta el editor visual -->
-        <div id="flujoEditorMount" style="margin-bottom:20px"></div>
+        <!-- Indicador de estado: con/sin algoritmo -->
+        <div id="flujoEstadoBadge" style="display:none;margin-top:14px;padding:10px 14px;
+          border-radius:10px;font-size:.85rem;display:flex;align-items:center;gap:10px"></div>
 
-        <!-- Acciones del flujograma -->
-        <div class="form-actions">
-          <button type="button" class="btn btn-primary" id="btnGuardarFlujo">💾 Guardar flujograma</button>
-          <button type="button" class="btn btn-ghost"   id="btnCargarFlujo">📂 Cargar existente</button>
-          <button type="button" class="btn btn-danger"  id="btnEliminarFlujo">🗑 Eliminar flujograma</button>
+        <!-- Toggle: activar/desactivar algoritmo para este diagnóstico -->
+        <div style="margin-top:16px;padding:14px 16px;background:var(--gray-50);
+          border-radius:var(--r-md);border:1.5px solid var(--gray-200);
+          display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:.88rem;font-weight:600;color:var(--text)">
+              Usar algoritmo para este diagnóstico
+            </div>
+            <div style="font-size:.75rem;color:var(--text-muted);margin-top:3px;line-height:1.4">
+              Activado: el buscador muestra solo identificación y guía al usuario por preguntas.<br>
+              Desactivado: el buscador muestra directamente toda la información clínica.
+            </div>
+          </div>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0">
+            <span id="flujoToggleLabel" style="font-size:.85rem;font-weight:600;color:var(--text-muted)">Desactivado</span>
+            <div style="position:relative;width:48px;height:26px">
+              <input type="checkbox" id="flujoToggle" style="opacity:0;position:absolute;inset:0;cursor:pointer;z-index:1;width:100%;height:100%;margin:0"/>
+              <div id="flujoToggleTrack" style="position:absolute;inset:0;border-radius:13px;
+                background:var(--gray-200);transition:background .2s;pointer-events:none"></div>
+              <div id="flujoToggleThumb" style="position:absolute;top:3px;left:3px;width:20px;height:20px;
+                border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);
+                transition:transform .2s;pointer-events:none"></div>
+            </div>
+          </label>
         </div>
-        <div id="flujoMsg" style="margin-top:12px;font-size:.85rem;display:none;padding:10px 14px;border-radius:10px"></div>
+
+        <div class="form-actions" style="margin-top:14px">
+          <button type="button" class="btn btn-ghost" id="btnCargarFlujo">📂 Cargar diagnóstico</button>
+        </div>
+        <div id="flujoMsg" style="margin-top:10px;font-size:.85rem;display:none;padding:10px 14px;border-radius:10px"></div>
       </div>
+
+      <!-- ── Editor visual del algoritmo (se muestra solo si toggle activo) ── -->
+      <div id="flujoEditorSection" style="display:none">
+        <div class="admin-form">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px">
+            <div style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--blue-900)">
+              Editor del Algoritmo
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button type="button" class="btn btn-primary" id="btnGuardarFlujo">💾 Guardar algoritmo</button>
+              <button type="button" class="btn btn-danger"  id="btnEliminarFlujo" style="display:none">🗑 Eliminar</button>
+            </div>
+          </div>
+
+          <!-- Contenedor donde se monta el editor visual -->
+          <div id="flujoEditorMount"></div>
+        </div>
+      </div>
+
     </div>
 
     <!-- ═══════════════════════════════════════════
@@ -1236,17 +1297,70 @@ document.getElementById('btnReset').addEventListener('click', function () {
 });
 
 /* ════════════════════════════════════════════════════════════════════════════
-   SECCIÓN: FLUJOGRAMA CLÍNICO
+   SECCIÓN: ALGORITMO CLÍNICO
+   Permite configurar qué diagnósticos usan un algoritmo de preguntas antes
+   de mostrar la información clínica, y cuáles la muestran directamente.
 ════════════════════════════════════════════════════════════════════════════ */
-var _flujoEditorInstance = null;
-var _flujoTabInited = false;
+var _algoritmoEditorInst  = null;
+var _algoritmoTabInited   = false;
+var _algoritmoCurrentDiag = null;  // diagnóstico actualmente cargado
 
+/* ─── Asegurar que flujograma.js esté disponible ─────────────────────── */
+function _loadAlgoritmoScript(cb) {
+  if (window.FLUJO_editor) { cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'flujograma.js';
+  s.onload = cb;
+  document.body.appendChild(s);
+}
+
+/* ─── Sincronizar el toggle visual ──────────────────────────────────── */
+function _syncToggle(active) {
+  var chk   = document.getElementById('flujoToggle');
+  var track = document.getElementById('flujoToggleTrack');
+  var thumb = document.getElementById('flujoToggleThumb');
+  var lbl   = document.getElementById('flujoToggleLabel');
+  var sec   = document.getElementById('flujoEditorSection');
+  var delBtn = document.getElementById('btnEliminarFlujo');
+  if (!chk) return;
+  chk.checked = active;
+  if (track) track.style.background = active ? 'var(--blue-500)' : 'var(--gray-200)';
+  if (thumb) thumb.style.transform  = active ? 'translateX(22px)' : 'translateX(0)';
+  if (lbl)   lbl.textContent        = active ? 'Activado' : 'Desactivado';
+  if (lbl)   lbl.style.color        = active ? 'var(--blue-700)' : 'var(--text-muted)';
+  if (sec)   sec.style.display      = active ? '' : 'none';
+  if (delBtn) delBtn.style.display  = active ? '' : 'none';
+}
+
+/* ─── Actualizar badge de estado ────────────────────────────────────── */
+function _updateEstadoBadge(diag) {
+  var badge = document.getElementById('flujoEstadoBadge');
+  if (!badge || !diag) return;
+  badge.style.display = 'flex';
+  if (diag.flujo_id) {
+    badge.style.background  = 'var(--ges-bg)';
+    badge.style.border      = '1px solid var(--ges-bd)';
+    badge.style.color       = 'var(--ges-text)';
+    badge.innerHTML = '<strong>Con algoritmo activo:</strong>&nbsp;' + esc(diag.flujo_id)
+      + '&nbsp;—&nbsp;El buscador iniciará la secuencia de preguntas antes de mostrar la información clínica.';
+  } else {
+    badge.style.background  = 'var(--gray-50)';
+    badge.style.border      = '1px solid var(--gray-200)';
+    badge.style.color       = 'var(--text-muted)';
+    badge.innerHTML = 'Sin algoritmo — El buscador mostrará la información clínica directamente.';
+  }
+}
+
+/* ─── Inicializar el tab ────────────────────────────────────────────── */
 function initFlujoTab() {
-  /* Poblar datalist con CIE-10 disponibles */
+  if (_algoritmoTabInited) return;
+  _algoritmoTabInited = true;
+
+  /* Poblar datalist */
   var dl = document.getElementById('flujoEspList');
   if (dl && window.DB) {
     dl.innerHTML = '';
-    window.DB.forEach(function (d) {
+    window.DB.sort(function(a,b){ return a.cie10.localeCompare(b.cie10); }).forEach(function (d) {
       var o = document.createElement('option');
       o.value = d.cie10;
       o.textContent = d.cie10 + ' – ' + d.nombre;
@@ -1254,136 +1368,180 @@ function initFlujoTab() {
     });
   }
 
-  /* Inicializar el editor visual solo si flujograma.js está cargado */
-  function mountEditor(initialData) {
-    var mount = document.getElementById('flujoEditorMount');
-    if (!mount) return;
-    if (window.FLUJO_editor) {
-      _flujoEditorInstance = window.FLUJO_editor(mount, initialData || null);
-    } else {
-      /* Cargar flujograma.js si aún no está */
-      var s = document.createElement('script');
-      s.src = 'flujograma.js';
-      s.onload = function () {
-        _flujoEditorInstance = window.FLUJO_editor(mount, initialData || null);
-      };
-      document.body.appendChild(s);
-    }
-  }
-
-  if (!_flujoTabInited) {
-    mountEditor(null);
-    _flujoTabInited = true;
-  }
-
-  /* Auto-rellenar flujoId cuando se escribe el CIE-10 */
   var cieInput = document.getElementById('flujoTargetCie');
   var idInput  = document.getElementById('flujoId');
-  if (cieInput && idInput) {
+  var toggle   = document.getElementById('flujoToggle');
+
+  /* Auto-rellenar ID cuando se escribe el CIE-10 */
+  if (cieInput) {
     cieInput.addEventListener('input', function () {
-      var cie = cieInput.value.trim().split(' ')[0].replace(/[^a-zA-Z0-9]/g, '');
-      if (cie && !idInput.value) {
-        idInput.value = cie + '_flujo';
+      var raw = cieInput.value.trim().split(' ')[0];
+      var cie = raw.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+      if (cie) {
+        if (!idInput.value || idInput.value === (_algoritmoCurrentDiag && _algoritmoCurrentDiag.cie10 + '_algo')) {
+          idInput.value = cie + '_algo';
+        }
+        /* Buscar el diagnóstico en DB y actualizar badge */
+        var found = (window.DB || []).find(function(d){ return d.cie10.toUpperCase() === cie; });
+        _algoritmoCurrentDiag = found || null;
+        _updateEstadoBadge(found || null);
+        /* Sincronizar toggle según si ya tiene algoritmo */
+        if (found) {
+          _syncToggle(Boolean(found.flujo_id));
+        }
       }
     });
   }
+
+  /* Toggle activar/desactivar */
+  if (toggle) {
+    toggle.addEventListener('change', function () {
+      _syncToggle(toggle.checked);
+      if (toggle.checked) {
+        /* Al activar: montar editor (vacío o con datos existentes) */
+        _loadAlgoritmoScript(function () {
+          var mount = document.getElementById('flujoEditorMount');
+          if (mount && !_algoritmoEditorInst) {
+            _algoritmoEditorInst = window.FLUJO_editor(mount, null);
+          }
+        });
+      }
+    });
+  }
+
+  /* Inicializar con toggle apagado */
+  _syncToggle(false);
 }
 
-/* Guardar flujograma */
+/* ─── Cargar diagnóstico existente ──────────────────────────────────── */
+document.getElementById('btnCargarFlujo').addEventListener('click', async function () {
+  var cieRaw = document.getElementById('flujoTargetCie').value.trim().split(' ')[0];
+  var cie    = cieRaw.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+
+  if (!cie) { showMsg('flujoMsg', '⚠️ Ingresa el CIE-10 del diagnóstico', false); return; }
+  if (!window.DB) { showMsg('flujoMsg', '⚠️ Base de datos no disponible', false); return; }
+
+  var diag = (window.DB || []).find(function(d){ return d.cie10.toUpperCase() === cie; });
+  if (!diag) { showMsg('flujoMsg', 'Diagnóstico ' + cie + ' no encontrado en la base de datos', false); return; }
+
+  _algoritmoCurrentDiag = diag;
+  var idInput = document.getElementById('flujoId');
+  var tieneAlgo = Boolean(diag.flujo_id);
+
+  /* Rellenar ID */
+  idInput.value = diag.flujo_id || (cie + '_algo');
+
+  /* Actualizar badge y toggle */
+  _updateEstadoBadge(diag);
+  _syncToggle(tieneAlgo);
+
+  if (tieneAlgo) {
+    /* Cargar el algoritmo de Firestore y montar el editor */
+    if (!window.FLUJO_get) { showMsg('flujoMsg', '⚠️ Firebase aún no disponible', false); return; }
+    var algoData = await window.FLUJO_get(diag.flujo_id).catch(function(){ return null; });
+    _loadAlgoritmoScript(function () {
+      var mount = document.getElementById('flujoEditorMount');
+      if (mount) {
+        _algoritmoEditorInst = window.FLUJO_editor(mount, algoData || null);
+      }
+    });
+    if (algoData) {
+      showMsg('flujoMsg', '✓ Algoritmo "' + diag.flujo_id + '" cargado para ' + cie, true);
+    } else {
+      showMsg('flujoMsg', '⚠️ El diagnóstico tiene algoritmo vinculado pero no se encontró en Firestore. Puedes crear uno nuevo.', false);
+    }
+  } else {
+    /* Sin algoritmo: limpiar editor y mostrar editor vacío */
+    _loadAlgoritmoScript(function () {
+      var mount = document.getElementById('flujoEditorMount');
+      if (mount) {
+        _algoritmoEditorInst = window.FLUJO_editor(mount, null);
+      }
+    });
+    showMsg('flujoMsg', '✓ Diagnóstico ' + cie + ' cargado — sin algoritmo activo', true);
+  }
+});
+
+/* ─── Guardar algoritmo ──────────────────────────────────────────────── */
 document.getElementById('btnGuardarFlujo').addEventListener('click', async function () {
-  var cie    = (document.getElementById('flujoTargetCie').value.trim().split(' ')[0] || '').toUpperCase();
-  var flujoId= document.getElementById('flujoId').value.trim().replace(/\s+/g, '_');
+  var toggle  = document.getElementById('flujoToggle');
+  var cieRaw  = document.getElementById('flujoTargetCie').value.trim().split(' ')[0];
+  var cie     = cieRaw.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  var algoId  = document.getElementById('flujoId').value.trim().replace(/\s+/g, '_');
 
-  if (!cie || !flujoId) {
-    showMsg('flujoMsg', '⚠️ Completa el CIE-10 y el ID del flujograma', false);
-    return;
-  }
-  if (!_flujoEditorInstance) {
-    showMsg('flujoMsg', '⚠️ El editor aún no está listo', false);
-    return;
-  }
+  if (!cie)    { showMsg('flujoMsg', '⚠️ Ingresa el CIE-10 del diagnóstico', false); return; }
+  if (!algoId) { showMsg('flujoMsg', '⚠️ El ID del algoritmo no puede estar vacío', false); return; }
 
-  var data = _flujoEditorInstance.getData();
-  data.id = flujoId;
+  var diag = (window.DB || []).find(function(d){ return d.cie10.toUpperCase() === cie; });
+  if (!diag)   { showMsg('flujoMsg', 'Diagnóstico ' + cie + ' no encontrado', false); return; }
 
-  if (!data.nodo_inicio || !data.nodos || !Object.keys(data.nodos).length) {
-    showMsg('flujoMsg', '⚠️ El flujograma debe tener al menos un nodo', false);
-    return;
-  }
+  var activar = toggle && toggle.checked;
 
   try {
-    /* 1. Guardar el flujograma en su colección */
-    if (window.FLUJO_save) {
+    if (activar) {
+      /* Guardar la definición del algoritmo */
+      if (!_algoritmoEditorInst) { showMsg('flujoMsg', '⚠️ El editor no está listo', false); return; }
+      var data = _algoritmoEditorInst.getData();
+      data.id = algoId;
+      if (!data.nodo_inicio || !Object.keys(data.nodos || {}).length) {
+        showMsg('flujoMsg', '⚠️ El algoritmo debe tener al menos un nodo de pregunta', false); return;
+      }
+      if (!window.FLUJO_save) { showMsg('flujoMsg', '⚠️ Firebase aún no disponible', false); return; }
       await window.FLUJO_save(data);
-    } else {
-      showMsg('flujoMsg', '⚠️ Firebase aún no disponible', false);
-      return;
-    }
+      /* Vincular flujo_id al diagnóstico */
+      diag.flujo_id = algoId;
+      await window.STORE_save('EDITADO', diag);
+      _updateEstadoBadge(diag);
+      showMsg('flujoMsg', '✅ Algoritmo guardado y activado para ' + cie
+        + '. El buscador iniciará la secuencia de preguntas.', true);
 
-    /* 2. Vincular el flujo_id en el diagnóstico seleccionado */
-    var diagEntry = (window.DB || []).find(function (d) { return d.cie10.toUpperCase() === cie; });
-    if (diagEntry) {
-      diagEntry.flujo_id = flujoId;
-      if (window.STORE_save) {
-        await window.STORE_save('EDITADO', diagEntry);
+    } else {
+      /* Desactivar: eliminar algoritmo de Firestore y desvincular del diagnóstico */
+      if (diag.flujo_id) {
+        var confirmar = confirm(
+          '¿Desactivar el algoritmo para "' + cie + ' – ' + diag.nombre + '"?
+
+'
+          + 'El buscador mostrará la información clínica directamente, sin preguntas previas.
+'
+          + 'El algoritmo guardado en Firestore también se eliminará.'
+        );
+        if (!confirmar) return;
+        if (window.FLUJO_delete) await window.FLUJO_delete(diag.flujo_id).catch(function(){});
+        delete diag.flujo_id;
+        await window.STORE_save('EDITADO', diag);
+        /* Limpiar editor */
+        var mount = document.getElementById('flujoEditorMount');
+        if (mount) { mount.innerHTML = ''; }
+        _algoritmoEditorInst = null;
+        _updateEstadoBadge(diag);
+        showMsg('flujoMsg', '✓ Algoritmo desactivado para ' + cie + '. Información clínica se mostrará directamente.', true);
+      } else {
+        showMsg('flujoMsg', 'Este diagnóstico ya está configurado para mostrar información directamente.', true);
       }
     }
-
-    showMsg('flujoMsg', '✅ Flujograma guardado y vinculado a ' + cie, true);
   } catch(e) {
     showMsg('flujoMsg', 'Error: ' + e.message, false);
   }
 });
 
-/* Cargar flujograma existente */
-document.getElementById('btnCargarFlujo').addEventListener('click', async function () {
-  var flujoId = document.getElementById('flujoId').value.trim();
-  if (!flujoId) {
-    showMsg('flujoMsg', '⚠️ Ingresa el ID del flujograma a cargar', false);
-    return;
-  }
-  if (!window.FLUJO_get) {
-    showMsg('flujoMsg', '⚠️ Firebase aún no disponible', false);
-    return;
-  }
-  var data = await window.FLUJO_get(flujoId);
-  if (!data) {
-    showMsg('flujoMsg', 'No se encontró un flujograma con ese ID', false);
-    return;
-  }
-  /* Autocompletar el CIE-10 si el diagnóstico tiene flujo_id */
-  var linked = (window.DB || []).find(function (d) { return d.flujo_id === flujoId; });
-  if (linked) document.getElementById('flujoTargetCie').value = linked.cie10 + ' – ' + linked.nombre;
-
-  /* Re-montar el editor con los datos cargados */
-  var mount = document.getElementById('flujoEditorMount');
-  if (mount && window.FLUJO_editor) {
-    _flujoEditorInstance = window.FLUJO_editor(mount, data);
-  }
-  showMsg('flujoMsg', '✓ Flujograma "' + flujoId + '" cargado', true);
-});
-
-/* Eliminar flujograma */
+/* ─── Eliminar algoritmo rápido ─────────────────────────────────────── */
 document.getElementById('btnEliminarFlujo').addEventListener('click', async function () {
-  var flujoId = document.getElementById('flujoId').value.trim();
-  if (!flujoId) { showMsg('flujoMsg', '⚠️ Ingresa el ID del flujograma a eliminar', false); return; }
-  if (!confirm('¿Eliminar el flujograma "' + flujoId + '"?\nSe desvinculará del diagnóstico asociado.')) return;
+  var diag   = _algoritmoCurrentDiag;
+  var algoId = diag && diag.flujo_id;
+  if (!diag || !algoId) { showMsg('flujoMsg', '⚠️ No hay algoritmo activo para eliminar', false); return; }
+  if (!confirm('¿Eliminar el algoritmo "' + algoId + '" de ' + diag.cie10 + '?
+El diagnóstico mostrará su información directamente.')) return;
   try {
-    if (window.FLUJO_delete) await window.FLUJO_delete(flujoId);
-    /* Desvincular flujo_id del diagnóstico */
-    var linked = (window.DB || []).find(function (d) { return d.flujo_id === flujoId; });
-    if (linked) {
-      delete linked.flujo_id;
-      if (window.STORE_save) await window.STORE_save('EDITADO', linked);
-    }
-    /* Limpiar el editor */
+    if (window.FLUJO_delete) await window.FLUJO_delete(algoId).catch(function(){});
+    delete diag.flujo_id;
+    await window.STORE_save('EDITADO', diag);
     var mount = document.getElementById('flujoEditorMount');
     if (mount) mount.innerHTML = '';
-    document.getElementById('flujoId').value = '';
-    document.getElementById('flujoTargetCie').value = '';
-    _flujoEditorInstance = null;
-    _flujoTabInited = false;
-    showMsg('flujoMsg', '✓ Flujograma eliminado correctamente', true);
+    _algoritmoEditorInst = null;
+    _syncToggle(false);
+    _updateEstadoBadge(diag);
+    showMsg('flujoMsg', '✓ Algoritmo eliminado. El diagnóstico mostrará su información directamente.', true);
   } catch(e) {
     showMsg('flujoMsg', 'Error: ' + e.message, false);
   }

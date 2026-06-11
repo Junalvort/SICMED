@@ -214,15 +214,15 @@
       </div>`;
   }
 
-  // ─── Construye el HTML estático del resultado (sin notas, sin bordes bajos
-  //     cuando hay flujograma) y lo inserta en el DOM.
-  function buildStaticCard(result, hasFlujo) {
-    // Cuando hay flujograma, el result-card NO debe terminar visualmente
-    // (sin border-radius inferior) porque continúa con el bloque del flujograma.
-    const cardClass = hasFlujo ? 'result-card result-card--no-bottom-radius' : 'result-card';
-
+  // ─── Construye la tarjeta con la información clínica completa.
+  //     Se usa directamente cuando NO hay algoritmo, o como bloque
+  //     que el motor inyecta al final cuando SÍ hay algoritmo.
+  function buildInfoCard(result) {
+    const notasHTML = result.notas
+      ? `<div class="result-notas full">💡 ${formatMultiline(result.notas)}</div>`
+      : '';
     return `
-      <div class="${cardClass}">
+      <div class="result-card">
         ${field('Código CIE-10',
           `<span style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.2rem;color:var(--blue-700)">
             ${escapeHTML(result.cie10)}
@@ -237,6 +237,7 @@
         ${field('Criterios de derivación', formatMultiline(result.criterios || '–'), true)}
         ${field('Exámenes mínimos (EMBD)',
           `<span style="color:var(--blue-700)">${formatMultiline(result.examenes || '–')}</span>`, true)}
+        ${notasHTML}
       </div>`;
   }
 
@@ -245,17 +246,8 @@
 
     el.resultTitle.textContent = `${result.cie10} – ${result.nombre}`;
 
-    const flujoId  = result.flujo_id || null;
-    const hasFlujo = Boolean(flujoId);
-
-    // Notas: cuando hay flujograma pierden el border-radius superior
-    // para ser continuación visual del bloque desplegado del flujograma.
-    const notasClass = hasFlujo
-      ? 'result-notas full result-notas--after-flujo'
-      : 'result-notas full';
-    const notasHTML = result.notas
-      ? `<div class="${notasClass}">💡 ${formatMultiline(result.notas)}</div>`
-      : '';
+    const algoritmoId = result.flujo_id || null;
+    const hasAlgoritmo = Boolean(algoritmoId);
 
     // Otros resultados relacionados
     let othersHTML = '';
@@ -270,62 +262,76 @@
         </div>`;
     }
 
-    // Orden visual:
-    //   1. Tarjeta estática (campos CIE-10, especialidad, criterios…)
-    //   2. Botón "Flujograma" centrado  [solo si hay flujo_id]
-    //   3. Zona de expansión inline del flujograma  [inicialmente vacía]
-    //   4. Notas importantes
-    //   5. Otros resultados relacionados
-    el.resultBody.innerHTML = `
-      ${buildStaticCard(result, hasFlujo)}
-      ${hasFlujo ? `
-        <div class="result-flujo-trigger">
-          <button class="result-flujo-btn" id="flujoLaunchBtn">Flujograma</button>
+    if (hasAlgoritmo) {
+      // ── CON ALGORITMO ────────────────────────────────────────────────
+      // Mostrar solo cabecera (CIE-10 + nombre) + botón Algoritmo.
+      // La información clínica completa aparece UNA VEZ que el usuario
+      // complete el algoritmo (el motor la inyecta al terminar).
+      el.resultBody.innerHTML = `
+        <div class="result-card result-card--no-bottom-radius">
+          ${field('Código CIE-10',
+            `<span style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.2rem;color:var(--blue-700)">
+              ${escapeHTML(result.cie10)}
+            </span>`)}
+          ${field('Especialidad', escapeHTML(result.especialidad))}
+          ${field('Diagnóstico',  escapeHTML(result.nombre), true)}
+          ${field('Prioridad',
+            `<span class="badge-urgencia ${result.prioridad}">
+              ${PRIORITY_LABELS[result.prioridad] || escapeHTML(result.prioridad)}
+            </span>`)}
         </div>
-        <div class="result-flujo-inline" id="flujoInlineZone" hidden></div>
-      ` : ''}
-      ${notasHTML}
-      ${othersHTML}
-    `;
+        <div class="result-flujo-trigger">
+          <button class="result-flujo-btn" id="algoritmoLaunchBtn">Algoritmo</button>
+        </div>
+        <div class="result-flujo-inline" id="algoritmoZone" hidden></div>
+        ${othersHTML}
+      `;
 
-    // Conectar el botón de flujograma (despliegue inline)
-    if (hasFlujo) {
-      const btn  = document.getElementById('flujoLaunchBtn');
-      const zone = document.getElementById('flujoInlineZone');
+      const btn  = document.getElementById('algoritmoLaunchBtn');
+      const zone = document.getElementById('algoritmoZone');
       if (btn && zone) {
-        btn.addEventListener('click', () => expandFlujoInline(result, flujoId, btn, zone));
+        btn.addEventListener('click', () =>
+          toggleAlgoritmo(result, algoritmoId, btn, zone)
+        );
       }
+
+    } else {
+      // ── SIN ALGORITMO ────────────────────────────────────────────────
+      // Mostrar directamente toda la información clínica.
+      el.resultBody.innerHTML = `
+        ${buildInfoCard(result)}
+        ${othersHTML}
+      `;
     }
 
     el.resultPanel.hidden = false;
-
     if (window.smoothScrollTo) {
       window.smoothScrollTo(el.resultPanel, 'nearest');
     }
   }
 
-  // ── Toggle inline del flujograma: abre/cierra sin texto de carga ────────
-  // Los datos se cargan una sola vez y se cachean en flujoCache.
-  const flujoCache = {};
+  // ── Toggle del algoritmo inline ───────────────────────────────────────
+  // Cache para evitar lecturas repetidas a Firestore
+  const _algoritmoCache = {};
 
-  async function expandFlujoInline(result, flujoId, triggerBtn, zone) {
-    // ── Toggle: si ya está abierto, cerrar ──────────────────────────────
+  async function toggleAlgoritmo(result, algoritmoId, btn, zone) {
+    // Cerrar si ya está abierto
     if (!zone.hidden) {
       zone.hidden = true;
-      triggerBtn.classList.remove('result-flujo-btn--open');
+      btn.classList.remove('result-flujo-btn--open');
       return;
     }
 
-    // ── Abrir ────────────────────────────────────────────────────────────
-    triggerBtn.classList.add('result-flujo-btn--open');
+    // Abrir
+    btn.classList.add('result-flujo-btn--open');
 
-    // Si ya montamos el contenido antes, solo mostrar
+    // Si ya se montó antes, solo mostrar
     if (zone.dataset.loaded === '1') {
       zone.hidden = false;
       return;
     }
 
-    // Primera apertura: cargar flujograma.js si aún no está disponible
+    // Cargar flujograma.js si aún no está disponible
     if (!window.FLUJO_run) {
       await new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -336,24 +342,27 @@
       }).catch(() => null);
     }
 
-    // Obtener datos (cache en memoria para evitar lecturas repetidas)
-    if (!flujoCache[flujoId] && window.FLUJO_get) {
-      flujoCache[flujoId] = await window.FLUJO_get(flujoId).catch(() => null);
+    // Obtener definición del algoritmo (cache en memoria)
+    if (!_algoritmoCache[algoritmoId] && window.FLUJO_get) {
+      _algoritmoCache[algoritmoId] = await window.FLUJO_get(algoritmoId).catch(() => null);
     }
-    const flujoData = flujoCache[flujoId];
+    const algoritmoData = _algoritmoCache[algoritmoId];
 
     zone.hidden = false;
     zone.innerHTML = '';
 
-    if (!flujoData) {
+    if (!algoritmoData) {
       zone.innerHTML = `<div class="result-flujo-error">
-        No se pudo cargar el flujograma. Verifica la conexión e intenta de nuevo.
+        No se pudo cargar el algoritmo. Verifica la conexión e intenta de nuevo.
       </div>`;
       return;
     }
 
     zone.dataset.loaded = '1';
-    window.FLUJO_run(flujoData, zone);
+
+    // Ejecutar el motor pasando la información clínica del diagnóstico
+    // para que sea mostrada al usuario al completar el algoritmo.
+    window.FLUJO_run(algoritmoData, zone, result);
   }
 
   function showNoResult(query) {

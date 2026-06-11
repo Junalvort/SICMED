@@ -673,7 +673,8 @@ window.showAdmin = showAdmin; window.showLogin = showLogin;
 
 (async function () {
   const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-  const { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  const { getAuth, GoogleAuthProvider, signInWithRedirect,
+          getRedirectResult, signOut, onAuthStateChanged }
     = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
 
   // Reusar la app de db.js si ya existe; si no, crearla
@@ -691,6 +692,20 @@ window.showAdmin = showAdmin; window.showLogin = showLogin;
   var auth     = getAuth(app);
   var provider = new GoogleAuthProvider();
 
+  // Procesar el resultado del redirect al volver de Google
+  try {
+    var redirectResult = await getRedirectResult(auth);
+    if (redirectResult && redirectResult.user) {
+      // El onAuthStateChanged lo maneja automáticamente
+    }
+  } catch (e) {
+    var errEl = document.getElementById('loginErr');
+    if (errEl) {
+      errEl.textContent = 'Error al iniciar sesión: ' + (e.message || e.code || 'intenta de nuevo');
+      errEl.style.display = 'block';
+    }
+  }
+
   // Vigila el estado de sesión (persiste entre recargas)
   onAuthStateChanged(auth, function (user) {
     if (user && user.uid === ADMIN_UID) {
@@ -705,14 +720,18 @@ window.showAdmin = showAdmin; window.showLogin = showLogin;
     }
   });
 
-  // Botón Ingresar con Google
+  // Botón Ingresar con Google → redirige a la página de Google
   document.getElementById('loginBtn').addEventListener('click', async function () {
     try {
       document.getElementById('loginErr').style.display = 'none';
-      await signInWithPopup(auth, provider);
+      document.getElementById('loginBtn').disabled = true;
+      document.getElementById('loginBtn').style.opacity = '0.7';
+      await signInWithRedirect(auth, provider);
     } catch (e) {
       document.getElementById('loginErr').textContent = 'Error: ' + (e.message || e.code || 'no se pudo iniciar sesión');
       document.getElementById('loginErr').style.display = 'block';
+      document.getElementById('loginBtn').disabled = false;
+      document.getElementById('loginBtn').style.opacity = '';
     }
   });
 

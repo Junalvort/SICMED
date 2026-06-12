@@ -1435,14 +1435,7 @@ document.getElementById('btnGuardarFlujo').addEventListener('click', async funct
     } else {
       /* Desactivar: eliminar algoritmo de Firestore y desvincular del diagnóstico */
       if (diag.flujo_id) {
-        var confirmar = confirm(
-          '¿Desactivar el algoritmo para "' + cie + ' – ' + diag.nombre + '"?
-
-'
-          + 'El buscador mostrará la información clínica directamente, sin preguntas previas.
-'
-          + 'El algoritmo guardado en Firestore también se eliminará.'
-        );
+        var confirmar = confirm('¿Desactivar el algoritmo para "' + cie + ' – ' + diag.nombre + '"?\n\nEl buscador mostrará la información clínica directamente.\nEl algoritmo guardado en Firestore también se eliminará.');
         if (!confirmar) return;
         if (window.FLUJO_delete) await window.FLUJO_delete(diag.flujo_id).catch(function(){});
         delete diag.flujo_id;
@@ -1467,8 +1460,7 @@ document.getElementById('btnEliminarFlujo').addEventListener('click', async func
   var diag   = _algoritmoCurrentDiag;
   var algoId = diag && diag.flujo_id;
   if (!diag || !algoId) { showMsg('flujoMsg', '⚠️ No hay algoritmo activo para eliminar', false); return; }
-  if (!confirm('¿Eliminar el algoritmo "' + algoId + '" de ' + diag.cie10 + '?
-El diagnóstico mostrará su información directamente.')) return;
+  if (!confirm('¿Eliminar el algoritmo "' + algoId + '" de ' + diag.cie10 + '? El diagnóstico mostrará su información directamente.')) return;
   try {
     if (window.FLUJO_delete) await window.FLUJO_delete(algoId).catch(function(){});
     delete diag.flujo_id;

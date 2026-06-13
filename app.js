@@ -278,7 +278,7 @@
           ${field('Prioridad',
             `<span class="badge-urgencia ${result.prioridad}">
               ${PRIORITY_LABELS[result.prioridad] || escapeHTML(result.prioridad)}
-            </span>`)}
+            </span>`, true)}
         </div>
         <div class="result-flujo-trigger">
           <button class="result-flujo-btn" id="algoritmoLaunchBtn">Algoritmo</button>

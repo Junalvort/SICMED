@@ -333,18 +333,43 @@
 
     // Cargar flujograma.js si aún no está disponible
     if (!window.FLUJO_run) {
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'flujograma.js';
-        s.onload  = resolve;
-        s.onerror = reject;
-        document.body.appendChild(s);
-      }).catch(() => null);
+      try {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'flujograma.js';
+          s.onload  = resolve;
+          s.onerror = () => reject(new Error('No se pudo cargar flujograma.js (404 o error de red)'));
+          document.body.appendChild(s);
+        });
+      } catch (e) {
+        console.error('SICMED Algoritmo:', e.message);
+        zone.hidden = false;
+        zone.innerHTML = `<div class="result-flujo-error">
+          No se pudo cargar el módulo del algoritmo (flujograma.js).<br>
+          Verifica que el archivo exista en el servidor.
+        </div>`;
+        zone.dataset.loaded = '1';
+        return;
+      }
     }
 
     // Obtener definición del algoritmo (cache en memoria)
-    if (!_algoritmoCache[algoritmoId] && window.FLUJO_get) {
-      _algoritmoCache[algoritmoId] = await window.FLUJO_get(algoritmoId).catch(() => null);
+    if (!_algoritmoCache[algoritmoId]) {
+      if (!window.FLUJO_get) {
+        console.error('SICMED Algoritmo: window.FLUJO_get no está definido (db.js no cargó correctamente)');
+        zone.hidden = false;
+        zone.innerHTML = `<div class="result-flujo-error">
+          Error de configuración: la base de datos no está lista. Recarga la página.
+        </div>`;
+        zone.dataset.loaded = '1';
+        return;
+      }
+      try {
+        _algoritmoCache[algoritmoId] = await window.FLUJO_get(algoritmoId);
+      } catch (e) {
+        console.error('SICMED Algoritmo: error al leer Firestore:', e);
+        _algoritmoCache[algoritmoId] = null;
+      }
     }
     const algoritmoData = _algoritmoCache[algoritmoId];
 
@@ -352,9 +377,11 @@
     zone.innerHTML = '';
 
     if (!algoritmoData) {
+      console.warn('SICMED Algoritmo: no existe el documento "' + algoritmoId + '" en la colección flujogramas');
       zone.innerHTML = `<div class="result-flujo-error">
-        No se pudo cargar el algoritmo. Verifica la conexión e intenta de nuevo.
+        No se encontró el algoritmo "${escapeHTML(algoritmoId)}" en la base de datos.
       </div>`;
+      zone.dataset.loaded = '1';
       return;
     }
 
@@ -362,7 +389,14 @@
 
     // Ejecutar el motor pasando la información clínica del diagnóstico
     // para que sea mostrada al usuario al completar el algoritmo.
-    window.FLUJO_run(algoritmoData, zone, result);
+    try {
+      window.FLUJO_run(algoritmoData, zone, result);
+    } catch (e) {
+      console.error('SICMED Algoritmo: error al ejecutar FLUJO_run:', e);
+      zone.innerHTML = `<div class="result-flujo-error">
+        Error al ejecutar el algoritmo. Revisa la consola para más detalles.
+      </div>`;
+    }
   }
 
   function showNoResult(query) {

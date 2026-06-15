@@ -2,9 +2,10 @@
 // SICMED – Algoritmo Clínico (Motor + Editor)
 // Archivo independiente; no modifica estructuras existentes.
 //
-// MOTOR:   window.FLUJO_run(algoritmoData, containerEl, diagnosticoResult?)
-//            → Si se pasa diagnosticoResult, muestra la info clínica del
-//              diagnóstico UNA VEZ completado el algoritmo.
+// MOTOR:   window.FLUJO_run(algoritmoData, containerEl)
+//            → Ejecuta el algoritmo y muestra el resultado final con sus
+//              campos clínicos configurados en el nodo (criterios, exámenes,
+//              manejo, indicaciones, notas, etc.).
 // EDITOR:  window.FLUJO_editor(containerEl, initialData)
 //            → Editor visual de nodos. Retorna { getData() }.
 // ═══════════════════════════════════════════════════════════════════════════
@@ -67,19 +68,6 @@
 .flujo-resultado-campo-value { font-size:.875rem;color:var(--text);line-height:1.55;white-space:pre-line; }
 [data-theme="dark"] .flujo-resultado-campo { background:rgba(15,30,55,.40); }
 
-/* Info clínica del diagnóstico post-algoritmo */
-.flujo-info-clinica { margin-top:16px;border-top:1.5px solid rgba(58,134,200,.15);padding-top:16px;animation:fadeUp .3s var(--ease); }
-.flujo-info-clinica-label { font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--blue-500);margin-bottom:10px; }
-.flujo-info-card { display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--gray-200);border-radius:var(--r-md);overflow:hidden; }
-.flujo-info-field { background:rgba(255,255,255,.90);padding:12px 16px;display:flex;flex-direction:column;gap:3px; }
-.flujo-info-field.full { grid-column:1/-1; }
-.flujo-info-label { font-size:.65rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gray-400); }
-.flujo-info-value { font-size:.875rem;color:var(--text);line-height:1.5;font-weight:500;white-space:pre-line; }
-.flujo-info-notas { grid-column:1/-1;background:rgba(58,134,200,.05);border:1px solid rgba(58,134,200,.15);border-radius:0 0 var(--r-md) var(--r-md);padding:12px 16px;font-size:.85rem;color:var(--blue-700);line-height:1.55; }
-[data-theme="dark"] .flujo-info-field { background:rgba(15,30,55,.60); }
-[data-theme="dark"] .flujo-info-notas { background:rgba(30,60,100,.30);border-color:rgba(60,110,160,.25); }
-@media(max-width:520px){ .flujo-info-card{grid-template-columns:1fr;} }
-
 /* Reiniciar */
 .flujo-reiniciar-btn { margin-top:16px;display:inline-flex;align-items:center;gap:8px;background:rgba(58,134,200,.10);border:1.5px solid var(--blue-200);padding:8px 20px;border-radius:30px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;color:var(--blue-700);cursor:pointer;transition:all .15s; }
 .flujo-reiniciar-btn:hover { background:rgba(58,134,200,.18); }
@@ -128,11 +116,6 @@
   /* ═══════════════════════════════════════════════════════════════════════
      MOTOR
   ════════════════════════════════════════════════════════════════════════ */
-  var PRIO_LABELS = {
-    P0:'P0 – Urgencia inmediata', P1:'P1 – Alta prioridad (< 30 días)',
-    P2:'P2 – Normal (< 6 meses)', GES:'GES – Garantía Explícita en Salud'
-  };
-
   // Campos clínicos que se pueden configurar por nodo resultado
   var CAMPOS = [
     { key:'conducta',    label:'Conducta / Recomendación' },
@@ -144,7 +127,7 @@
     { key:'notas',       label:'Notas importantes' },
   ];
 
-  window.FLUJO_run = function (algoritmoData, containerEl, diagnosticoResult) {
+  window.FLUJO_run = function (algoritmoData, containerEl) {
     if (!algoritmoData || !containerEl) return;
     var nodos   = algoritmoData.nodos || {};
     var history = [];
@@ -229,11 +212,6 @@
 
       wrap.appendChild(resDiv);
 
-      // Info clínica del diagnóstico (del buscador) — siempre después del resultado
-      if (diagnosticoResult) {
-        renderInfoClinica(diagnosticoResult);
-      }
-
       // Botón reiniciar
       var reinBtn = document.createElement('button');
       reinBtn.className = 'flujo-reiniciar-btn';
@@ -243,45 +221,6 @@
         render(algoritmoData.nodo_inicio || 'inicio');
       });
       wrap.appendChild(reinBtn);
-    }
-
-    function renderInfoClinica(diag) {
-      var wrapper = document.createElement('div');
-      wrapper.className = 'flujo-info-clinica';
-
-      var lbl = document.createElement('div');
-      lbl.className = 'flujo-info-clinica-label';
-      lbl.textContent = 'Información de derivación';
-      wrapper.appendChild(lbl);
-
-      var card = document.createElement('div');
-      card.className = 'flujo-info-card';
-
-      function iField(label, valueHTML, full) {
-        var f = document.createElement('div');
-        f.className = 'flujo-info-field' + (full ? ' full' : '');
-        f.innerHTML = '<span class="flujo-info-label">' + esc(label) + '</span>'
-          + '<span class="flujo-info-value">' + valueHTML + '</span>';
-        card.appendChild(f);
-      }
-
-      iField('Destino', esc(diag.destino || '–'));
-      iField('Prioridad',
-        '<span class="badge-urgencia ' + esc(diag.prioridad) + '">'
-        + esc(PRIO_LABELS[diag.prioridad] || diag.prioridad) + '</span>');
-      iField('Criterios de derivación', esc(diag.criterios || '–'), true);
-      iField('Exámenes mínimos (EMBD)',
-        '<span style="color:var(--blue-700)">' + esc(diag.examenes || '–') + '</span>', true);
-
-      if (diag.notas) {
-        var notas = document.createElement('div');
-        notas.className = 'flujo-info-notas';
-        notas.innerHTML = '💡 ' + esc(diag.notas).replace(/\n/g,'<br>');
-        card.appendChild(notas);
-      }
-
-      wrapper.appendChild(card);
-      wrap.appendChild(wrapper);
     }
 
     render(algoritmoData.nodo_inicio || 'inicio');

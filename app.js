@@ -387,10 +387,10 @@
 
     zone.dataset.loaded = '1';
 
-    // Ejecutar el motor pasando la información clínica del diagnóstico
-    // para que sea mostrada al usuario al completar el algoritmo.
+    // Ejecutar el motor: muestra el resultado final con los campos
+    // clínicos configurados en el propio nodo del algoritmo.
     try {
-      window.FLUJO_run(algoritmoData, zone, result);
+      window.FLUJO_run(algoritmoData, zone);
     } catch (e) {
       console.error('SICMED Algoritmo: error al ejecutar FLUJO_run:', e);
       zone.innerHTML = `<div class="result-flujo-error">
